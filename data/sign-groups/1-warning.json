@@ -2,101 +2,176 @@
   {
     "id": "1.1",
     "title": "Железнодорожный переезд со шлагбаумом",
-    "images": ["assets/signs/1_1.png"],
+    "images": [
+      "assets/signs/1_1.png"
+    ],
     "comment": "Впереди железнодорожный переезд со шлагбаумом. Сбавь скорость, смотри на светофор и шлагбаум и не выезжай на рельсы, если переезд закрывается или впереди пробка.",
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "1.1"
+    ],
+    "topicIds": [
+      "railway-crossings"
+    ]
   },
   {
     "id": "1.2",
     "title": "Железнодорожный переезд без шлагбаума",
-    "images": ["assets/signs/1_2.png"],
+    "images": [
+      "assets/signs/1_2.png"
+    ],
     "comment": "Впереди железнодорожный переезд без шлагбаума, там нужно быть особенно внимательным. Сбавь скорость, посмотри в обе стороны и не выезжай на рельсы, если есть хоть малейшее сомнение.",
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "1.2"
+    ],
+    "topicIds": [
+      "railway-crossings"
+    ]
   },
   {
     "id": "1.3.1",
     "title": "Однопутная железная дорога",
-    "images": ["assets/signs/1_3_1.png"],
+    "images": [
+      "assets/signs/1_3_1.png"
+    ],
     "comment": "Перед тобой переезд через один железнодорожный путь. Будь готов остановиться и проверь обе стороны: поезд может быть ближе, чем кажется.",
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "1.3.1"
+    ],
+    "topicIds": [
+      "railway-crossings"
+    ]
   },
   {
     "id": "1.3.2",
     "title": "Многопутная железная дорога",
-    "images": ["assets/signs/1_3_2.png"],
+    "images": [
+      "assets/signs/1_3_2.png"
+    ],
     "comment": "Перед тобой переезд через несколько железнодорожных путей. Даже если один поезд уже прошёл, не стартуй сразу: по соседнему пути может идти другой.",
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "1.3.2"
+    ],
+    "topicIds": [
+      "railway-crossings"
+    ]
   },
   {
     "id": "1.4.1-1.4.6",
     "title": "Приближение к железнодорожному переезду",
-    "images": ["assets/signs/1_4_1_1_4_6.png"],
+    "images": [
+      "assets/signs/1_4_1_1_4_6.png"
+    ],
     "comment": "Это полоски-подсказки перед железнодорожным переездом вне населённого пункта: чем меньше полосок, тем ближе рельсы. Это не отдельный запрет, а напоминание заранее сбросить скорость.",
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "1.4.1",
+      "1.4.2",
+      "1.4.3",
+      "1.4.4",
+      "1.4.5",
+      "1.4.6"
+    ],
+    "topicIds": [
+      "railway-crossings"
+    ]
   },
   {
     "id": "1.5",
     "title": "Пересечение с трамвайной линией",
-    "images": ["assets/signs/1_5.png"],
+    "images": [
+      "assets/signs/1_5.png"
+    ],
     "comment": "Впереди дорога пересекается с трамвайными путями. Сбавь скорость и смотри на трамвай: он тяжёлый, быстро не остановится и часто имеет преимущество.",
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "1.5"
+    ]
   },
   {
     "id": "1.6",
     "title": "Пересечение равнозначных дорог",
-    "images": ["assets/signs/1_6.png"],
+    "images": [
+      "assets/signs/1_6.png"
+    ],
     "comment": "Впереди перекрёсток равнозначных дорог, главной тут нет. Обычно пропускай тех, кто справа, и не жди, что тебя обязаны пропустить.",
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "1.6"
+    ]
   },
   {
     "id": "1.7",
     "title": "Пересечение с круговым движением",
-    "images": ["assets/signs/1_7.png"],
+    "images": [
+      "assets/signs/1_7.png"
+    ],
     "comment": "Впереди перекрёсток с круговым движением. Заранее сбавь скорость, смотри знаки приоритета и не путай: сам этот знак только предупреждает о круге.",
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "1.7"
+    ]
   },
   {
     "id": "1.8",
     "title": "Светофорное регулирование",
-    "images": ["assets/signs/1_8.png"],
+    "images": [
+      "assets/signs/1_8.png"
+    ],
     "comment": "Впереди светофор — на перекрёстке, переходе или участке дороги. Не разгоняйся «на авось»: заранее смотри сигнал и будь готов остановиться.",
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "1.8"
+    ]
   },
   {
     "id": "1.9",
     "title": "Разводной мост",
-    "images": ["assets/signs/1_9.png"],
+    "images": [
+      "assets/signs/1_9.png"
+    ],
     "comment": "Впереди разводной мост или паромная переправа. Сбавь скорость и будь готов остановиться: дорога может физически закончиться или быть перекрыта.",
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "1.9"
+    ]
   },
   {
     "id": "1.10",
     "title": "Выезд на набережную",
-    "images": ["assets/signs/1_10.png"],
+    "images": [
+      "assets/signs/1_10.png"
+    ],
     "comment": "Впереди выезд к набережной или берегу, где можно случайно уехать прямо к воде. Сбавь скорость и не лети по инерции, особенно в темноте или плохую погоду.",
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "1.10"
+    ]
   },
   {
     "id": "1.11.1-1.11.2",
@@ -108,7 +183,11 @@
     "comment": "Впереди резкий или плохо видимый поворот: 1.11.1 — направо, 1.11.2 — налево. Сбавь скорость заранее, чтобы не вынесло на встречку или обочину.",
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "1.11.1",
+      "1.11.2"
+    ]
   },
   {
     "id": "1.12.1-1.12.2",
@@ -120,70 +199,109 @@
     "comment": "Впереди несколько опасных поворотов подряд: 1.12.1 — первый направо, 1.12.2 — первый налево. Не разгоняйся после первого поворота: за ним сразу может быть следующий.",
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "1.12.1",
+      "1.12.2"
+    ]
   },
   {
     "id": "1.13",
     "title": "Крутой спуск",
-    "images": ["assets/signs/1_13.png"],
+    "images": [
+      "assets/signs/1_13.png"
+    ],
     "comment": "Впереди крутой спуск. Сбавь скорость заранее и держи дистанцию: на спуске машина разгоняется, а тормозной путь растёт.",
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "1.13"
+    ]
   },
   {
     "id": "1.14",
     "title": "Крутой подъем",
-    "images": ["assets/signs/1_14.png"],
+    "images": [
+      "assets/signs/1_14.png"
+    ],
     "comment": "Впереди крутой подъём. Держи скорость и дистанцию, будь готов к медленным машинам или грузовикам, которые могут откатиться.",
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "1.14"
+    ]
   },
   {
     "id": "1.15",
     "title": "Скользкая дорога",
-    "images": ["assets/signs/1_15.png"],
+    "images": [
+      "assets/signs/1_15.png"
+    ],
     "comment": "Впереди участок, где дорога может быть скользкой. Не делай резких движений рулём и тормозом: занос тут случается быстрее, чем кажется.",
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "1.15"
+    ]
   },
   {
     "id": "1.16",
     "title": "Неровная дорога",
-    "images": ["assets/signs/1_16.png"],
+    "images": [
+      "assets/signs/1_16.png"
+    ],
     "comment": "Впереди неровная дорога: ямы, волны, стыки или выбоины. Сбавь скорость, чтобы не потерять управление и не повредить машину.",
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "1.16"
+    ]
   },
   {
     "id": "1.17",
     "title": "Искусственная неровность",
-    "images": ["assets/signs/1_17.png"],
+    "images": [
+      "assets/signs/1_17.png"
+    ],
     "comment": "Впереди искусственная неровность — обычно «лежачий полицейский». Сбавь скорость заранее, а не в последний момент прямо на нём.",
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "1.17"
+    ]
   },
   {
     "id": "1.18",
     "title": "Выброс гравия",
-    "images": ["assets/signs/1_18.png"],
+    "images": [
+      "assets/signs/1_18.png"
+    ],
     "comment": "Впереди участок, где из-под колёс может лететь гравий или щебень. Держи дистанцию и не жмись к машинам, чтобы камни не прилетели в стекло.",
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "1.18"
+    ]
   },
   {
     "id": "1.19",
     "title": "Опасная обочина",
-    "images": ["assets/signs/1_19.png"],
+    "images": [
+      "assets/signs/1_19.png"
+    ],
     "comment": "Обочина впереди опасная: она может быть мягкой, с ямой или резким перепадом. Не съезжай на неё без необходимости и возвращайся на дорогу аккуратно.",
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "1.19"
+    ]
   },
   {
     "id": "1.20.1-1.20.3",
@@ -196,124 +314,194 @@
     "comment": "Впереди дорога сужается: 1.20.1 — с обеих сторон, 1.20.2 — справа, 1.20.3 — слева. Заранее перестройся и не лезь в последний момент, чтобы не зажать соседей.",
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "1.20.1",
+      "1.20.2",
+      "1.20.3"
+    ]
   },
   {
     "id": "1.21",
     "title": "Двустороннее движение",
-    "images": ["assets/signs/1_21.png"],
+    "images": [
+      "assets/signs/1_21.png"
+    ],
     "comment": "Впереди начинается участок со встречным движением. Не едь как по односторонней: держись своей полосы и особенно аккуратно обгоняй.",
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "1.21"
+    ]
   },
   {
     "id": "1.22",
     "title": "Пешеходный переход",
-    "images": ["assets/signs/1_22.png"],
+    "images": [
+      "assets/signs/1_22.png"
+    ],
     "comment": "Впереди пешеходный переход, который может быть обозначен знаками 5.19.1, 5.19.2 и/или разметкой 1.14.1, 1.14.2. Сбавь скорость и будь готов пропустить пешеходов, даже если их пока плохо видно.",
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "1.22"
+    ]
   },
   {
     "id": "1.23",
     "title": "Дети",
-    "images": ["assets/signs/1_23.png"],
+    "images": [
+      "assets/signs/1_23.png"
+    ],
     "comment": "Впереди место, где на дорогу могут выбежать дети: школа, садик, лагерь или двор. Сбавь скорость заранее, потому что ребёнок может появиться внезапно и не посмотреть по сторонам.",
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "1.23"
+    ]
   },
   {
     "id": "1.24",
     "title": "Пересечение с велосипедной дорожкой или велопешеходной дорожкой",
-    "images": ["assets/signs/1_24.png"],
+    "images": [
+      "assets/signs/1_24.png"
+    ],
     "comment": "Впереди пересечение с велосипедной или велопешеходной дорожкой. Смотри по сторонам и будь готов пропустить велосипедиста: он может выехать быстро и быть плохо заметен.",
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "1.24"
+    ]
   },
   {
     "id": "1.25",
     "title": "Дорожные работы",
-    "images": ["assets/signs/1_25.png"],
+    "images": [
+      "assets/signs/1_25.png"
+    ],
     "comment": "Впереди дорожные работы. Сбавь скорость, смотри на временные знаки и людей на дороге: рабочие, техника и сужение могут появиться внезапно.",
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "1.25"
+    ]
   },
   {
     "id": "1.26",
     "title": "Перегон скота",
-    "images": ["assets/signs/1_26.png"],
+    "images": [
+      "assets/signs/1_26.png"
+    ],
     "comment": "Впереди место, где через дорогу могут перегонять скот. Сбавь скорость и не сигналь резко: животные непредсказуемы и могут выйти прямо перед машиной.",
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "1.26"
+    ]
   },
   {
     "id": "1.27",
     "title": "Дикие животные",
-    "images": ["assets/signs/1_27.png"],
+    "images": [
+      "assets/signs/1_27.png"
+    ],
     "comment": "Впереди участок, где на дорогу могут выбежать дикие животные. Сбавь скорость и смотри на обочины, особенно ночью и за городом.",
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "1.27"
+    ]
   },
   {
     "id": "1.28",
     "title": "Падение камней",
-    "images": ["assets/signs/1_28.png"],
+    "images": [
+      "assets/signs/1_28.png"
+    ],
     "comment": "Впереди участок, где возможны обвалы, оползни или падение камней. Не останавливайся без причины под склоном и держи дистанцию, чтобы успеть объехать препятствие.",
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "1.28"
+    ]
   },
   {
     "id": "1.29",
     "title": "Боковой ветер",
-    "images": ["assets/signs/1_29.png"],
+    "images": [
+      "assets/signs/1_29.png"
+    ],
     "comment": "Впереди сильный боковой ветер. Держи руль крепче и будь особенно осторожен с фурами, мотоциклами и при выезде из-за зданий или леса.",
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "1.29"
+    ]
   },
   {
     "id": "1.30",
     "title": "Низколетящие самолеты",
-    "images": ["assets/signs/1_30.png"],
+    "images": [
+      "assets/signs/1_30.png"
+    ],
     "comment": "Впереди место, где самолёты могут лететь низко над дорогой. Не пугайся шума и не отвлекайся: главное — держать траекторию и скорость под контролем.",
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "1.30"
+    ]
   },
   {
     "id": "1.31",
     "title": "Тоннель",
-    "images": ["assets/signs/1_31.png"],
+    "images": [
+      "assets/signs/1_31.png"
+    ],
     "comment": "Впереди тоннель без нормального освещения или с плохо видимым въездом. Сбавь скорость, включи свет и держи дистанцию: глазам нужно время привыкнуть к темноте.",
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "1.31"
+    ]
   },
   {
     "id": "1.32",
     "title": "Затор",
-    "images": ["assets/signs/1_32.png"],
+    "images": [
+      "assets/signs/1_32.png"
+    ],
     "comment": "Впереди участок, где часто образуется затор. Не разгоняйся и заранее смотри дальше потока, чтобы не въехать в хвост пробки.",
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "1.32"
+    ]
   },
   {
     "id": "1.33",
     "title": "Прочие опасности",
-    "images": ["assets/signs/1_33.png"],
+    "images": [
+      "assets/signs/1_33.png"
+    ],
     "comment": "Впереди какая-то опасность, для которой нет отдельного знака. Сбавь скорость и смотри по ситуации: причина может быть любой — от ямы до аварийного участка.",
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "1.33"
+    ]
   },
   {
     "id": "1.34.1-1.34.2",
@@ -325,24 +513,38 @@
     "comment": "Эти стрелки показывают направление резкого поворота или объезда: 1.34.1 и 1.34.2 ведут вдоль поворота. Смотри, куда указывает стрелка, и не продолжай ехать прямо по инерции.",
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "1.34.1",
+      "1.34.2"
+    ]
   },
   {
     "id": "1.34.3",
     "title": "Направление поворота",
-    "images": ["assets/signs/1_34_3.png"],
+    "images": [
+      "assets/signs/1_34_3.png"
+    ],
     "comment": "Эта стрелка стоит на Т-образном перекрёстке, разветвлении или объезде и показывает, куда уходит дорога. Не путай с обычным указателем маршрута: здесь предупреждают, что прямо ехать нельзя или опасно.",
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "1.34.3"
+    ]
   },
   {
     "id": "1.35",
     "title": "Учаcток перекрестка",
-    "images": ["assets/signs/1_35.png"],
+    "images": [
+      "assets/signs/1_35.png"
+    ],
     "comment": "Ты подъезжаешь к перекрёстку с разметкой 1.26, куда нельзя выезжать, если впереди пробка и ты застрянешь поперёк. Знак 1.35 напоминает: не блокируй перекрёсток, даже если тебе горит зелёный.",
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "1.35"
+    ]
   }
 ]

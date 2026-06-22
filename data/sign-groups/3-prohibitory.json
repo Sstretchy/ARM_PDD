@@ -2,310 +2,593 @@
   {
     "id": "3.1",
     "title": "Въезд запрещен",
-    "images": ["assets/signs/3_1.png"],
+    "images": [
+      "assets/signs/3_1.png"
+    ],
     "comment": "С этой стороны въезд запрещён: туда нельзя заезжать никакому транспорту, кроме разрешённых исключений вроде маршрутного транспорта. Не путай с 3.2: 3.1 запрещает именно въезд с этой стороны, а не всё движение в зоне.",
+    "conceptSlugs": [
+      "shuttle_vehicle"
+    ],
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "3.1"
+    ]
   },
   {
     "id": "3.2",
     "title": "Движение запрещено",
-    "images": ["assets/signs/3_2.png"],
+    "images": [
+      "assets/signs/3_2.png"
+    ],
     "comment": "Дальше нельзя ехать почти никакому транспорту: зона закрыта для движения. Не путай с 3.1: 3.2 запрещает движение по участку, а не только въезд с одной стороны.",
+    "conceptSlugs": [],
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "3.2"
+    ]
   },
   {
     "id": "3.3",
     "title": "Движение механических транспортных средств запрещено",
-    "images": ["assets/signs/3_3.png"],
+    "images": [
+      "assets/signs/3_3.png"
+    ],
     "comment": "Нельзя ехать механическим транспортным средствам: машинам, мотоциклам, тракторам и подобной технике. Не путай с 3.2: там запрещено движение вообще, а здесь — именно техника с двигателем.",
+    "conceptSlugs": [
+      "motor_vehicle",
+      "motorcycle"
+    ],
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "3.3"
+    ]
   },
   {
     "id": "3.4",
     "title": "Движение грузовых автомобилей запрещено",
-    "images": ["assets/signs/3_4.png"],
+    "images": [
+      "assets/signs/3_4.png"
+    ],
     "comment": "Если на знаке нет массы, сюда нельзя грузовикам тяжелее 3,5 т, автопоездам, тракторам и самоходным машинам; если масса указана — смотри её. Не путай с 3.11: там ограничивают фактическую массу всех машин. Исключения бывают для почты, перевозки людей и тех, кто обслуживает зону — они едут ближайшим путём.",
+    "conceptSlugs": [
+      "rmm"
+    ],
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "3.4"
+    ]
   },
   {
     "id": "3.5",
     "title": "Движение мотоциклов запрещено",
-    "images": ["assets/signs/3_5.png"],
+    "images": [
+      "assets/signs/3_5.png"
+    ],
     "comment": "Мотоциклам дальше нельзя. Машинам этот знак сам по себе не запрещает движение, поэтому не путай его с 3.3.",
+    "conceptSlugs": [
+      "motorcycle"
+    ],
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "3.5"
+    ]
   },
   {
     "id": "3.6",
     "title": "Движение тракторов запрещено",
-    "images": ["assets/signs/3_6.png"],
+    "images": [
+      "assets/signs/3_6.png"
+    ],
     "comment": "Тракторам и самоходным машинам дальше нельзя. Обычные машины этот знак не касается; он нужен, чтобы медленная техника не мешала или не портила дорогу.",
+    "conceptSlugs": [
+      "road"
+    ],
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "3.6"
+    ]
   },
   {
     "id": "3.7",
     "title": "Движение с прицепом запрещено",
-    "images": ["assets/signs/3_7.png"],
+    "images": [
+      "assets/signs/3_7.png"
+    ],
     "comment": "Грузовикам и тракторам с любым прицепом дальше нельзя, и буксировать другое механическое ТС тоже нельзя. Легковая машина с прицепом — не то же самое, поэтому смотри, какой именно транспорт нарисован.",
+    "conceptSlugs": [
+      "motor_vehicle"
+    ],
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "3.7"
+    ]
   },
   {
     "id": "3.8",
     "title": "Движение гужевых повозок запрещено",
-    "images": ["assets/signs/3_8.png"],
+    "images": [
+      "assets/signs/3_8.png"
+    ],
     "comment": "Нельзя ехать на повозке, верхом, вести вьючных животных или перегонять скот. Для водителя важно: на этом участке таких участников быть не должно, но всё равно будь готов к неожиданности.",
+    "conceptSlugs": [],
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "3.8"
+    ]
   },
   {
     "id": "3.9",
     "title": "Движение на велосипедах запрещено",
-    "images": ["assets/signs/3_9.png"],
+    "images": [
+      "assets/signs/3_9.png"
+    ],
     "comment": "На велосипеде и мопеде здесь ехать нельзя. Это не запрет для пешехода: можно спешиться и вести велосипед рядом, если нет других запретов.",
+    "conceptSlugs": [
+      "bicycle",
+      "moped",
+      "pedestrian"
+    ],
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "3.9"
+    ]
   },
   {
     "id": "3.10",
     "title": "Движение пешеходов запрещено",
-    "images": ["assets/signs/3_10.png"],
+    "images": [
+      "assets/signs/3_10.png"
+    ],
     "comment": "Пешеходам здесь идти нельзя: это опасный участок или дорога не для пешего движения. Водителю не стоит ждать пешеходов на этой стороне дороги, но внимательность всё равно обязательна.",
+    "conceptSlugs": [
+      "pedestrian",
+      "road"
+    ],
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "3.10"
+    ]
   },
   {
     "id": "3.11",
     "title": "Ограничение массы",
-    "images": ["assets/signs/3_11.png"],
+    "images": [
+      "assets/signs/3_11.png"
+    ],
     "comment": "Если фактическая масса твоего ТС или автопоезда больше числа на знаке — ехать нельзя. Не путай с 3.4: 3.11 смотрит на вес, а не на тип транспорта.",
+    "conceptSlugs": [],
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "3.11"
+    ]
   },
   {
     "id": "3.12",
     "title": "Ограничение массы, приходящейся на ось транспортного средства",
-    "images": ["assets/signs/3_12.png"],
+    "images": [
+      "assets/signs/3_12.png"
+    ],
     "comment": "Если нагрузка хотя бы на одну ось больше числа на знаке, ехать нельзя. Это важно для мостов и слабых дорог: даже не слишком тяжёлая машина может давить одной осью слишком сильно.",
+    "conceptSlugs": [
+      "road"
+    ],
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "3.12"
+    ]
   },
   {
     "id": "3.13",
     "title": "Ограничение высоты",
-    "images": ["assets/signs/3_13.png"],
+    "images": [
+      "assets/signs/3_13.png"
+    ],
     "comment": "Если машина с грузом выше числа на знаке, дальше нельзя. Это ставят перед мостами, тоннелями и проводами, чтобы ты не застрял и не снёс конструкцию.",
+    "conceptSlugs": [],
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "3.13"
+    ]
   },
   {
     "id": "3.14",
     "title": "Ограничение ширины",
-    "images": ["assets/signs/3_14.png"],
+    "images": [
+      "assets/signs/3_14.png"
+    ],
     "comment": "Если ширина машины с грузом больше числа на знаке, дальше нельзя. Не пытайся «пролезть»: знак обычно стоит перед узким мостом, воротами или участком дороги.",
+    "conceptSlugs": [
+      "road"
+    ],
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "3.14"
+    ]
   },
   {
     "id": "3.15",
     "title": "Ограничение длины",
-    "images": ["assets/signs/3_15.png"],
+    "images": [
+      "assets/signs/3_15.png"
+    ],
     "comment": "Если длина машины или автопоезда больше числа на знаке, ехать нельзя. Это важно на узких поворотах и переездах, где длинный состав может не вписаться.",
+    "conceptSlugs": [
+      "railroad-crossing"
+    ],
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "3.15"
+    ]
   },
   {
     "id": "3.16",
     "title": "Ограничение минимальной дистанции",
-    "images": ["assets/signs/3_16.png"],
+    "images": [
+      "assets/signs/3_16.png"
+    ],
     "comment": "Держи дистанцию не меньше числа на знаке. Это не про скорость, а про расстояние между машинами: знак нужен там, где опасно ехать плотной колонной.",
+    "conceptSlugs": [],
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "3.16"
+    ]
   },
   {
     "id": "3.17.1",
     "title": "Таможня",
-    "images": ["assets/signs/3_17_1.png"],
+    "images": [
+      "assets/signs/3_17_1.png"
+    ],
     "comment": "Перед таможней нужно остановиться, даже если кажется, что путь свободен. Дальше ехать можно только после разрешения или проверки.",
+    "conceptSlugs": [
+      "stop"
+    ],
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "3.17.1"
+    ]
   },
   {
     "id": "3.17.2",
     "title": "Опасность",
-    "images": ["assets/signs/3_17_2.png"],
+    "images": [
+      "assets/signs/3_17_2.png"
+    ],
     "comment": "Дальше ехать нельзя вообще: впереди ДТП, авария, пожар или другая опасность. Это не обычный запрет, а сигнал, что путь закрыт ради безопасности.",
+    "conceptSlugs": [
+      "dtp"
+    ],
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "3.17.2"
+    ]
   },
   {
     "id": "3.17.3",
     "title": "Контроль",
-    "images": ["assets/signs/3_17_3.png"],
+    "images": [
+      "assets/signs/3_17_3.png"
+    ],
     "comment": "Перед контрольным пунктом обязательно остановись. Дальше едь только когда тебя пропустили.",
+    "conceptSlugs": [
+      "stop"
+    ],
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "3.17.3"
+    ]
   },
   {
     "id": "3.18.1",
     "title": "Поворот направо запрещен",
-    "images": ["assets/signs/3_18_1.png"],
+    "images": [
+      "assets/signs/3_18_1.png"
+    ],
     "comment": "На ближайшем пересечении нельзя поворачивать направо. Прямо, налево или на разворот — только если это не запрещено другими знаками и разметкой.",
+    "conceptSlugs": [
+      "crossroad"
+    ],
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "3.18.1"
+    ]
   },
   {
     "id": "3.18.2",
     "title": "Поворот налево запрещен",
-    "images": ["assets/signs/3_18_2.png"],
+    "images": [
+      "assets/signs/3_18_2.png"
+    ],
     "comment": "На ближайшем пересечении нельзя поворачивать налево. Разворот этот знак не запрещает, поэтому не путай его с 3.19.",
+    "conceptSlugs": [
+      "crossroad"
+    ],
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "3.18.2"
+    ]
   },
   {
     "id": "3.19",
     "title": "Разворот запрещен",
-    "images": ["assets/signs/3_19.png"],
+    "images": [
+      "assets/signs/3_19.png"
+    ],
     "comment": "Разворот запрещён: нельзя развернуться в этом месте или на ближайшем пересечении. Поворот налево этот знак сам по себе не запрещает, поэтому не путай с 3.18.2.",
+    "conceptSlugs": [
+      "crossroad"
+    ],
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "3.19"
+    ]
   },
   {
     "id": "3.20",
     "title": "Обгон запрещен",
-    "images": ["assets/signs/3_20.png"],
+    "images": [
+      "assets/signs/3_20.png"
+    ],
     "comment": "Обгонять нельзя, кроме тихоходных ТС, повозок, велосипедов, мопедов и двухколёсных мотоциклов без коляски, если это безопасно. Не путай с запретом любого выезда: знак именно про обгон.",
+    "conceptSlugs": [
+      "overtaking",
+      "bicycle",
+      "moped",
+      "motorcycle"
+    ],
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "3.20"
+    ]
   },
   {
     "id": "3.21",
     "title": "Конец зоны запрещения обгона",
-    "images": ["assets/signs/3_21.png"],
+    "images": [
+      "assets/signs/3_21.png"
+    ],
     "comment": "С этого места запрет обгона 3.20 заканчивается. Но обгонять можно только если это разрешают разметка, видимость и встречное движение.",
+    "conceptSlugs": [
+      "overtaking",
+      "limited_visibility"
+    ],
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "3.21"
+    ]
   },
   {
     "id": "3.22",
     "title": "Обгон грузовым автомобилям запрещен",
-    "images": ["assets/signs/3_22.png"],
+    "images": [
+      "assets/signs/3_22.png"
+    ],
     "comment": "Грузовикам тяжелее 3,5 т нельзя обгонять другие ТС. Легковые машины этот знак не касается, а грузовику важно не путать его с общим запретом обгона 3.20.",
+    "conceptSlugs": [
+      "overtaking",
+      "rmm"
+    ],
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "3.22"
+    ]
   },
   {
     "id": "3.23",
     "title": "Конец зоны запрещения обгона грузовым автомобилям",
-    "images": ["assets/signs/3_23.png"],
+    "images": [
+      "assets/signs/3_23.png"
+    ],
     "comment": "С этого места заканчивается запрет обгона для грузовиков 3.22. Дальше грузовику всё равно надо смотреть на разметку, видимость и другие знаки.",
+    "conceptSlugs": [
+      "overtaking"
+    ],
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "3.23"
+    ]
   },
   {
     "id": "3.24",
     "title": "Ограничение максимальной скорости",
-    "images": ["assets/signs/3_24.png"],
+    "images": [
+      "assets/signs/3_24.png"
+    ],
     "comment": "Нельзя ехать быстрее числа на знаке. Это максимум, а не рекомендация: даже если дорога пустая, превышать нельзя.",
+    "conceptSlugs": [
+      "road"
+    ],
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "3.24"
+    ]
   },
   {
     "id": "3.25",
     "title": "Конец зоны ограничения максимальной скорости",
-    "images": ["assets/signs/3_25.png"],
+    "images": [
+      "assets/signs/3_25.png"
+    ],
     "comment": "С этого места ограничение скорости 3.24 заканчивается. Дальше действует обычный лимит для этой дороги или новый знак, если он стоит дальше.",
+    "conceptSlugs": [
+      "road"
+    ],
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "3.25"
+    ]
   },
   {
     "id": "3.26",
     "title": "Подача звукового сигнала запрещена",
-    "images": ["assets/signs/3_26.png"],
+    "images": [
+      "assets/signs/3_26.png"
+    ],
     "comment": "Сигналить нельзя, кроме ситуации, когда гудок помогает избежать ДТП. Не используй клаксон «поторопить» или поздороваться — знак как раз против лишнего шума.",
+    "conceptSlugs": [
+      "dtp"
+    ],
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "3.26"
+    ]
   },
   {
     "id": "3.27",
     "title": "Остановка запрещена",
-    "images": ["assets/signs/3_27.png"],
+    "images": [
+      "assets/signs/3_27.png"
+    ],
     "comment": "Нельзя даже останавливаться, значит и стоять тоже нельзя. Не путай с 3.28: там короткая остановка для посадки, высадки или разгрузки может быть разрешена.",
+    "conceptSlugs": [
+      "stop",
+      "parking"
+    ],
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "3.27"
+    ],
+    "topicIds": [
+      "railway-crossings"
+    ]
   },
   {
     "id": "3.28",
     "title": "Стоянка запрещена",
-    "images": ["assets/signs/3_28.png"],
+    "images": [
+      "assets/signs/3_28.png"
+    ],
     "comment": "Стоянка запрещена: надолго оставлять машину нельзя. Коротко остановиться для посадки, высадки или быстрой разгрузки можно, если нет 3.27 и это безопасно.",
+    "conceptSlugs": [
+      "parking",
+      "stop"
+    ],
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "3.28"
+    ],
+    "topicIds": [
+      "railway-crossings"
+    ]
   },
   {
     "id": "3.29",
     "title": "Стоянка запрещена по нечетным числам месяца",
-    "images": ["assets/signs/3_29.png"],
+    "images": [
+      "assets/signs/3_29.png"
+    ],
     "comment": "В нечётные числа месяца стоять здесь нельзя. Не путай с 3.30: он запрещает стоянку по чётным числам.",
+    "conceptSlugs": [
+      "parking"
+    ],
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "3.29"
+    ]
   },
   {
     "id": "3.30",
     "title": "Стоянка запрещена по четным числам месяца",
-    "images": ["assets/signs/3_30.png"],
+    "images": [
+      "assets/signs/3_30.png"
+    ],
     "comment": "В чётные числа месяца стоять здесь нельзя; 3.29 — такой же запрет, но по нечётным числам. Если 3.29 и 3.30 стоят на противоположных сторонах дороги, с 19:00 до 21:00 можно переставить машину.",
+    "conceptSlugs": [
+      "parking",
+      "road"
+    ],
     "internalRefs": [],
-    "relatedIds": ["3.29"],
+    "relatedIds": [
+      "3.29"
+    ],
     "relatedCards": [
       {
         "id": "3.29",
-        "images": ["assets/signs/3_29.png"]
+        "images": [
+          "assets/signs/3_29.png"
+        ]
       }
+    ],
+    "atomicIds": [
+      "3.30"
     ]
   },
   {
     "id": "3.31",
     "title": "Конец зоны всех ограничений",
-    "images": ["assets/signs/3_31.png"],
+    "images": [
+      "assets/signs/3_31.png"
+    ],
     "comment": "Здесь заканчиваются сразу несколько ограничений: 3.16, 3.20, 3.22, 3.24, 3.26, 3.27, 3.28, 3.29 и 3.30. После знака можно ехать по обычным правилам, если нет новых знаков или разметки.",
+    "conceptSlugs": [
+      "overtaking",
+      "stop",
+      "parking"
+    ],
     "internalRefs": [],
     "relatedIds": [
       "3.26",
@@ -321,56 +604,86 @@
     "relatedCards": [
       {
         "id": "3.26",
-        "images": ["assets/signs/3_26.png"]
+        "images": [
+          "assets/signs/3_26.png"
+        ]
       },
       {
         "id": "3.27",
-        "images": ["assets/signs/3_27.png"]
+        "images": [
+          "assets/signs/3_27.png"
+        ]
       },
       {
         "id": "3.28",
-        "images": ["assets/signs/3_28.png"]
+        "images": [
+          "assets/signs/3_28.png"
+        ]
       },
       {
         "id": "3.29",
-        "images": ["assets/signs/3_29.png"]
+        "images": [
+          "assets/signs/3_29.png"
+        ]
       },
       {
         "id": "3.30",
-        "images": ["assets/signs/3_30.png"]
+        "images": [
+          "assets/signs/3_30.png"
+        ]
       },
       {
         "id": "3.16",
-        "images": ["assets/signs/3_16.png"]
+        "images": [
+          "assets/signs/3_16.png"
+        ]
       },
       {
         "id": "3.20",
-        "images": ["assets/signs/3_20.png"]
+        "images": [
+          "assets/signs/3_20.png"
+        ]
       },
       {
         "id": "3.22",
-        "images": ["assets/signs/3_22.png"]
+        "images": [
+          "assets/signs/3_22.png"
+        ]
       },
       {
         "id": "3.24",
-        "images": ["assets/signs/3_24.png"]
+        "images": [
+          "assets/signs/3_24.png"
+        ]
       }
+    ],
+    "atomicIds": [
+      "3.31"
     ]
   },
   {
     "id": "3.32",
     "title": "Движение транспортных средств с опасными грузами запрещено",
-    "images": ["assets/signs/3_32.png"],
+    "images": [
+      "assets/signs/3_32.png"
+    ],
     "comment": "ТС с табличками «Опасный груз» сюда нельзя. Не путай с 3.33: 3.32 про опасные грузы в целом, а 3.33 — про взрывчатые и легковоспламеняющиеся.",
+    "conceptSlugs": [],
     "internalRefs": [],
     "relatedIds": [],
-    "relatedCards": []
+    "relatedCards": [],
+    "atomicIds": [
+      "3.32"
+    ]
   },
   {
     "id": "3.33",
     "title": "Движение транспортных средств с взрывчатыми и легковоспламеняющимися грузами запрещено",
-    "images": ["assets/signs/3_33.png"],
+    "images": [
+      "assets/signs/3_33.png"
+    ],
     "comment": "ТС со взрывчатыми или легковоспламеняющимися опасными грузами сюда нельзя; не путай с 3.32, который запрещает опасные грузы в целом. Связанные запреты и исключения: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 3.8, 3.9, 3.10, 3.16, 3.18.1, 3.18.2, 3.19, 3.20, 3.21, 3.22, 3.23, 3.24, 3.25, 3.26, 3.27, 3.28, 3.29, 3.30, 3.32, 3.33, а также 5.16, 5.17, 5.18, 5.23.1, 5.23.2, 8.2.1, 8.2.2, 8.2.3, 1.4, 1.10 и 1.17. Знаки 3.27-3.30 и 3.10 действуют только на той стороне дороги, где стоят; таблички 8.2.1, 8.2.2, 8.2.3, разметка 1.4, 1.10 и знаки 3.21, 3.23, 3.25 могут уточнять, где заканчивается запрет.",
+    "conceptSlugs": [],
     "internalRefs": [],
     "relatedIds": [
       "3.2",
@@ -409,132 +722,199 @@
     "relatedCards": [
       {
         "id": "3.2",
-        "images": ["assets/signs/3_2.png"]
+        "images": [
+          "assets/signs/3_2.png"
+        ]
       },
       {
         "id": "3.3",
-        "images": ["assets/signs/3_3.png"]
+        "images": [
+          "assets/signs/3_3.png"
+        ]
       },
       {
         "id": "3.4",
-        "images": ["assets/signs/3_4.png"]
+        "images": [
+          "assets/signs/3_4.png"
+        ]
       },
       {
         "id": "3.5",
-        "images": ["assets/signs/3_5.png"]
+        "images": [
+          "assets/signs/3_5.png"
+        ]
       },
       {
         "id": "3.6",
-        "images": ["assets/signs/3_6.png"]
+        "images": [
+          "assets/signs/3_6.png"
+        ]
       },
       {
         "id": "3.7",
-        "images": ["assets/signs/3_7.png"]
+        "images": [
+          "assets/signs/3_7.png"
+        ]
       },
       {
         "id": "3.8",
-        "images": ["assets/signs/3_8.png"]
+        "images": [
+          "assets/signs/3_8.png"
+        ]
       },
       {
         "id": "3.9",
-        "images": ["assets/signs/3_9.png"]
+        "images": [
+          "assets/signs/3_9.png"
+        ]
       },
       {
         "id": "3.1",
-        "images": ["assets/signs/3_1.png"]
+        "images": [
+          "assets/signs/3_1.png"
+        ]
       },
       {
         "id": "5.16",
-        "images": ["assets/signs/5_16.png"]
+        "images": [
+          "assets/signs/5_16.png"
+        ]
       },
       {
         "id": "5.17",
-        "images": ["assets/signs/5_17.png"]
+        "images": [
+          "assets/signs/5_17.png"
+        ]
       },
       {
         "id": "5.18",
-        "images": ["assets/signs/5_18.png"]
+        "images": [
+          "assets/signs/5_18.png"
+        ]
       },
       {
         "id": "3.28",
-        "images": ["assets/signs/3_28.png"]
+        "images": [
+          "assets/signs/3_28.png"
+        ]
       },
       {
         "id": "3.29",
-        "images": ["assets/signs/3_29.png"]
+        "images": [
+          "assets/signs/3_29.png"
+        ]
       },
       {
         "id": "3.30",
-        "images": ["assets/signs/3_30.png"]
+        "images": [
+          "assets/signs/3_30.png"
+        ]
       },
       {
         "id": "3.26",
-        "images": ["assets/signs/3_26.png"]
+        "images": [
+          "assets/signs/3_26.png"
+        ]
       },
       {
         "id": "3.27",
-        "images": ["assets/signs/3_27.png"]
+        "images": [
+          "assets/signs/3_27.png"
+        ]
       },
       {
         "id": "3.32",
-        "images": ["assets/signs/3_32.png"]
+        "images": [
+          "assets/signs/3_32.png"
+        ]
       },
       {
         "id": "3.18.1",
-        "images": ["assets/signs/3_18_1.png"]
+        "images": [
+          "assets/signs/3_18_1.png"
+        ]
       },
       {
         "id": "3.18.2",
-        "images": ["assets/signs/3_18_2.png"]
+        "images": [
+          "assets/signs/3_18_2.png"
+        ]
       },
       {
         "id": "3.19",
-        "images": ["assets/signs/3_19.png"]
+        "images": [
+          "assets/signs/3_19.png"
+        ]
       },
       {
         "id": "1.17",
-        "images": ["assets/signs/1_17.png"]
+        "images": [
+          "assets/signs/1_17.png"
+        ]
       },
       {
         "id": "3.16",
-        "images": ["assets/signs/3_16.png"]
+        "images": [
+          "assets/signs/3_16.png"
+        ]
       },
       {
         "id": "3.20",
-        "images": ["assets/signs/3_20.png"]
+        "images": [
+          "assets/signs/3_20.png"
+        ]
       },
       {
         "id": "3.22",
-        "images": ["assets/signs/3_22.png"]
+        "images": [
+          "assets/signs/3_22.png"
+        ]
       },
       {
         "id": "3.24",
-        "images": ["assets/signs/3_24.png"]
+        "images": [
+          "assets/signs/3_24.png"
+        ]
       },
       {
         "id": "8.2.1",
-        "images": ["assets/signs/8_2_1.png"]
+        "images": [
+          "assets/signs/8_2_1.png"
+        ]
       },
       {
         "id": "3.21",
-        "images": ["assets/signs/3_21.png"]
+        "images": [
+          "assets/signs/3_21.png"
+        ]
       },
       {
         "id": "3.23",
-        "images": ["assets/signs/3_23.png"]
+        "images": [
+          "assets/signs/3_23.png"
+        ]
       },
       {
         "id": "3.25",
-        "images": ["assets/signs/3_25.png"]
+        "images": [
+          "assets/signs/3_25.png"
+        ]
       },
       {
         "id": "1.10",
-        "images": ["assets/signs/1_10.png"]
+        "images": [
+          "assets/signs/1_10.png"
+        ]
       },
       {
         "id": "3.10",
-        "images": ["assets/signs/3_10.png"]
+        "images": [
+          "assets/signs/3_10.png"
+        ]
       }
+    ],
+    "atomicIds": [
+      "3.33"
     ]
   }
 ]

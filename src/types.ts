@@ -1,26 +1,78 @@
-export type ContentType = "sign" | "rule" | "situation" | "comparison" | "exam";
-
-export type LearningCard = {
+export type SignRecord = {
   id: string;
-  topic: string;
-  type: ContentType;
   title: string;
-  prompt: string;
-  question: string;
-  options: string[];
-  correctOption: number;
-  image?: string;
-  images?: string[];
-  scenario?: string;
-  explanation: string;
-  whatItMeans: string;
-  whatDriverMustDo: string;
-  why: string;
-  commonMistake: string;
-  confusedWith?: string;
-  difference?: string;
-  memoryHook?: string;
-  tags: string[];
+  images: string[];
+  comment: string;
+  conceptSlugs?: string[];
+  internalRefs: string[];
+  relatedIds: string[];
+  relatedCards: Array<{ id: string; images: string[] }>;
+  atomicIds: string[];
+  topicIds?: string[];
+};
+
+export type TopicRecord = {
+  id: string;
+  title: string;
+  mainSignIds: string[];
+  relatedSignIds: string[];
+  conceptSlugs: string[];
+  questionTags: string[];
+  ruleIds?: string[];
+  fineIds?: string[];
+  notes: string[];
+};
+
+export type TopicSection = {
+  id: string;
+  title: string;
+  text: string;
+};
+
+export type TopicSectionsRecord = {
+  topicId: string;
+  sections: TopicSection[];
+};
+
+export type TopicRuleRecord = {
+  id: string;
+  topicId: string;
+  title: string;
+  text: string;
+  sourceRefs?: Array<{
+    source: string;
+    point?: string;
+    article?: string;
+    url?: string;
+  }>;
+};
+
+export type FineRecord = {
+  id: string;
+  topicId: string;
+  title: string;
+  penalty: string;
+  summary: string;
+  sourceRefs?: Array<{
+    source: string;
+    point?: string;
+    article?: string;
+    url?: string;
+  }>;
+};
+
+export type ConceptRecord = {
+  slug: string;
+  term: string;
+  signRefs: string[];
+  definition: string;
+  comment?: string;
+  linkedSigns?: Array<{
+    id: string;
+    title: string;
+    images: string[];
+    groupTitle?: string;
+  }>;
 };
 
 export type UserRecord = {
@@ -48,8 +100,6 @@ export type AnswerRecord = {
 export type AppConfig = {
   botToken: string;
   timezone: string;
-  morningCron: string;
-  dayCron: string;
-  eveningCron: string;
+  touchCrons: string[];
   lessonSize: number;
 };

@@ -1,10 +1,24 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
-import type { AnswerRecord, LearningCard, UserRecord } from "./types.js";
+import type {
+  AnswerRecord,
+  ConceptRecord,
+  FineRecord,
+  SignRecord,
+  TopicRecord,
+  TopicRuleRecord,
+  TopicSectionsRecord,
+  UserRecord,
+} from "./types.js";
 
 const dataDir = path.resolve(process.cwd(), "data");
-const cardsPath = path.join(dataDir, "signs.json");
+const signsPath = path.join(dataDir, "signs.json");
+const topicsPath = path.join(dataDir, "topics.json");
+const topicSectionsPath = path.join(dataDir, "topicSections.json");
+const topicRulesPath = path.join(dataDir, "topicRules.json");
+const finesPath = path.join(dataDir, "fines.json");
+const conceptsPath = path.join(dataDir, "concepts.json");
 const usersPath = path.join(dataDir, "users.json");
 const answersPath = path.join(dataDir, "answers.json");
 
@@ -31,8 +45,28 @@ function writeJsonFile<T>(filePath: string, data: T): void {
   writeFileSync(filePath, JSON.stringify(data, null, 2), "utf-8");
 }
 
-export function getLearningCards(): LearningCard[] {
-  return readJsonFile<LearningCard[]>(cardsPath, []);
+export function getSigns(): SignRecord[] {
+  return readJsonFile<SignRecord[]>(signsPath, []);
+}
+
+export function getTopics(): TopicRecord[] {
+  return readJsonFile<TopicRecord[]>(topicsPath, []);
+}
+
+export function getTopicSections(): TopicSectionsRecord[] {
+  return readJsonFile<TopicSectionsRecord[]>(topicSectionsPath, []);
+}
+
+export function getTopicRules(): TopicRuleRecord[] {
+  return readJsonFile<TopicRuleRecord[]>(topicRulesPath, []);
+}
+
+export function getFines(): FineRecord[] {
+  return readJsonFile<FineRecord[]>(finesPath, []);
+}
+
+export function getConcepts(): ConceptRecord[] {
+  return readJsonFile<ConceptRecord[]>(conceptsPath, []);
 }
 
 export function getUsers(): UserRecord[] {

@@ -1,0 +1,206 @@
+[
+  {
+    "id": "railway-crossings",
+    "title": "Железнодорожные переезды",
+    "mainSignIds": [
+      "1.1",
+      "1.2",
+      "1.3.1",
+      "1.3.2",
+      "1.4.1",
+      "1.4.2",
+      "1.4.3",
+      "1.4.4",
+      "1.4.5",
+      "1.4.6"
+    ],
+    "relatedSignIds": [
+      "2.5",
+      "3.27",
+      "3.28",
+      "8.1.1",
+      "8.2.2",
+      "8.2.3",
+      "8.2.4",
+      "8.2.5",
+      "8.2.6"
+    ],
+    "conceptSlugs": [
+      "railway-crossing",
+      "barrier",
+      "stop-line",
+      "traffic-light",
+      "parking",
+      "stopping",
+      "traffic-jam"
+    ],
+    "questionTags": [
+      "railway-crossing",
+      "railway-barrier",
+      "railway-red-light",
+      "railway-stop-line",
+      "railway-parking-50m",
+      "railway-traffic-jam-after-crossing",
+      "railway-where-to-stop"
+    ],
+    "ruleIds": [
+      "railway-cross-only-at-crossing",
+      "railway-traffic-light-signals",
+      "railway-yield-to-train",
+      "railway-where-to-stop",
+      "railway-entry-prohibited",
+      "railway-no-overtaking-100m",
+      "railway-no-overtake-queue",
+      "railway-parking-50m",
+      "railway-forced-stop"
+    ],
+    "fineIds": [
+      "railway-crossing-rules-violation",
+      "railway-ignore-barrier-light-signs",
+      "railway-entry-when-prohibited",
+      "railway-forced-stop-wrong-actions"
+    ],
+    "notes": [
+      "Главное в теме — не просто узнать знак, а понять поведение у переезда.",
+      "В билетах часто спрашивают, где остановиться перед переездом.",
+      "Отдельная частая ловушка — стоянка ближе 50 м от железнодорожного переезда.",
+      "Если за переездом затор, на рельсы выезжать нельзя.",
+      "Знак 1.1 или 1.2 сам по себе предупреждает, но рядом с ним начинают работать отдельные правила про переезды."
+    ]
+  },
+  {
+    "id": "intersections-and-priority",
+    "title": "Перекрёстки и приоритет",
+    "mainSignIds": [],
+    "relatedSignIds": [],
+    "conceptSlugs": [],
+    "questionTags": [],
+    "notes": []
+  },
+  {
+    "id": "stopping-and-parking",
+    "title": "Остановка и стоянка",
+    "mainSignIds": [],
+    "relatedSignIds": [],
+    "conceptSlugs": [],
+    "questionTags": [],
+    "notes": []
+  },
+  {
+    "id": "overtaking-oncoming-and-passing",
+    "title": "Обгон / опережение / встречка",
+    "mainSignIds": [],
+    "relatedSignIds": [],
+    "conceptSlugs": [],
+    "questionTags": [],
+    "notes": []
+  },
+  {
+    "id": "pedestrians-and-crossings",
+    "title": "Пешеходы и переходы",
+    "mainSignIds": [],
+    "relatedSignIds": [],
+    "conceptSlugs": [],
+    "questionTags": [],
+    "notes": []
+  },
+  {
+    "id": "speed-and-limits",
+    "title": "Скорость и ограничения",
+    "mainSignIds": [],
+    "relatedSignIds": [],
+    "conceptSlugs": [],
+    "questionTags": [],
+    "notes": []
+  },
+  {
+    "id": "lanes-directions-and-maneuvers",
+    "title": "Полосы, направления и манёвры",
+    "mainSignIds": [],
+    "relatedSignIds": [],
+    "conceptSlugs": [],
+    "questionTags": [],
+    "notes": []
+  },
+  {
+    "id": "traffic-lights-and-controller",
+    "title": "Светофоры и регулировщик",
+    "mainSignIds": [],
+    "relatedSignIds": [],
+    "conceptSlugs": [],
+    "questionTags": [],
+    "notes": []
+  },
+  {
+    "id": "motorway-and-car-roads",
+    "title": "Автомагистраль и дороги для автомобилей",
+    "mainSignIds": [],
+    "relatedSignIds": [],
+    "conceptSlugs": [],
+    "questionTags": [],
+    "notes": []
+  },
+  {
+    "id": "residential-zones-and-yards",
+    "title": "Жилые зоны / дворы",
+    "mainSignIds": [],
+    "relatedSignIds": [],
+    "conceptSlugs": [],
+    "questionTags": [],
+    "notes": []
+  },
+  {
+    "id": "public-transport-and-stops",
+    "title": "Общественный транспорт и остановки",
+    "mainSignIds": [],
+    "relatedSignIds": [],
+    "conceptSlugs": [],
+    "questionTags": [],
+    "notes": []
+  },
+  {
+    "id": "bicycles-scooters-and-mopeds",
+    "title": "Велосипеды / самокаты / мопеды",
+    "mainSignIds": [],
+    "relatedSignIds": [],
+    "conceptSlugs": [],
+    "questionTags": [],
+    "notes": []
+  },
+  {
+    "id": "prohibitory-signs",
+    "title": "Запрещающие знаки",
+    "mainSignIds": [],
+    "relatedSignIds": [],
+    "conceptSlugs": [],
+    "questionTags": [],
+    "notes": []
+  },
+  {
+    "id": "mandatory-signs",
+    "title": "Предписывающие знаки",
+    "mainSignIds": [],
+    "relatedSignIds": [],
+    "conceptSlugs": [],
+    "questionTags": [],
+    "notes": []
+  },
+  {
+    "id": "information-signs",
+    "title": "Информационные знаки",
+    "mainSignIds": [],
+    "relatedSignIds": [],
+    "conceptSlugs": [],
+    "questionTags": [],
+    "notes": []
+  },
+  {
+    "id": "supplementary-plates",
+    "title": "Таблички под знаками",
+    "mainSignIds": [],
+    "relatedSignIds": [],
+    "conceptSlugs": [],
+    "questionTags": [],
+    "notes": []
+  }
+]

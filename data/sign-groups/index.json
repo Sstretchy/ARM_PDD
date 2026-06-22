@@ -27,7 +27,7 @@
     "group": 5,
     "title": "Знаки особых предписаний",
     "file": "data/sign-groups/5-special-regulation.json",
-    "count": 46
+    "count": 47
   },
   {
     "group": 6,
@@ -45,6 +45,6 @@
     "group": 8,
     "title": "Знаки дополнительной информации",
     "file": "data/sign-groups/8-plates.json",
-    "count": 33
+    "count": 30
   }
 ]

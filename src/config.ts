@@ -26,11 +26,29 @@ function getNumberEnv(name: string, fallback: number): number {
   return parsed;
 }
 
+function getCronListEnv(name: string, fallback: string[]): string[] {
+  const value = process.env[name];
+  if (!value) {
+    return fallback;
+  }
+
+  return value
+    .split(",")
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+}
+
 export const config: AppConfig = {
   botToken: getRequiredEnv("BOT_TOKEN"),
   timezone: process.env.TIMEZONE ?? "Asia/Yerevan",
-  morningCron: process.env.MORNING_CRON ?? "0 10 * * *",
-  dayCron: process.env.DAY_CRON ?? "0 15 * * *",
-  eveningCron: process.env.EVENING_CRON ?? "0 21 * * *",
+  touchCrons: getCronListEnv("TOUCH_CRONS", [
+    "30 9 * * *",
+    "30 11 * * *",
+    "30 13 * * *",
+    "30 15 * * *",
+    "30 17 * * *",
+    "0 20 * * *",
+    "0 22 * * *",
+  ]),
   lessonSize: getNumberEnv("LESSON_SIZE", 3),
 };
