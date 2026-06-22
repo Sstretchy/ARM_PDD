@@ -1,0 +1,32 @@
+{
+  "name": "arm_pdd",
+  "version": "1.0.0",
+  "description": "MVP Telegram bot for studying Armenian road signs",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx watch src/index.ts",
+    "preview:signs": "node scripts/build-signs-preview.mjs",
+    "start": "tsx src/index.ts",
+    "check": "tsc --noEmit -p tsconfig.json"
+  },
+  "keywords": [
+    "telegram",
+    "bot",
+    "telegraf",
+    "pdd"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "cheerio": "^1.2.0",
+    "dotenv": "^17.4.2",
+    "node-cron": "^4.5.0",
+    "telegraf": "^4.16.3"
+  },
+  "devDependencies": {
+    "@types/node": "^26.0.0",
+    "tsx": "^4.22.4",
+    "typescript": "^6.0.3"
+  }
+}
