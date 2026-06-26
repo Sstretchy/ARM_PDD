@@ -1,0 +1,11 @@
+{
+  "functions": {
+    "api/telegram.ts": {
+      "includeFiles": "data/** assets/**"
+    },
+    "api/cron/[slot].ts": {
+      "includeFiles": "data/** assets/**",
+      "maxDuration": 60
+    }
+  }
+}

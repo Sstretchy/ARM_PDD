@@ -3,5 +3,9 @@ dist/
 .env
 data/users.json
 data/answers.json
+data/error-reports.json
+data/question-progress.json
+data/quiz-sessions.json
+data/app.db
 data/imports/assets/
 data/imports/drv/

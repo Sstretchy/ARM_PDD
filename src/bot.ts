@@ -42,6 +42,8 @@ import type {
 } from "./types.js";
 
 const bot = new Telegraf(config.botToken);
+let commandsRegistered = false;
+let schedulesRegistered = false;
 
 const TOPICS: TopicMeta[] = [
   {
@@ -108,8 +110,8 @@ function getTopicTitle(topicSlug: TopicSlug, language: LanguageCode): string {
   return getTopicMeta(topicSlug).title[language];
 }
 
-function getSubscribedUsers(): UserRecord[] {
-  return getUsers().filter((user) => user.isSubscribed);
+async function getSubscribedUsers(): Promise<UserRecord[]> {
+  return (await getUsers()).filter((user) => user.isSubscribed);
 }
 
 function getTextMessage(ctx: Context): string {
@@ -204,9 +206,9 @@ function buildMainMenuText(language: LanguageCode): string {
   ].join("\n");
 }
 
-function buildDailySummaryText(user: UserRecord): string {
+async function buildDailySummaryText(user: UserRecord): Promise<string> {
   const todayKey = getLocalDateKey(new Date());
-  const todayAnswers = getAnswers().filter(
+  const todayAnswers = (await getAnswers()).filter(
     (answer) =>
       answer.telegramId === user.telegramId &&
       answer.language === user.language &&
@@ -324,16 +326,16 @@ function buildFollowupKeyboard(language: LanguageCode, question: QuizQuestion) {
   return Markup.inlineKeyboard(rows);
 }
 
-function getQuestionStatesForUser(user: UserRecord): Map<string, UserQuestionState> {
+async function getQuestionStatesForUser(user: UserRecord): Promise<Map<string, UserQuestionState>> {
   return new Map(
-    getQuestionStates()
+    (await getQuestionStates())
       .filter((state) => state.telegramId === user.telegramId)
       .map((state) => [state.questionKey, state]),
   );
 }
 
-function getSessionsForUser(user: UserRecord): QuizSessionRecord[] {
-  return getQuizSessions().filter((session) => session.telegramId === user.telegramId);
+async function getSessionsForUser(user: UserRecord): Promise<QuizSessionRecord[]> {
+  return (await getQuizSessions()).filter((session) => session.telegramId === user.telegramId);
 }
 
 function buildQuestionState(
@@ -378,11 +380,11 @@ function buildQuestionState(
   };
 }
 
-function selectNextQuestion(
+async function selectNextQuestion(
   user: UserRecord,
   mode: QuizMode,
   topicFilter?: TopicSlug,
-): QuizQuestion | undefined {
+): Promise<QuizQuestion | undefined> {
   const allQuestions = getQuestions(user.language).filter((question) =>
     topicFilter ? question.topicSlug === topicFilter : true,
   );
@@ -390,8 +392,8 @@ function selectNextQuestion(
     return undefined;
   }
 
-  const states = getQuestionStatesForUser(user);
-  const sessions = getSessionsForUser(user);
+  const states = await getQuestionStatesForUser(user);
+  const sessions = await getSessionsForUser(user);
   const pendingKeys = new Set(
     sessions.filter((session) => session.status === "pending").map((session) => session.questionKey),
   );
@@ -491,7 +493,7 @@ function buildQuestionText(question: QuizQuestion, language: LanguageCode, mode:
 }
 
 async function sendQuestion(user: UserRecord, mode: QuizMode, topicFilter?: TopicSlug): Promise<boolean> {
-  const question = selectNextQuestion(user, mode, topicFilter);
+  const question = await selectNextQuestion(user, mode, topicFilter);
   if (!question) {
     await bot.telegram.sendMessage(
       user.chatId,
@@ -505,7 +507,7 @@ async function sendQuestion(user: UserRecord, mode: QuizMode, topicFilter?: Topi
   }
 
   const session = createSession(user, question, mode);
-  createQuizSession(session);
+  await createQuizSession(session);
 
   const imagePath = resolveQuestionImagePath(question);
   const keyboard = buildQuestionKeyboard(question, session.id);
@@ -549,10 +551,10 @@ function buildAnswerExplanation(user: UserRecord, question: QuizQuestion, select
   return lines.join("\n\n");
 }
 
-function buildProgressText(user: UserRecord): string {
-  const states = getQuestionStates()
+async function buildProgressText(user: UserRecord): Promise<string> {
+  const states = (await getQuestionStates())
     .filter((state) => state.telegramId === user.telegramId && state.language === user.language);
-  const answers = getAnswers().filter((answer) => answer.telegramId === user.telegramId && answer.language === user.language);
+  const answers = (await getAnswers()).filter((answer) => answer.telegramId === user.telegramId && answer.language === user.language);
   const counts: Record<QuestionStatus, number> = {
     new: 0,
     learning: 0,
@@ -731,7 +733,7 @@ async function sendTermInfo(chatId: number, language: LanguageCode, query?: stri
 }
 
 async function sendDailySummary(user: UserRecord): Promise<void> {
-  await bot.telegram.sendMessage(user.chatId, buildDailySummaryText(user));
+  await bot.telegram.sendMessage(user.chatId, await buildDailySummaryText(user));
 }
 
 async function startErrorReportFlow(ctx: Context, questionKey: string): Promise<void> {
@@ -742,10 +744,10 @@ async function startErrorReportFlow(ctx: Context, questionKey: string): Promise<
     return;
   }
 
-  const user = upsertUser(from.id, chatId, from.first_name, from.username);
+  const user = await upsertUser(from.id, chatId, from.first_name, from.username);
   user.pendingErrorReportQuestionKey = questionKey;
   user.updatedAt = nowIso();
-  updateUser(user);
+  await updateUser(user);
 
   await ctx.answerCbQuery(
     t(user.language, "Жду описание ошибки", "Սպասում եմ սխալի նկարագրությանը"),
@@ -767,7 +769,7 @@ async function maybeCaptureErrorReport(ctx: Context): Promise<boolean> {
     return false;
   }
 
-  const user = upsertUser(from.id, chatId, from.first_name, from.username);
+  const user = await upsertUser(from.id, chatId, from.first_name, from.username);
   if (!user.pendingErrorReportQuestionKey) {
     return false;
   }
@@ -777,7 +779,7 @@ async function maybeCaptureErrorReport(ctx: Context): Promise<boolean> {
   }
 
   const question = getQuestionByKey(user.pendingErrorReportQuestionKey);
-  appendErrorReport({
+  await appendErrorReport({
     telegramId: user.telegramId,
     chatId: user.chatId,
     language: user.language,
@@ -790,7 +792,7 @@ async function maybeCaptureErrorReport(ctx: Context): Promise<boolean> {
 
   user.pendingErrorReportQuestionKey = undefined;
   user.updatedAt = nowIso();
-  updateUser(user);
+  await updateUser(user);
 
   await ctx.reply(
     t(
@@ -811,8 +813,8 @@ async function answerQuestion(ctx: Context, sessionId: string, optionId: string)
     return;
   }
 
-  const user = upsertUser(from.id, chatId, from.first_name, from.username);
-  const session = getQuizSessionById(sessionId);
+  const user = await upsertUser(from.id, chatId, from.first_name, from.username);
+  const session = await getQuizSessionById(sessionId);
   if (!session || session.telegramId !== user.telegramId) {
     await ctx.answerCbQuery(t(user.language, "Сессия не найдена", "Սեսիան չի գտնվել"));
     return;
@@ -833,9 +835,9 @@ async function answerQuestion(ctx: Context, sessionId: string, optionId: string)
   session.answeredAt = nowIso();
   session.selectedOptionId = optionId;
   session.isCorrect = optionId === question.correctOptionId;
-  updateQuizSession(session);
+  await updateQuizSession(session);
 
-  appendAnswer({
+  await appendAnswer({
     telegramId: user.telegramId,
     questionKey: question.key,
     questionId: question.id,
@@ -847,9 +849,9 @@ async function answerQuestion(ctx: Context, sessionId: string, optionId: string)
     answeredAt: session.answeredAt,
   });
 
-  const states = getQuestionStatesForUser(user);
+  const states = await getQuestionStatesForUser(user);
   const nextState = buildQuestionState(user, question, states.get(question.key), session.isCorrect);
-  upsertQuestionState(nextState);
+  await upsertQuestionState(nextState);
 
   await ctx.answerCbQuery(
     session.isCorrect
@@ -871,6 +873,12 @@ async function answerQuestion(ctx: Context, sessionId: string, optionId: string)
 }
 
 function registerCommands(): void {
+  if (commandsRegistered) {
+    return;
+  }
+
+  commandsRegistered = true;
+
   bot.on("text", async (ctx, next) => {
     const captured = await maybeCaptureErrorReport(ctx);
     if (captured) {
@@ -886,7 +894,7 @@ function registerCommands(): void {
       return;
     }
 
-    const user = upsertUser(from.id, ctx.chat.id, from.first_name, from.username);
+    const user = await upsertUser(from.id, ctx.chat.id, from.first_name, from.username);
     await ctx.reply(
       [
         t(user.language, "Это новый бот-репетитор по ПДД Армении.", "Սա նոր ՊԴԴ ուսուցիչ-բոտն է Հայաստանի համար։"),
@@ -911,7 +919,7 @@ function registerCommands(): void {
       return;
     }
 
-    const user = upsertUser(from.id, ctx.chat.id, from.first_name, from.username);
+    const user = await upsertUser(from.id, ctx.chat.id, from.first_name, from.username);
     await ctx.reply(
       t(user.language, "Выбери язык интерфейса и вопросов.", "Ընտրիր ինտերֆեյսի և հարցերի լեզուն։"),
       buildLanguageKeyboard(),
@@ -924,7 +932,7 @@ function registerCommands(): void {
       return;
     }
 
-    const user = upsertUser(from.id, ctx.chat.id, from.first_name, from.username);
+    const user = await upsertUser(from.id, ctx.chat.id, from.first_name, from.username);
     await ctx.reply(
       t(user.language, "Выбери язык.", "Ընտրիր լեզուն։"),
       buildLanguageKeyboard(),
@@ -937,7 +945,7 @@ function registerCommands(): void {
       return;
     }
 
-    const user = upsertUser(from.id, ctx.chat.id, from.first_name, from.username);
+    const user = await upsertUser(from.id, ctx.chat.id, from.first_name, from.username);
     await sendQuestion(user, "manual");
   });
 
@@ -947,7 +955,7 @@ function registerCommands(): void {
       return;
     }
 
-    const user = upsertUser(from.id, ctx.chat.id, from.first_name, from.username);
+    const user = await upsertUser(from.id, ctx.chat.id, from.first_name, from.username);
     await sendQuestion(user, "mistake");
   });
 
@@ -957,8 +965,8 @@ function registerCommands(): void {
       return;
     }
 
-    const user = upsertUser(from.id, ctx.chat.id, from.first_name, from.username);
-    await ctx.reply(buildProgressText(user));
+    const user = await upsertUser(from.id, ctx.chat.id, from.first_name, from.username);
+    await ctx.reply(await buildProgressText(user));
   });
 
   bot.command("topics", async (ctx) => {
@@ -967,7 +975,7 @@ function registerCommands(): void {
       return;
     }
 
-    const user = upsertUser(from.id, ctx.chat.id, from.first_name, from.username);
+    const user = await upsertUser(from.id, ctx.chat.id, from.first_name, from.username);
     const lines = TOPICS.map(
       (topic) => `${topic.order}. ${topic.title[user.language]}`,
     );
@@ -980,7 +988,7 @@ function registerCommands(): void {
       return;
     }
 
-    const user = upsertUser(from.id, ctx.chat.id, from.first_name, from.username);
+    const user = await upsertUser(from.id, ctx.chat.id, from.first_name, from.username);
     await sendSignInfo(user.chatId, user.language, getCommandArg(ctx));
   });
 
@@ -990,7 +998,7 @@ function registerCommands(): void {
       return;
     }
 
-    const user = upsertUser(from.id, ctx.chat.id, from.first_name, from.username);
+    const user = await upsertUser(from.id, ctx.chat.id, from.first_name, from.username);
     await sendSignInfo(user.chatId, user.language, getCommandArg(ctx));
   });
 
@@ -1000,7 +1008,7 @@ function registerCommands(): void {
       return;
     }
 
-    const user = upsertUser(from.id, ctx.chat.id, from.first_name, from.username);
+    const user = await upsertUser(from.id, ctx.chat.id, from.first_name, from.username);
     await sendTermInfo(user.chatId, user.language, getCommandArg(ctx));
   });
 
@@ -1010,7 +1018,7 @@ function registerCommands(): void {
       return;
     }
 
-    const user = setSubscription(from.id, false);
+    const user = await setSubscription(from.id, false);
     if (!user) {
       await ctx.reply("Use /start first.");
       return;
@@ -1034,8 +1042,8 @@ function registerCommands(): void {
     }
 
     const [, language] = ctx.match;
-    upsertUser(from.id, chatId, from.first_name, from.username);
-    setUserLanguage(from.id, language as LanguageCode);
+    await upsertUser(from.id, chatId, from.first_name, from.username);
+    await setUserLanguage(from.id, language as LanguageCode);
     await ctx.answerCbQuery(language === "am" ? "Լեզուն փոխվեց" : "Язык изменен");
     await ctx.reply(
       buildMainMenuText(language as LanguageCode),
@@ -1056,7 +1064,7 @@ function registerCommands(): void {
       return;
     }
 
-    const user = upsertUser(from.id, chatId, from.first_name, from.username);
+    const user = await upsertUser(from.id, chatId, from.first_name, from.username);
     await ctx.answerCbQuery(t(user.language, "Открываю квиз", "Բացում եմ քուիզը"));
     await sendQuestion(user, "manual");
   });
@@ -1069,7 +1077,7 @@ function registerCommands(): void {
       return;
     }
 
-    const user = upsertUser(from.id, chatId, from.first_name, from.username);
+    const user = await upsertUser(from.id, chatId, from.first_name, from.username);
     await ctx.answerCbQuery(t(user.language, "Показываю темы", "Ցույց եմ տալիս թեմաները"));
     const lines = TOPICS.map((topic) => `${topic.order}. ${topic.title[user.language]}`);
     await ctx.reply(lines.join("\n"), buildTopicsKeyboard());
@@ -1083,7 +1091,7 @@ function registerCommands(): void {
       return;
     }
 
-    const user = upsertUser(from.id, chatId, from.first_name, from.username);
+    const user = await upsertUser(from.id, chatId, from.first_name, from.username);
     await ctx.answerCbQuery(t(user.language, "Проверяю ошибки", "Ստուգում եմ սխալները"));
     await sendQuestion(user, "mistake");
   });
@@ -1096,7 +1104,7 @@ function registerCommands(): void {
       return;
     }
 
-    const user = upsertUser(from.id, chatId, from.first_name, from.username);
+    const user = await upsertUser(from.id, chatId, from.first_name, from.username);
     await ctx.answerCbQuery(t(user.language, "Настройки", "Կարգավորումներ"));
     await ctx.reply(
       t(user.language, "Выбери язык интерфейса и вопросов.", "Ընտրիր ինտերֆեյսի և հարցերի լեզուն։"),
@@ -1112,7 +1120,7 @@ function registerCommands(): void {
       return;
     }
 
-    const user = upsertUser(from.id, chatId, from.first_name, from.username);
+    const user = await upsertUser(from.id, chatId, from.first_name, from.username);
     await ctx.answerCbQuery(t(user.language, "Показываю знак", "Ցույց եմ տալիս նշանը"));
     await sendSignInfo(chatId, user.language);
   });
@@ -1125,7 +1133,7 @@ function registerCommands(): void {
       return;
     }
 
-    const user = upsertUser(from.id, chatId, from.first_name, from.username);
+    const user = await upsertUser(from.id, chatId, from.first_name, from.username);
     await ctx.answerCbQuery(t(user.language, "Показываю термин", "Ցույց եմ տալիս տերմինը"));
     await sendTermInfo(chatId, user.language);
   });
@@ -1143,7 +1151,7 @@ function registerCommands(): void {
       return;
     }
 
-    const user = upsertUser(from.id, chatId, from.first_name, from.username);
+    const user = await upsertUser(from.id, chatId, from.first_name, from.username);
     await ctx.answerCbQuery(
       t(user.language, "Следующий вопрос", "Հաջորդ հարց"),
     );
@@ -1165,7 +1173,7 @@ function registerCommands(): void {
       return;
     }
 
-    const user = upsertUser(from.id, chatId, from.first_name, from.username);
+    const user = await upsertUser(from.id, chatId, from.first_name, from.username);
     await ctx.answerCbQuery(topic.title[user.language]);
     await ctx.reply(buildTopicOverview(topic.slug, user.language), Markup.inlineKeyboard([
       [Markup.button.callback(t(user.language, "Вопрос по теме", "Հարց թեմայից"), `topicquiz|${topic.slug}`)],
@@ -1187,7 +1195,7 @@ function registerCommands(): void {
       return;
     }
 
-    const user = upsertUser(from.id, chatId, from.first_name, from.username);
+    const user = await upsertUser(from.id, chatId, from.first_name, from.username);
     await ctx.answerCbQuery(
       t(user.language, "Отправляю вопрос", "Ուղարկում եմ հարց"),
     );
@@ -1203,7 +1211,7 @@ function registerCommands(): void {
     }
 
     const [, signId] = ctx.match;
-    const user = upsertUser(from.id, chatId, from.first_name, from.username);
+    const user = await upsertUser(from.id, chatId, from.first_name, from.username);
     await ctx.answerCbQuery();
     await sendSignInfo(chatId, user.language, signId);
   });
@@ -1217,20 +1225,25 @@ function registerCommands(): void {
     }
 
     const [, termSlug] = ctx.match;
-    const user = upsertUser(from.id, chatId, from.first_name, from.username);
+    const user = await upsertUser(from.id, chatId, from.first_name, from.username);
     await ctx.answerCbQuery();
     await sendTermInfo(chatId, user.language, termSlug);
   });
 }
 
 function registerSchedules(): void {
+  if (schedulesRegistered) {
+    return;
+  }
+
+  schedulesRegistered = true;
   const lastScheduleIndex = Math.max(config.touchCrons.length - 1, 0);
 
   for (const [index, cronExpression] of config.touchCrons.entries()) {
     cron.schedule(
       cronExpression,
       async () => {
-        for (const user of getSubscribedUsers()) {
+        for (const user of await getSubscribedUsers()) {
           try {
             await sendQuestion(user, "daily");
             if (index === lastScheduleIndex) {
@@ -1246,12 +1259,29 @@ function registerSchedules(): void {
   }
 }
 
+export async function runScheduledTouch(slotIndex: number): Promise<void> {
+  const lastScheduleIndex = Math.max(config.touchCrons.length - 1, 0);
+
+  for (const user of await getSubscribedUsers()) {
+    try {
+      await sendQuestion(user, "daily");
+      if (slotIndex === lastScheduleIndex) {
+        await sendDailySummary(user);
+      }
+    } catch (error) {
+      console.error(`Failed to send scheduled question to ${user.telegramId}:`, error);
+    }
+  }
+}
+
 bot.catch((error: unknown, ctx: Context) => {
   console.error(`Bot error on update ${ctx.update.update_id}:`, error);
 });
 
-export function createBot(): Telegraf {
+export function createBot(options?: { enableSchedules?: boolean }): Telegraf {
   registerCommands();
-  registerSchedules();
+  if (options?.enableSchedules) {
+    registerSchedules();
+  }
   return bot;
 }

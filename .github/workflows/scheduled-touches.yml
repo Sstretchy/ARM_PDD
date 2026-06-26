@@ -1,0 +1,41 @@
+name: Scheduled Touches
+
+on:
+  schedule:
+    - cron: "30 5 * * *"
+    - cron: "30 7 * * *"
+    - cron: "30 9 * * *"
+    - cron: "30 11 * * *"
+    - cron: "30 13 * * *"
+    - cron: "0 16 * * *"
+    - cron: "0 18 * * *"
+  workflow_dispatch:
+
+jobs:
+  touch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pick slot by UTC time
+        id: slot
+        run: |
+          case "${{ github.event.schedule }}" in
+            "30 5 * * *") echo "slot=0" >> "$GITHUB_OUTPUT" ;;
+            "30 7 * * *") echo "slot=1" >> "$GITHUB_OUTPUT" ;;
+            "30 9 * * *") echo "slot=2" >> "$GITHUB_OUTPUT" ;;
+            "30 11 * * *") echo "slot=3" >> "$GITHUB_OUTPUT" ;;
+            "30 13 * * *") echo "slot=4" >> "$GITHUB_OUTPUT" ;;
+            "0 16 * * *") echo "slot=5" >> "$GITHUB_OUTPUT" ;;
+            "0 18 * * *") echo "slot=6" >> "$GITHUB_OUTPUT" ;;
+            *) echo "slot=0" >> "$GITHUB_OUTPUT" ;;
+          esac
+
+      - name: Trigger scheduled touch
+        env:
+          SCHEDULER_SECRET: ${{ secrets.SCHEDULER_SECRET }}
+          VERCEL_BASE_URL: ${{ secrets.VERCEL_BASE_URL }}
+          SLOT: ${{ steps.slot.outputs.slot }}
+        run: |
+          curl --fail --show-error --silent \
+            -X POST \
+            -H "x-scheduler-secret: ${SCHEDULER_SECRET}" \
+            "${VERCEL_BASE_URL}/api/cron/${SLOT}"

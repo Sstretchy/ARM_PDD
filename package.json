@@ -2,9 +2,10 @@
   "name": "arm_pdd",
   "version": "1.0.0",
   "description": "MVP Telegram bot for studying Armenian road signs",
-  "main": "dist/index.js",
+  "main": "dist/src/index.js",
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "npm run clean && tsc -p tsconfig.json",
+    "clean": "node -e \"require('fs').rmSync('dist',{ recursive: true, force: true })\"",
     "concepts:fetch": "node scripts/fetch-concepts.mjs",
     "dev": "tsx watch src/index.ts",
     "export:test-empty-explanations": "python scripts/export_empty_explanations_to_test.py",
@@ -24,6 +25,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@libsql/client": "^0.15.15",
     "cheerio": "^1.2.0",
     "dotenv": "^17.4.2",
     "node-cron": "^4.5.0",

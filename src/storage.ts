@@ -1,6 +1,9 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
+import type { InArgs } from "@libsql/client/node";
+
+import { db } from "./db.js";
 import type {
   AnswerRecord,
   ErrorReportRecord,
@@ -29,6 +32,11 @@ const drvTopicsRoot = path.join(dataDir, "drv-topics");
 type LegacyUserRecord = UserRecord & {
   lessonCursor?: number;
 };
+
+type RowValue = string | number | bigint | Uint8Array | null;
+type RowMap = Record<string, RowValue>;
+
+let initPromise: Promise<void> | undefined;
 
 function ensureDataDir(): void {
   if (!existsSync(dataDir)) {
@@ -78,32 +86,427 @@ function normalizeUser(user: LegacyUserRecord): UserRecord {
   };
 }
 
-export function getUsers(): UserRecord[] {
-  return readJsonFile<LegacyUserRecord[]>(usersPath, []).map(normalizeUser);
+function getRowNumber(row: RowMap, key: string): number {
+  const value = row[key];
+  if (typeof value === "bigint") {
+    return Number(value);
+  }
+
+  return Number(value ?? 0);
 }
 
-export function saveUsers(users: UserRecord[]): void {
-  writeJsonFile(usersPath, users);
+function getRowString(row: RowMap, key: string): string | undefined {
+  const value = row[key];
+  if (value === null || value === undefined) {
+    return undefined;
+  }
+
+  if (typeof value === "string") {
+    return value;
+  }
+
+  if (typeof value === "number" || typeof value === "bigint") {
+    return String(value);
+  }
+
+  return Buffer.from(value).toString("utf-8");
 }
 
-export function upsertUser(
+function getRowBoolean(row: RowMap, key: string): boolean {
+  return getRowNumber(row, key) === 1;
+}
+
+function mapUser(row: RowMap): UserRecord {
+  return {
+    telegramId: getRowNumber(row, "telegram_id"),
+    chatId: getRowNumber(row, "chat_id"),
+    firstName: getRowString(row, "first_name"),
+    username: getRowString(row, "username"),
+    language: (getRowString(row, "language") as LanguageCode | undefined) ?? "ru",
+    isSubscribed: getRowBoolean(row, "is_subscribed"),
+    pendingErrorReportQuestionKey: getRowString(row, "pending_error_report_question_key"),
+    createdAt: getRowString(row, "created_at") ?? new Date().toISOString(),
+    updatedAt: getRowString(row, "updated_at") ?? new Date().toISOString(),
+  };
+}
+
+function mapAnswer(row: RowMap): AnswerRecord {
+  return {
+    telegramId: getRowNumber(row, "telegram_id"),
+    questionKey: getRowString(row, "question_key") ?? "",
+    questionId: getRowString(row, "question_id") ?? "",
+    topicSlug: (getRowString(row, "topic_slug") as TopicSlug | undefined) ?? "road-signs",
+    language: (getRowString(row, "language") as LanguageCode | undefined) ?? "ru",
+    mode: (getRowString(row, "mode") as AnswerRecord["mode"] | undefined) ?? "manual",
+    selectedOptionId: getRowString(row, "selected_option_id") ?? "",
+    isCorrect: getRowBoolean(row, "is_correct"),
+    answeredAt: getRowString(row, "answered_at") ?? new Date().toISOString(),
+  };
+}
+
+function mapErrorReport(row: RowMap): ErrorReportRecord {
+  return {
+    telegramId: getRowNumber(row, "telegram_id"),
+    chatId: getRowNumber(row, "chat_id"),
+    language: (getRowString(row, "language") as LanguageCode | undefined) ?? "ru",
+    questionKey: getRowString(row, "question_key") ?? "",
+    questionId: getRowString(row, "question_id"),
+    topicSlug: getRowString(row, "topic_slug") as TopicSlug | undefined,
+    text: getRowString(row, "text") ?? "",
+    createdAt: getRowString(row, "created_at") ?? new Date().toISOString(),
+  };
+}
+
+function mapQuestionState(row: RowMap): UserQuestionState {
+  return {
+    telegramId: getRowNumber(row, "telegram_id"),
+    questionKey: getRowString(row, "question_key") ?? "",
+    language: (getRowString(row, "language") as LanguageCode | undefined) ?? "ru",
+    topicSlug: (getRowString(row, "topic_slug") as TopicSlug | undefined) ?? "road-signs",
+    status: (getRowString(row, "status") as UserQuestionState["status"] | undefined) ?? "new",
+    correctStreak: getRowNumber(row, "correct_streak"),
+    mistakeCount: getRowNumber(row, "mistake_count"),
+    lastSeenAt: getRowString(row, "last_seen_at"),
+    nextReviewAt: getRowString(row, "next_review_at"),
+    lastAnswerCorrect:
+      getRowString(row, "last_answer_correct") === undefined
+        ? undefined
+        : getRowBoolean(row, "last_answer_correct"),
+    updatedAt: getRowString(row, "updated_at") ?? new Date().toISOString(),
+  };
+}
+
+function mapQuizSession(row: RowMap): QuizSessionRecord {
+  return {
+    id: getRowString(row, "id") ?? "",
+    telegramId: getRowNumber(row, "telegram_id"),
+    chatId: getRowNumber(row, "chat_id"),
+    questionKey: getRowString(row, "question_key") ?? "",
+    questionId: getRowString(row, "question_id") ?? "",
+    topicSlug: (getRowString(row, "topic_slug") as TopicSlug | undefined) ?? "road-signs",
+    language: (getRowString(row, "language") as LanguageCode | undefined) ?? "ru",
+    mode: (getRowString(row, "mode") as QuizSessionRecord["mode"] | undefined) ?? "manual",
+    status: (getRowString(row, "status") as QuizSessionRecord["status"] | undefined) ?? "pending",
+    sentAt: getRowString(row, "sent_at") ?? new Date().toISOString(),
+    answeredAt: getRowString(row, "answered_at"),
+    selectedOptionId: getRowString(row, "selected_option_id"),
+    isCorrect:
+      getRowString(row, "is_correct") === undefined
+        ? undefined
+        : getRowBoolean(row, "is_correct"),
+  };
+}
+
+async function getCount(tableName: string): Promise<number> {
+  const result = await db.execute(`SELECT COUNT(*) AS count FROM ${tableName}`);
+  const firstRow = result.rows[0] as RowMap | undefined;
+  return firstRow ? getRowNumber(firstRow, "count") : 0;
+}
+
+async function importLegacyUsers(): Promise<void> {
+  const users = readJsonFile<LegacyUserRecord[]>(usersPath, []).map(normalizeUser);
+  if (users.length === 0) {
+    return;
+  }
+
+  await db.batch(
+    users.map((user) => ({
+      sql: `
+        INSERT INTO users (
+          telegram_id, chat_id, first_name, username, language, is_subscribed,
+          pending_error_report_question_key, created_at, updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `,
+      args: [
+        user.telegramId,
+        user.chatId,
+        user.firstName ?? null,
+        user.username ?? null,
+        user.language,
+        user.isSubscribed ? 1 : 0,
+        user.pendingErrorReportQuestionKey ?? null,
+        user.createdAt,
+        user.updatedAt,
+      ],
+    })),
+    "write",
+  );
+}
+
+async function importLegacyAnswers(): Promise<void> {
+  const answers = readJsonFile<AnswerRecord[]>(answersPath, []);
+  if (answers.length === 0) {
+    return;
+  }
+
+  await db.batch(
+    answers.map((answer) => ({
+      sql: `
+        INSERT INTO answers (
+          telegram_id, question_key, question_id, topic_slug, language, mode,
+          selected_option_id, is_correct, answered_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `,
+      args: [
+        answer.telegramId,
+        answer.questionKey,
+        answer.questionId,
+        answer.topicSlug,
+        answer.language,
+        answer.mode,
+        answer.selectedOptionId,
+        answer.isCorrect ? 1 : 0,
+        answer.answeredAt,
+      ],
+    })),
+    "write",
+  );
+}
+
+async function importLegacyQuestionStates(): Promise<void> {
+  const states = readJsonFile<UserQuestionState[]>(questionStatesPath, []);
+  if (states.length === 0) {
+    return;
+  }
+
+  await db.batch(
+    states.map((state) => ({
+      sql: `
+        INSERT INTO question_states (
+          telegram_id, question_key, language, topic_slug, status, correct_streak,
+          mistake_count, last_seen_at, next_review_at, last_answer_correct, updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `,
+      args: [
+        state.telegramId,
+        state.questionKey,
+        state.language,
+        state.topicSlug,
+        state.status,
+        state.correctStreak,
+        state.mistakeCount,
+        state.lastSeenAt ?? null,
+        state.nextReviewAt ?? null,
+        state.lastAnswerCorrect === undefined ? null : state.lastAnswerCorrect ? 1 : 0,
+        state.updatedAt,
+      ],
+    })),
+    "write",
+  );
+}
+
+async function importLegacyQuizSessions(): Promise<void> {
+  const sessions = readJsonFile<QuizSessionRecord[]>(quizSessionsPath, []);
+  if (sessions.length === 0) {
+    return;
+  }
+
+  await db.batch(
+    sessions.map((session) => ({
+      sql: `
+        INSERT INTO quiz_sessions (
+          id, telegram_id, chat_id, question_key, question_id, topic_slug, language,
+          mode, status, sent_at, answered_at, selected_option_id, is_correct
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `,
+      args: [
+        session.id,
+        session.telegramId,
+        session.chatId,
+        session.questionKey,
+        session.questionId,
+        session.topicSlug,
+        session.language,
+        session.mode,
+        session.status,
+        session.sentAt,
+        session.answeredAt ?? null,
+        session.selectedOptionId ?? null,
+        session.isCorrect === undefined ? null : session.isCorrect ? 1 : 0,
+      ],
+    })),
+    "write",
+  );
+}
+
+async function importLegacyErrorReports(): Promise<void> {
+  const reports = readJsonFile<ErrorReportRecord[]>(errorReportsPath, []);
+  if (reports.length === 0) {
+    return;
+  }
+
+  await db.batch(
+    reports.map((report) => ({
+      sql: `
+        INSERT INTO error_reports (
+          telegram_id, chat_id, language, question_key, question_id, topic_slug, text, created_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      `,
+      args: [
+        report.telegramId,
+        report.chatId,
+        report.language,
+        report.questionKey,
+        report.questionId ?? null,
+        report.topicSlug ?? null,
+        report.text,
+        report.createdAt,
+      ],
+    })),
+    "write",
+  );
+}
+
+async function initializeDatabase(): Promise<void> {
+  if (initPromise) {
+    return initPromise;
+  }
+
+  initPromise = (async () => {
+    await db.executeMultiple(`
+      CREATE TABLE IF NOT EXISTS users (
+        telegram_id INTEGER PRIMARY KEY,
+        chat_id INTEGER NOT NULL,
+        first_name TEXT,
+        username TEXT,
+        language TEXT NOT NULL,
+        is_subscribed INTEGER NOT NULL DEFAULT 1,
+        pending_error_report_question_key TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+      );
+
+      CREATE TABLE IF NOT EXISTS answers (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        telegram_id INTEGER NOT NULL,
+        question_key TEXT NOT NULL,
+        question_id TEXT NOT NULL,
+        topic_slug TEXT NOT NULL,
+        language TEXT NOT NULL,
+        mode TEXT NOT NULL,
+        selected_option_id TEXT NOT NULL,
+        is_correct INTEGER NOT NULL,
+        answered_at TEXT NOT NULL
+      );
+
+      CREATE TABLE IF NOT EXISTS question_states (
+        telegram_id INTEGER NOT NULL,
+        question_key TEXT NOT NULL,
+        language TEXT NOT NULL,
+        topic_slug TEXT NOT NULL,
+        status TEXT NOT NULL,
+        correct_streak INTEGER NOT NULL,
+        mistake_count INTEGER NOT NULL,
+        last_seen_at TEXT,
+        next_review_at TEXT,
+        last_answer_correct INTEGER,
+        updated_at TEXT NOT NULL,
+        PRIMARY KEY (telegram_id, question_key)
+      );
+
+      CREATE TABLE IF NOT EXISTS quiz_sessions (
+        id TEXT PRIMARY KEY,
+        telegram_id INTEGER NOT NULL,
+        chat_id INTEGER NOT NULL,
+        question_key TEXT NOT NULL,
+        question_id TEXT NOT NULL,
+        topic_slug TEXT NOT NULL,
+        language TEXT NOT NULL,
+        mode TEXT NOT NULL,
+        status TEXT NOT NULL,
+        sent_at TEXT NOT NULL,
+        answered_at TEXT,
+        selected_option_id TEXT,
+        is_correct INTEGER
+      );
+
+      CREATE TABLE IF NOT EXISTS error_reports (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        telegram_id INTEGER NOT NULL,
+        chat_id INTEGER NOT NULL,
+        language TEXT NOT NULL,
+        question_key TEXT NOT NULL,
+        question_id TEXT,
+        topic_slug TEXT,
+        text TEXT NOT NULL,
+        created_at TEXT NOT NULL
+      );
+
+      CREATE INDEX IF NOT EXISTS idx_answers_telegram_language_answered_at
+      ON answers (telegram_id, language, answered_at);
+
+      CREATE INDEX IF NOT EXISTS idx_question_states_telegram_language_status
+      ON question_states (telegram_id, language, status);
+
+      CREATE INDEX IF NOT EXISTS idx_quiz_sessions_telegram_status_sent_at
+      ON quiz_sessions (telegram_id, status, sent_at);
+    `);
+
+    if ((await getCount("users")) === 0) {
+      await importLegacyUsers();
+    }
+
+    if ((await getCount("answers")) === 0) {
+      await importLegacyAnswers();
+    }
+
+    if ((await getCount("question_states")) === 0) {
+      await importLegacyQuestionStates();
+    }
+
+    if ((await getCount("quiz_sessions")) === 0) {
+      await importLegacyQuizSessions();
+    }
+
+    if ((await getCount("error_reports")) === 0) {
+      await importLegacyErrorReports();
+    }
+  })();
+
+  return initPromise;
+}
+
+async function execute(sql: string, args?: InArgs) {
+  await initializeDatabase();
+  return db.execute({ sql, args });
+}
+
+export async function getUsers(): Promise<UserRecord[]> {
+  const result = await execute("SELECT * FROM users ORDER BY telegram_id ASC");
+  return result.rows.map((row: unknown) => mapUser(row as RowMap));
+}
+
+export async function upsertUser(
   telegramId: number,
   chatId: number,
   firstName?: string,
   username?: string,
-): UserRecord {
-  const users = getUsers();
-  const existing = users.find((user) => user.telegramId === telegramId);
+): Promise<UserRecord> {
+  const existingResult = await execute(
+    "SELECT * FROM users WHERE telegram_id = ? LIMIT 1",
+    [telegramId],
+  );
+  const existing = existingResult.rows[0] as RowMap | undefined;
   const now = new Date().toISOString();
 
   if (existing) {
-    existing.chatId = chatId;
-    existing.firstName = firstName;
-    existing.username = username;
-    existing.isSubscribed = true;
-    existing.updatedAt = now;
-    saveUsers(users);
-    return existing;
+    await execute(
+      `
+        UPDATE users
+        SET chat_id = ?, first_name = ?, username = ?, is_subscribed = 1, updated_at = ?
+        WHERE telegram_id = ?
+      `,
+      [chatId, firstName ?? null, username ?? null, now, telegramId],
+    );
+
+    return {
+      ...mapUser(existing),
+      chatId,
+      firstName,
+      username,
+      isSubscribed: true,
+      updatedAt: now,
+    };
   }
 
   const created: UserRecord = {
@@ -118,129 +521,268 @@ export function upsertUser(
     updatedAt: now,
   };
 
-  users.push(created);
-  saveUsers(users);
+  await execute(
+    `
+      INSERT INTO users (
+        telegram_id, chat_id, first_name, username, language, is_subscribed,
+        pending_error_report_question_key, created_at, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `,
+    [
+      created.telegramId,
+      created.chatId,
+      created.firstName ?? null,
+      created.username ?? null,
+      created.language,
+      1,
+      null,
+      created.createdAt,
+      created.updatedAt,
+    ],
+  );
+
   return created;
 }
 
-export function updateUser(user: UserRecord): void {
-  const users = getUsers();
-  const index = users.findIndex((entry) => entry.telegramId === user.telegramId);
-
-  if (index === -1) {
-    users.push(user);
-  } else {
-    users[index] = user;
-  }
-
-  saveUsers(users);
+export async function updateUser(user: UserRecord): Promise<void> {
+  await execute(
+    `
+      INSERT INTO users (
+        telegram_id, chat_id, first_name, username, language, is_subscribed,
+        pending_error_report_question_key, created_at, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ON CONFLICT(telegram_id) DO UPDATE SET
+        chat_id = excluded.chat_id,
+        first_name = excluded.first_name,
+        username = excluded.username,
+        language = excluded.language,
+        is_subscribed = excluded.is_subscribed,
+        pending_error_report_question_key = excluded.pending_error_report_question_key,
+        created_at = excluded.created_at,
+        updated_at = excluded.updated_at
+    `,
+    [
+      user.telegramId,
+      user.chatId,
+      user.firstName ?? null,
+      user.username ?? null,
+      user.language,
+      user.isSubscribed ? 1 : 0,
+      user.pendingErrorReportQuestionKey ?? null,
+      user.createdAt,
+      user.updatedAt,
+    ],
+  );
 }
 
-export function setSubscription(
+export async function setSubscription(
   telegramId: number,
   isSubscribed: boolean,
-): UserRecord | undefined {
-  const users = getUsers();
-  const user = users.find((entry) => entry.telegramId === telegramId);
-  if (!user) {
+): Promise<UserRecord | undefined> {
+  const existingResult = await execute(
+    "SELECT * FROM users WHERE telegram_id = ? LIMIT 1",
+    [telegramId],
+  );
+  const existing = existingResult.rows[0] as RowMap | undefined;
+  if (!existing) {
     return undefined;
   }
 
-  user.isSubscribed = isSubscribed;
-  user.updatedAt = new Date().toISOString();
-  saveUsers(users);
-  return user;
+  const updated = mapUser(existing);
+  updated.isSubscribed = isSubscribed;
+  updated.updatedAt = new Date().toISOString();
+  await updateUser(updated);
+  return updated;
 }
 
-export function setUserLanguage(
+export async function setUserLanguage(
   telegramId: number,
   language: LanguageCode,
-): UserRecord | undefined {
-  const users = getUsers();
-  const user = users.find((entry) => entry.telegramId === telegramId);
-  if (!user) {
+): Promise<UserRecord | undefined> {
+  const existingResult = await execute(
+    "SELECT * FROM users WHERE telegram_id = ? LIMIT 1",
+    [telegramId],
+  );
+  const existing = existingResult.rows[0] as RowMap | undefined;
+  if (!existing) {
     return undefined;
   }
 
-  user.language = language;
-  user.updatedAt = new Date().toISOString();
-  saveUsers(users);
-  return user;
+  const updated = mapUser(existing);
+  updated.language = language;
+  updated.updatedAt = new Date().toISOString();
+  await updateUser(updated);
+  return updated;
 }
 
-export function getAnswers(): AnswerRecord[] {
-  return readJsonFile<AnswerRecord[]>(answersPath, []);
+export async function getAnswers(): Promise<AnswerRecord[]> {
+  const result = await execute("SELECT * FROM answers ORDER BY answered_at ASC, id ASC");
+  return result.rows.map((row: unknown) => mapAnswer(row as RowMap));
 }
 
-export function appendAnswer(answer: AnswerRecord): void {
-  const answers = getAnswers();
-  answers.push(answer);
-  writeJsonFile(answersPath, answers);
-}
-
-export function getErrorReports(): ErrorReportRecord[] {
-  return readJsonFile<ErrorReportRecord[]>(errorReportsPath, []);
-}
-
-export function appendErrorReport(report: ErrorReportRecord): void {
-  const reports = getErrorReports();
-  reports.push(report);
-  writeJsonFile(errorReportsPath, reports);
-}
-
-export function getQuestionStates(): UserQuestionState[] {
-  return readJsonFile<UserQuestionState[]>(questionStatesPath, []);
-}
-
-export function saveQuestionStates(states: UserQuestionState[]): void {
-  writeJsonFile(questionStatesPath, states);
-}
-
-export function upsertQuestionState(state: UserQuestionState): void {
-  const states = getQuestionStates();
-  const index = states.findIndex(
-    (entry) =>
-      entry.telegramId === state.telegramId && entry.questionKey === state.questionKey,
+export async function appendAnswer(answer: AnswerRecord): Promise<void> {
+  await execute(
+    `
+      INSERT INTO answers (
+        telegram_id, question_key, question_id, topic_slug, language, mode,
+        selected_option_id, is_correct, answered_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `,
+    [
+      answer.telegramId,
+      answer.questionKey,
+      answer.questionId,
+      answer.topicSlug,
+      answer.language,
+      answer.mode,
+      answer.selectedOptionId,
+      answer.isCorrect ? 1 : 0,
+      answer.answeredAt,
+    ],
   );
-
-  if (index === -1) {
-    states.push(state);
-  } else {
-    states[index] = state;
-  }
-
-  saveQuestionStates(states);
 }
 
-export function getQuizSessions(): QuizSessionRecord[] {
-  return readJsonFile<QuizSessionRecord[]>(quizSessionsPath, []);
+export async function getErrorReports(): Promise<ErrorReportRecord[]> {
+  const result = await execute("SELECT * FROM error_reports ORDER BY created_at ASC, id ASC");
+  return result.rows.map((row: unknown) => mapErrorReport(row as RowMap));
 }
 
-export function saveQuizSessions(sessions: QuizSessionRecord[]): void {
-  writeJsonFile(quizSessionsPath, sessions);
+export async function appendErrorReport(report: ErrorReportRecord): Promise<void> {
+  await execute(
+    `
+      INSERT INTO error_reports (
+        telegram_id, chat_id, language, question_key, question_id, topic_slug, text, created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `,
+    [
+      report.telegramId,
+      report.chatId,
+      report.language,
+      report.questionKey,
+      report.questionId ?? null,
+      report.topicSlug ?? null,
+      report.text,
+      report.createdAt,
+    ],
+  );
 }
 
-export function createQuizSession(session: QuizSessionRecord): void {
-  const sessions = getQuizSessions();
-  sessions.push(session);
-  saveQuizSessions(sessions);
+export async function getQuestionStates(): Promise<UserQuestionState[]> {
+  const result = await execute("SELECT * FROM question_states ORDER BY updated_at ASC");
+  return result.rows.map((row: unknown) => mapQuestionState(row as RowMap));
 }
 
-export function updateQuizSession(session: QuizSessionRecord): void {
-  const sessions = getQuizSessions();
-  const index = sessions.findIndex((entry) => entry.id === session.id);
-
-  if (index === -1) {
-    sessions.push(session);
-  } else {
-    sessions[index] = session;
-  }
-
-  saveQuizSessions(sessions);
+export async function upsertQuestionState(state: UserQuestionState): Promise<void> {
+  await execute(
+    `
+      INSERT INTO question_states (
+        telegram_id, question_key, language, topic_slug, status, correct_streak,
+        mistake_count, last_seen_at, next_review_at, last_answer_correct, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ON CONFLICT(telegram_id, question_key) DO UPDATE SET
+        language = excluded.language,
+        topic_slug = excluded.topic_slug,
+        status = excluded.status,
+        correct_streak = excluded.correct_streak,
+        mistake_count = excluded.mistake_count,
+        last_seen_at = excluded.last_seen_at,
+        next_review_at = excluded.next_review_at,
+        last_answer_correct = excluded.last_answer_correct,
+        updated_at = excluded.updated_at
+    `,
+    [
+      state.telegramId,
+      state.questionKey,
+      state.language,
+      state.topicSlug,
+      state.status,
+      state.correctStreak,
+      state.mistakeCount,
+      state.lastSeenAt ?? null,
+      state.nextReviewAt ?? null,
+      state.lastAnswerCorrect === undefined ? null : state.lastAnswerCorrect ? 1 : 0,
+      state.updatedAt,
+    ],
+  );
 }
 
-export function getQuizSessionById(sessionId: string): QuizSessionRecord | undefined {
-  return getQuizSessions().find((session) => session.id === sessionId);
+export async function getQuizSessions(): Promise<QuizSessionRecord[]> {
+  const result = await execute("SELECT * FROM quiz_sessions ORDER BY sent_at ASC, id ASC");
+  return result.rows.map((row: unknown) => mapQuizSession(row as RowMap));
+}
+
+export async function createQuizSession(session: QuizSessionRecord): Promise<void> {
+  await execute(
+    `
+      INSERT INTO quiz_sessions (
+        id, telegram_id, chat_id, question_key, question_id, topic_slug, language,
+        mode, status, sent_at, answered_at, selected_option_id, is_correct
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `,
+    [
+      session.id,
+      session.telegramId,
+      session.chatId,
+      session.questionKey,
+      session.questionId,
+      session.topicSlug,
+      session.language,
+      session.mode,
+      session.status,
+      session.sentAt,
+      session.answeredAt ?? null,
+      session.selectedOptionId ?? null,
+      session.isCorrect === undefined ? null : session.isCorrect ? 1 : 0,
+    ],
+  );
+}
+
+export async function updateQuizSession(session: QuizSessionRecord): Promise<void> {
+  await execute(
+    `
+      INSERT INTO quiz_sessions (
+        id, telegram_id, chat_id, question_key, question_id, topic_slug, language,
+        mode, status, sent_at, answered_at, selected_option_id, is_correct
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ON CONFLICT(id) DO UPDATE SET
+        telegram_id = excluded.telegram_id,
+        chat_id = excluded.chat_id,
+        question_key = excluded.question_key,
+        question_id = excluded.question_id,
+        topic_slug = excluded.topic_slug,
+        language = excluded.language,
+        mode = excluded.mode,
+        status = excluded.status,
+        sent_at = excluded.sent_at,
+        answered_at = excluded.answered_at,
+        selected_option_id = excluded.selected_option_id,
+        is_correct = excluded.is_correct
+    `,
+    [
+      session.id,
+      session.telegramId,
+      session.chatId,
+      session.questionKey,
+      session.questionId,
+      session.topicSlug,
+      session.language,
+      session.mode,
+      session.status,
+      session.sentAt,
+      session.answeredAt ?? null,
+      session.selectedOptionId ?? null,
+      session.isCorrect === undefined ? null : session.isCorrect ? 1 : 0,
+    ],
+  );
+}
+
+export async function getQuizSessionById(sessionId: string): Promise<QuizSessionRecord | undefined> {
+  const result = await execute(
+    "SELECT * FROM quiz_sessions WHERE id = ? LIMIT 1",
+    [sessionId],
+  );
+  const row = result.rows[0] as RowMap | undefined;
+  return row ? mapQuizSession(row) : undefined;
 }
 
 export function getSigns(): SignRecord[] {

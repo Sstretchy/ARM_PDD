@@ -1,17 +1,8 @@
-# ARM PDD Bot MVP
+# ARM PDD Bot
 
-MVP Telegram-бот для изучения дорожных знаков Армении в формате бота-репетитора. Проект строится не как база билетов, а как тренажер, который объясняет, что видит водитель, что это значит и что нужно делать на дороге.
+Telegram-бот-репетитор по ПДД Армении с квизом, объяснениями, повторами ошибок и карточками по знакам, терминам и разметке.
 
-## Что уже есть
-
-- команды `/start`, `/stop`, `/signs`, `/quiz`, `/mistakes`, `/progress`
-- учебные карточки в универсальном формате
-- карточки по знакам как первый тип контента
-- объяснение после каждого ответа: смысл, действие водителя, важность, частая путаница
-- хранение пользователей и ответов в JSON
-- базовая рассылка: урок, вопрос дня, повтор ошибок
-
-## Быстрый запуск
+## Локальный запуск
 
 1. Создайте бота через BotFather и получите токен.
 2. Скопируйте `.env.example` в `.env`.
@@ -23,48 +14,108 @@ npm install
 npm run dev
 ```
 
-Для production-сборки:
+Локально бот работает через polling и сам запускает расписание.
+
+## Деплой на Vercel
+
+Репозиторий подготовлен под serverless-режим:
+
+- `api/telegram.ts` принимает Telegram webhook
+- `api/cron/[slot].ts` запускает дневные касания по слотам
+- `.github/workflows/scheduled-touches.yml` запускает эти касания через GitHub Actions
+
+### Что добавить в переменные окружения Vercel
+
+- `BOT_TOKEN`
+- `TIMEZONE=Asia/Yerevan`
+- `LESSON_SIZE=3`
+- `TOUCH_CRONS=30 9 * * *,30 11 * * *,30 13 * * *,30 15 * * *,30 17 * * *,0 20 * * *,0 22 * * *`
+- `TELEGRAM_WEBHOOK_SECRET=<любой длинный секрет>`
+- `SCHEDULER_SECRET=<отдельный секрет для GitHub Actions>`
+- `TURSO_DATABASE_URL`
+- `TURSO_AUTH_TOKEN`
+
+### Что добавить в GitHub Secrets
+
+- `VERCEL_BASE_URL=https://<your-vercel-domain>`
+- `SCHEDULER_SECRET=<тот же секрет, что и в Vercel>`
+
+### После деплоя
+
+Нужно один раз выставить webhook у Telegram:
 
 ```bash
-npm run build
-npm start
+curl -X POST "https://api.telegram.org/bot<BOT_TOKEN>/setWebhook" ^
+  -H "Content-Type: application/json" ^
+  -d "{\"url\":\"https://<your-vercel-domain>/api/telegram\",\"secret_token\":\"<TELEGRAM_WEBHOOK_SECRET>\"}"
 ```
 
-## Структура данных
+Проверить можно так:
 
-Пока данные лежат в `data/signs.json`, но формат уже универсальный и подходит не только для знаков.
+```bash
+curl "https://api.telegram.org/bot<BOT_TOKEN>/getWebhookInfo"
+```
 
-Основные поля карточки:
+### Бесплатная схема расписания
 
-- `id`
-- `topic`
-- `type`
-- `title`
-- `prompt`
-- `question`
-- `options`
-- `correctOption`
-- `image` - опционально
-- `scenario` - опционально
-- `whatItMeans`
-- `whatDriverMustDo`
-- `why`
-- `commonMistake`
-- `confusedWith` - опционально
-- `difference` - опционально
-- `memoryHook` - опционально
+На `Vercel Hobby` нельзя нормально держать `7` cron в день. Поэтому в этом репозитории расписание для бесплатной схемы вынесено в `GitHub Actions`, а Vercel только принимает webhook и защищённые вызовы `/api/cron/[slot]`.
 
-## Данные
+GitHub Actions ходит в endpoint:
 
-- `data/signs.json` - учебные карточки
-- `data/users.json` - подписки и позиция пользователя
-- `data/answers.json` - история ответов и ошибок
+- `POST /api/cron/0`
+- `POST /api/cron/1`
+- `POST /api/cron/2`
+- `POST /api/cron/3`
+- `POST /api/cron/4`
+- `POST /api/cron/5`
+- `POST /api/cron/6`
 
-Если добавить реальные изображения, укажите путь в поле `image`. Если файл отсутствует, бот отправит текстовую карточку.
+с заголовком:
 
-## Следующий шаг
+- `x-scheduler-secret: <SCHEDULER_SECRET>`
 
-1. Расширить базу до первых 30-50 знаков.
-2. Подключить реальные SVG или PNG.
-3. Перейти к типам карточек `rule`, `situation`, `comparison`.
-4. После стабилизации контента добавить 7 разных вопросов в день вместо текущего упрощенного расписания.
+Без этого секрета endpoint вернёт `401`.
+
+## База данных
+
+Пользовательское состояние теперь хранится в `libSQL`:
+
+- локально по умолчанию используется `file:data/app.db`
+- на Vercel нужно задать `TURSO_DATABASE_URL` и `TURSO_AUTH_TOKEN`
+
+В БД лежат:
+
+- пользователи
+- ответы
+- прогресс по вопросам
+- quiz sessions
+- репорты ошибок
+
+Учебный контент по-прежнему читается из JSON:
+
+- `data/drv-topics/**`
+- `data/signs.json`
+- `data/terms.json`
+- `data/marking.json`
+
+При первом запуске бот автоматически импортирует старые данные из:
+
+- `data/users.json`
+- `data/answers.json`
+- `data/question-progress.json`
+- `data/quiz-sessions.json`
+- `data/error-reports.json`
+
+## Сборка
+
+```bash
+npm run check
+npm run build
+```
+
+## Структура
+
+- `src/` — логика бота
+- `api/` — Vercel serverless endpoints
+- `data/` — учебные данные и текущее JSON-хранилище
+- `assets/` — изображения знаков и разметки

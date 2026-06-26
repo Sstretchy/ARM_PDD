@@ -1,6 +1,6 @@
 import { createBot } from "./bot.js";
 
-const bot = createBot();
+const bot = createBot({ enableSchedules: true });
 
 async function main(): Promise<void> {
   await bot.launch();
