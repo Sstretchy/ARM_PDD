@@ -131,6 +131,23 @@ function getTextMessage(ctx: Context): string {
   return message.text.trim();
 }
 
+function getChatId(ctx: Context): number | undefined {
+  const directChatId = ctx.chat?.id;
+  if (directChatId !== undefined) {
+    return directChatId;
+  }
+
+  const callbackChatId = (
+    ctx.callbackQuery as { message?: { chat?: { id?: number } } } | undefined
+  )?.message?.chat?.id;
+  if (callbackChatId !== undefined) {
+    return callbackChatId;
+  }
+
+  const messageChatId = (ctx.message as { chat?: { id?: number } } | undefined)?.chat?.id;
+  return messageChatId;
+}
+
 function getCommandArg(ctx: Context): string {
   const text = getTextMessage(ctx);
   const [, ...rest] = text.split(/\s+/);
@@ -884,7 +901,7 @@ async function sendDailySummary(user: UserRecord): Promise<void> {
 
 async function startErrorReportFlow(ctx: Context, questionKey: string): Promise<void> {
   const from = ctx.from;
-  const chatId = ctx.chat?.id;
+  const chatId = getChatId(ctx);
   if (!from || !chatId) {
     await ctx.answerCbQuery();
     return;
@@ -909,7 +926,7 @@ async function startErrorReportFlow(ctx: Context, questionKey: string): Promise<
 
 async function maybeCaptureErrorReport(ctx: Context): Promise<boolean> {
   const from = ctx.from;
-  const chatId = ctx.chat?.id;
+  const chatId = getChatId(ctx);
   const text = getTextMessage(ctx);
   if (!from || !chatId || !text) {
     return false;
@@ -953,7 +970,7 @@ async function maybeCaptureErrorReport(ctx: Context): Promise<boolean> {
 
 async function answerQuestion(ctx: Context, sessionId: string, optionId: string): Promise<void> {
   const from = ctx.from;
-  const chatId = ctx.chat?.id;
+  const chatId = getChatId(ctx);
   if (!from || !chatId) {
     await ctx.answerCbQuery();
     return;
@@ -1192,7 +1209,7 @@ function registerCommands(): void {
 
   getBot().action(/settings\|lang\|(am|ru)/, async (ctx) => {
     const from = ctx.from;
-    const chatId = ctx.chat?.id;
+    const chatId = getChatId(ctx);
     if (!from || !chatId) {
       await ctx.answerCbQuery();
       return;
@@ -1215,7 +1232,7 @@ function registerCommands(): void {
 
   getBot().action("menu|quiz", async (ctx) => {
     const from = ctx.from;
-    const chatId = ctx.chat?.id;
+    const chatId = getChatId(ctx);
     if (!from || !chatId) {
       await ctx.answerCbQuery();
       return;
@@ -1228,7 +1245,7 @@ function registerCommands(): void {
 
   getBot().action("menu|topics", async (ctx) => {
     const from = ctx.from;
-    const chatId = ctx.chat?.id;
+    const chatId = getChatId(ctx);
     if (!from || !chatId) {
       await ctx.answerCbQuery();
       return;
@@ -1242,7 +1259,7 @@ function registerCommands(): void {
 
   getBot().action("menu|mistakes", async (ctx) => {
     const from = ctx.from;
-    const chatId = ctx.chat?.id;
+    const chatId = getChatId(ctx);
     if (!from || !chatId) {
       await ctx.answerCbQuery();
       return;
@@ -1255,7 +1272,7 @@ function registerCommands(): void {
 
   getBot().action("menu|settings", async (ctx) => {
     const from = ctx.from;
-    const chatId = ctx.chat?.id;
+    const chatId = getChatId(ctx);
     if (!from || !chatId) {
       await ctx.answerCbQuery();
       return;
@@ -1271,7 +1288,7 @@ function registerCommands(): void {
 
   getBot().action("menu|sign", async (ctx) => {
     const from = ctx.from;
-    const chatId = ctx.chat?.id;
+    const chatId = getChatId(ctx);
     if (!from || !chatId) {
       await ctx.answerCbQuery();
       return;
@@ -1284,7 +1301,7 @@ function registerCommands(): void {
 
   getBot().action("menu|term", async (ctx) => {
     const from = ctx.from;
-    const chatId = ctx.chat?.id;
+    const chatId = getChatId(ctx);
     if (!from || !chatId) {
       await ctx.answerCbQuery();
       return;
@@ -1302,7 +1319,7 @@ function registerCommands(): void {
 
   getBot().action("nav|next-quiz", async (ctx) => {
     const from = ctx.from;
-    const chatId = ctx.chat?.id;
+    const chatId = getChatId(ctx);
     if (!from || !chatId) {
       await ctx.answerCbQuery();
       return;
@@ -1322,7 +1339,7 @@ function registerCommands(): void {
 
   getBot().action(/topic\|(.+)/, async (ctx) => {
     const from = ctx.from;
-    const chatId = ctx.chat?.id;
+    const chatId = getChatId(ctx);
     if (!from || !chatId) {
       await ctx.answerCbQuery();
       return;
@@ -1344,7 +1361,7 @@ function registerCommands(): void {
 
   getBot().action(/topicquiz\|(.+)/, async (ctx) => {
     const from = ctx.from;
-    const chatId = ctx.chat?.id;
+    const chatId = getChatId(ctx);
     if (!from || !chatId) {
       await ctx.answerCbQuery();
       return;
@@ -1364,7 +1381,7 @@ function registerCommands(): void {
 
   getBot().action(/ref\|sign\|(.+)/, async (ctx) => {
     const from = ctx.from;
-    const chatId = ctx.chat?.id;
+    const chatId = getChatId(ctx);
     if (!from || !chatId) {
       await ctx.answerCbQuery();
       return;
@@ -1378,7 +1395,7 @@ function registerCommands(): void {
 
   getBot().action(/ref\|term\|(.+)/, async (ctx) => {
     const from = ctx.from;
-    const chatId = ctx.chat?.id;
+    const chatId = getChatId(ctx);
     if (!from || !chatId) {
       await ctx.answerCbQuery();
       return;
