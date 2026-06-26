@@ -179,16 +179,29 @@ async function releaseUserProcessing(telegramId: number, updateId: number): Prom
 async function rejectBusyUpdate(ctx: Context): Promise<void> {
   log.warn("bot", "update_ignored_busy", describeCtx(ctx));
 
-  if (!ctx.callbackQuery) {
+  const busyText = "Подожди, обрабатываю предыдущее действие… / Մի վայրկյան սպասիր…";
+
+  if (ctx.callbackQuery) {
+    try {
+      await ctx.answerCbQuery(busyText);
+    } catch (error) {
+      log.warn("bot", "busy_callback_answer_failed", {
+        ...describeCtx(ctx),
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+    return;
+  }
+
+  const chatId = getChatId(ctx);
+  if (chatId === undefined) {
     return;
   }
 
   try {
-    await ctx.answerCbQuery(
-      t("ru", "Подожди, обрабатываю предыдущее действие…", "Մի վայրկյան սպասիր, նախորդ գործողությունը մշակվում է…"),
-    );
+    await sendTextToChat(chatId, busyText, undefined, ctx);
   } catch (error) {
-    log.warn("bot", "busy_callback_answer_failed", {
+    log.warn("bot", "busy_text_reply_failed", {
       ...describeCtx(ctx),
       error: error instanceof Error ? error.message : String(error),
     });
@@ -233,18 +246,21 @@ async function sendTextToChat(
   await getBot().telegram.sendMessage(targetChatId, text, extra);
 }
 
+const TELEGRAM_CAPTION_LIMIT = 1024;
+
 async function sendPhotoToChat(
   chatId: number,
   photo: { source: string },
+  extra?: object,
   ctx?: Context,
 ): Promise<void> {
   const targetChatId = resolveDeliveryChatId(ctx, chatId);
   if (ctx) {
-    await ctx.telegram.sendPhoto(targetChatId, photo);
+    await ctx.telegram.sendPhoto(targetChatId, photo, extra);
     return;
   }
 
-  await getBot().telegram.sendPhoto(targetChatId, photo);
+  await getBot().telegram.sendPhoto(targetChatId, photo, extra);
 }
 
 function getCommandArg(ctx: Context): string {
@@ -458,6 +474,25 @@ function buildTopicsKeyboard(): ReturnType<typeof Markup.inlineKeyboard> {
     Markup.button.callback(`${topic.order}`, `topic|${topic.slug}`),
   ]);
   return Markup.inlineKeyboard(rows);
+}
+
+async function sendTopicsList(ctx: Context, user: UserRecord): Promise<void> {
+  const lines = TOPICS.map((topic) => `${topic.order}. ${getTopicTitle(topic.slug, user.language)}`);
+  const text = [
+    t(user.language, "Темы:", "Թեմաներ՝"),
+    "",
+    ...lines,
+    "",
+    t(user.language, "Нажми номер темы ниже.", "Սեղմիր ներքևի թեմայի համարը։"),
+  ].join("\n");
+
+  log.info("handler", "topics_list_send", {
+    telegramId: user.telegramId,
+    language: user.language,
+    topicCount: TOPICS.length,
+  });
+
+  await sendTextToChat(user.chatId, text, buildTopicsKeyboard(), ctx);
 }
 
 function buildQuestionKeyboard(question: QuizQuestion, sessionId: string) {
@@ -893,10 +928,39 @@ async function deliverQuestionMessage(
     textLength: text.length,
   });
 
-  if (imagePath) {
+  if (imagePath && text.length <= TELEGRAM_CAPTION_LIMIT) {
     try {
-      log.debug("delivery", "send_photo", { sessionId: session.id, imagePath, deliveryVia, targetChatId });
-      await sendPhotoToChat(chatId, { source: imagePath }, ctx);
+      log.debug("delivery", "send_photo_with_caption", {
+        sessionId: session.id,
+        imagePath,
+        deliveryVia,
+        targetChatId,
+        textLength: text.length,
+      });
+      await sendPhotoToChat(chatId, { source: imagePath }, { caption: text, ...keyboard }, ctx);
+      log.info("delivery", "deliver_question_done", {
+        sessionId: session.id,
+        via: `${deliveryVia}.sendPhoto+caption`,
+        targetChatId,
+      });
+      return;
+    } catch (error) {
+      log.error("delivery", "send_photo_with_caption_failed", error, {
+        sessionId: session.id,
+        questionKey: question.key,
+        imagePath,
+        targetChatId,
+        textLength: text.length,
+      });
+    }
+  } else if (imagePath) {
+    log.warn("delivery", "caption_too_long_fallback_split", {
+      sessionId: session.id,
+      textLength: text.length,
+      captionLimit: TELEGRAM_CAPTION_LIMIT,
+    });
+    try {
+      await sendPhotoToChat(chatId, { source: imagePath }, undefined, ctx);
       log.info("delivery", "send_photo_done", { sessionId: session.id });
     } catch (error) {
       log.error("delivery", "send_photo_failed", error, {
@@ -912,7 +976,7 @@ async function deliverQuestionMessage(
 
   log.debug("delivery", "send_text", { sessionId: session.id, deliveryVia, targetChatId });
   await sendTextToChat(chatId, text, keyboard, ctx);
-  log.info("delivery", "deliver_question_done", { sessionId: session.id, via: deliveryVia, targetChatId });
+  log.info("delivery", "deliver_question_done", { sessionId: session.id, via: `${deliveryVia}.sendMessage`, targetChatId });
 }
 
 async function notifyQuizMessage(
@@ -1656,12 +1720,13 @@ function registerCommands(): void {
           "Այն օրական ուղարկում է 7 հարց, տալիս է բացատրություն և հետո կրկին վերադարձնում է սխալները։",
         ),
         buildMainMenuText(user.language),
+        "",
+        t(user.language, "Можно сразу выбрать язык:", "Կարող ես անմիջապես ընտրել լեզուն՝"),
       ].join("\n\n"),
-      buildStartKeyboard(user.language),
-    );
-    await ctx.reply(
-      t(user.language, "Можно сразу выбрать язык.", "Կարող ես անմիջապես ընտրել լեզուն։"),
-      buildLanguageKeyboard(),
+      Markup.inlineKeyboard([
+        ...buildStartKeyboard(user.language).reply_markup.inline_keyboard,
+        ...buildLanguageKeyboard().reply_markup.inline_keyboard,
+      ]),
     );
   });
 
@@ -1725,16 +1790,32 @@ function registerCommands(): void {
   });
 
   getBot().command("topics", async (ctx) => {
+    log.info("handler", "command_topics_start", describeCtx(ctx));
     const from = ctx.from;
     if (!from) {
+      log.warn("handler", "command_topics_no_from", describeCtx(ctx));
       return;
     }
 
     const user = await upsertUser(from.id, ctx.chat.id, from.first_name, from.username);
-    const lines = TOPICS.map(
-      (topic) => `${topic.order}. ${topic.title[user.language]}`,
-    );
-    await ctx.reply(lines.join("\n"), buildTopicsKeyboard());
+    try {
+      await sendTopicsList(ctx, user);
+      log.info("handler", "command_topics_done", {
+        telegramId: user.telegramId,
+        language: user.language,
+      });
+    } catch (error) {
+      log.error("handler", "command_topics_failed", error, {
+        telegramId: user.telegramId,
+        language: user.language,
+      });
+      await sendTextToChat(
+        user.chatId,
+        t(user.language, "Не удалось показать темы. Попробуй ещё раз.", "Չհաջողվեց ցույց տալ թեմաները։ Փորձիր կրկին։"),
+        undefined,
+        ctx,
+      );
+    }
   });
 
   getBot().command("sign", async (ctx) => {
@@ -1836,6 +1917,7 @@ function registerCommands(): void {
   });
 
   getBot().action("menu|topics", async (ctx) => {
+    log.info("handler", "menu_topics_start", describeCtx(ctx));
     const from = ctx.from;
     const chatId = getChatId(ctx);
     if (!from || !chatId) {
@@ -1844,9 +1926,22 @@ function registerCommands(): void {
     }
 
     const user = await upsertUser(from.id, chatId, from.first_name, from.username);
-    await ctx.answerCbQuery(t(user.language, "Показываю темы", "Ցույց եմ տալիս թեմաները"));
-    const lines = TOPICS.map((topic) => `${topic.order}. ${topic.title[user.language]}`);
-    await ctx.reply(lines.join("\n"), buildTopicsKeyboard());
+    try {
+      await sendTopicsList(ctx, user);
+      await ctx.answerCbQuery(t(user.language, "Показываю темы", "Ցույց եմ տալիս թեմաները"));
+      log.info("handler", "menu_topics_done", {
+        telegramId: user.telegramId,
+        language: user.language,
+      });
+    } catch (error) {
+      log.error("handler", "menu_topics_failed", error, {
+        telegramId: user.telegramId,
+        language: user.language,
+      });
+      await ctx.answerCbQuery(
+        t(user.language, "Не удалось показать темы", "Չհաջողվեց ցույց տալ թեմաները"),
+      );
+    }
   });
 
   getBot().action("menu|mistakes", async (ctx) => {
@@ -1952,15 +2047,20 @@ function registerCommands(): void {
     const [, slug] = ctx.match;
     const topic = TOPICS.find((entry) => entry.slug === slug);
     if (!topic) {
-      await ctx.answerCbQuery("Topic not found");
+      await ctx.answerCbQuery(t("ru", "Тема не найдена", "Թեման չի գտնվել"));
       return;
     }
 
     const user = await upsertUser(from.id, chatId, from.first_name, from.username);
-    await ctx.answerCbQuery(topic.title[user.language]);
-    await ctx.reply(buildTopicOverview(topic.slug, user.language), Markup.inlineKeyboard([
-      [Markup.button.callback(t(user.language, "Вопрос по теме", "Հարց թեմայից"), `topicquiz|${topic.slug}`)],
-    ]));
+    await ctx.answerCbQuery(getTopicTitle(topic.slug, user.language));
+    await sendTextToChat(
+      user.chatId,
+      buildTopicOverview(topic.slug, user.language),
+      Markup.inlineKeyboard([
+        [Markup.button.callback(t(user.language, "Вопрос по теме", "Հարց թեմայից"), `topicquiz|${topic.slug}`)],
+      ]),
+      ctx,
+    );
   });
 
   getBot().action(/topicquiz\|(.+)/, async (ctx) => {
@@ -1974,7 +2074,7 @@ function registerCommands(): void {
     const [, slug] = ctx.match;
     const topic = TOPICS.find((entry) => entry.slug === slug);
     if (!topic) {
-      await ctx.answerCbQuery("Topic not found");
+      await ctx.answerCbQuery(t("ru", "Тема не найдена", "Թեման չի գտնվել"));
       return;
     }
 
