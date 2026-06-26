@@ -620,15 +620,12 @@ export async function releaseProcessingLock(
   updateId: number,
 ): Promise<void> {
   log.debug("storage", "release_processing_lock", { telegramId, updateId });
-  const exact = await execute(
-    "DELETE FROM user_processing_locks WHERE telegram_id = ? AND update_id = ?",
-    [telegramId, updateId],
-  );
+  await execute("DELETE FROM user_processing_locks WHERE telegram_id = ?", [telegramId]);
+}
 
-  if ((exact.rowsAffected ?? 0) === 0) {
-    log.warn("storage", "release_processing_lock_fallback", { telegramId, updateId });
-    await execute("DELETE FROM user_processing_locks WHERE telegram_id = ?", [telegramId]);
-  }
+export async function clearProcessingLock(telegramId: number): Promise<void> {
+  log.debug("storage", "clear_processing_lock", { telegramId });
+  await execute("DELETE FROM user_processing_locks WHERE telegram_id = ?", [telegramId]);
 }
 
 export async function releaseUserFlow(telegramId: number, updatedAt?: string): Promise<void> {

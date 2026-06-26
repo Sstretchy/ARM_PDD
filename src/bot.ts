@@ -11,6 +11,7 @@ import {
   createQuizSession,
   deleteQuizSession,
   getAnswersForUser,
+  clearProcessingLock,
   forceReleaseStaleProcessingLock,
   releaseProcessingLock,
   releaseUserFlow,
@@ -165,10 +166,7 @@ function needsProcessingLock(ctx: Context): boolean {
     return (
       callbackData === "menu|quiz" ||
       callbackData === "menu|mistakes" ||
-      callbackData === "nav|next-quiz" ||
-      callbackData.startsWith("answer|") ||
-      callbackData.startsWith("topicquiz|") ||
-      callbackData.startsWith("report|")
+      callbackData.startsWith("topicquiz|")
     );
   }
 
@@ -2056,6 +2054,9 @@ function registerCommands(): void {
     }
 
     const user = await upsertUser(from.id, chatId, from.first_name, from.username);
+    localProcessingUsers.delete(user.telegramId);
+    await clearProcessingLock(user.telegramId);
+
     const flow = await getFlowForUser(user);
     log.info("handler", "nav_next_quiz_flow", {
       telegramId: user.telegramId,
@@ -2071,9 +2072,9 @@ function registerCommands(): void {
       return;
     }
 
+    await ctx.answerCbQuery();
     await releaseUserFlow(user.telegramId);
     const sent = await sendQuestion(user, "manual", undefined, ctx);
-    await ctx.answerCbQuery();
     log.info("handler", "nav_next_quiz_done", { telegramId: user.telegramId, sent });
   });
 
