@@ -160,9 +160,47 @@ function describeCtx(ctx: Context): Record<string, unknown> {
     updateId: ctx.update.update_id,
     fromId: ctx.from?.id,
     chatId: getChatId(ctx),
+    ctxChatId: ctx.chat?.id,
     callbackData,
     text: getTextMessage(ctx).slice(0, 120) || undefined,
   };
+}
+
+function resolveDeliveryChatId(ctx: Context | undefined, fallbackChatId: number): number {
+  if (!ctx) {
+    return fallbackChatId;
+  }
+
+  return getChatId(ctx) ?? fallbackChatId;
+}
+
+async function sendTextToChat(
+  chatId: number,
+  text: string,
+  extra: object | undefined,
+  ctx?: Context,
+): Promise<void> {
+  const targetChatId = resolveDeliveryChatId(ctx, chatId);
+  if (ctx) {
+    await ctx.telegram.sendMessage(targetChatId, text, extra);
+    return;
+  }
+
+  await getBot().telegram.sendMessage(targetChatId, text, extra);
+}
+
+async function sendPhotoToChat(
+  chatId: number,
+  photo: { source: string },
+  ctx?: Context,
+): Promise<void> {
+  const targetChatId = resolveDeliveryChatId(ctx, chatId);
+  if (ctx) {
+    await ctx.telegram.sendPhoto(targetChatId, photo);
+    return;
+  }
+
+  await getBot().telegram.sendPhoto(targetChatId, photo);
 }
 
 function getCommandArg(ctx: Context): string {
@@ -753,17 +791,20 @@ async function deliverQuestionMessage(
   const keyboard = buildQuestionKeyboard(question, session.id);
   const text = buildQuestionText(question, user.language, mode, topicFilter);
   const chatId = user.chatId;
-  const useCtxReply = ctx?.chat?.id === chatId;
+  const targetChatId = resolveDeliveryChatId(ctx, chatId);
+  const deliveryVia = ctx ? "ctx.telegram" : "bot.telegram";
 
   log.info("delivery", "deliver_question_start", {
     telegramId: user.telegramId,
     chatId,
+    targetChatId,
     sessionId: session.id,
     questionKey: question.key,
     hasImage: Boolean(imagePath),
     imagePath,
-    useCtxReply,
+    deliveryVia,
     ctxChatId: ctx?.chat?.id,
+    resolvedCtxChatId: ctx ? getChatId(ctx) : undefined,
     mode,
     topicFilter,
     textLength: text.length,
@@ -771,35 +812,24 @@ async function deliverQuestionMessage(
 
   if (imagePath) {
     try {
-      if (useCtxReply) {
-        log.debug("delivery", "send_photo_via_ctx", { sessionId: session.id, imagePath });
-        await ctx.replyWithPhoto({ source: imagePath });
-      } else {
-        log.debug("delivery", "send_photo_via_telegram", { sessionId: session.id, chatId, imagePath });
-        await getBot().telegram.sendPhoto(chatId, { source: imagePath });
-      }
+      log.debug("delivery", "send_photo", { sessionId: session.id, imagePath, deliveryVia, targetChatId });
+      await sendPhotoToChat(chatId, { source: imagePath }, ctx);
       log.info("delivery", "send_photo_done", { sessionId: session.id });
     } catch (error) {
       log.error("delivery", "send_photo_failed", error, {
         sessionId: session.id,
         questionKey: question.key,
         imagePath,
+        targetChatId,
       });
     }
   } else {
     log.debug("delivery", "no_image", { sessionId: session.id, questionKey: question.key });
   }
 
-  if (useCtxReply) {
-    log.debug("delivery", "send_text_via_ctx", { sessionId: session.id });
-    await ctx.reply(text, keyboard);
-    log.info("delivery", "deliver_question_done", { sessionId: session.id, via: "ctx.reply" });
-    return;
-  }
-
-  log.debug("delivery", "send_text_via_telegram", { sessionId: session.id, chatId });
-  await getBot().telegram.sendMessage(chatId, text, keyboard);
-  log.info("delivery", "deliver_question_done", { sessionId: session.id, via: "telegram.sendMessage" });
+  log.debug("delivery", "send_text", { sessionId: session.id, deliveryVia, targetChatId });
+  await sendTextToChat(chatId, text, keyboard, ctx);
+  log.info("delivery", "deliver_question_done", { sessionId: session.id, via: deliveryVia, targetChatId });
 }
 
 async function notifyQuizMessage(
@@ -807,20 +837,16 @@ async function notifyQuizMessage(
   text: string,
   ctx?: Context,
 ): Promise<void> {
-  const useCtxReply = ctx?.chat?.id === user.chatId;
+  const targetChatId = resolveDeliveryChatId(ctx, user.chatId);
   log.info("quiz", "notify_message", {
     telegramId: user.telegramId,
     chatId: user.chatId,
-    useCtxReply,
+    targetChatId,
+    deliveryVia: ctx ? "ctx.telegram" : "bot.telegram",
     textPreview: text.slice(0, 80),
   });
 
-  if (useCtxReply) {
-    await ctx.reply(text);
-    return;
-  }
-
-  await getBot().telegram.sendMessage(user.chatId, text);
+  await sendTextToChat(user.chatId, text, undefined, ctx);
 }
 
 async function resendPendingQuestion(
@@ -1445,6 +1471,9 @@ async function answerQuestion(ctx: Context, sessionId: string, optionId: string)
     isCorrect,
   });
 
+  const explanationText = buildAnswerExplanation(user, question, optionId);
+  const followupKeyboard = buildFollowupKeyboard(user.language, question);
+
   await ctx.answerCbQuery(
     isCorrect
       ? t(user.language, "Верно", "Ճիշտ է")
@@ -1452,22 +1481,18 @@ async function answerQuestion(ctx: Context, sessionId: string, optionId: string)
   );
 
   try {
-    await ctx.editMessageReplyMarkup(undefined);
-    log.debug("answer", "answer_question_markup_cleared", { sessionId });
-  } catch (error) {
-    log.warn("answer", "answer_question_markup_clear_failed", {
+    log.info("answer", "answer_question_send_explanation", {
+      telegramId: user.telegramId,
+      chatId,
+      targetChatId: resolveDeliveryChatId(ctx, chatId),
       sessionId,
-      error: error instanceof Error ? error.message : String(error),
     });
-  }
-
-  const explanationText = buildAnswerExplanation(user, question, optionId);
-  const followupKeyboard = buildFollowupKeyboard(user.language, question);
-
-  try {
-    log.debug("answer", "answer_question_send_explanation", { telegramId: user.telegramId, chatId });
-    await getBot().telegram.sendMessage(chatId, explanationText, followupKeyboard);
-    log.info("answer", "answer_question_done", { telegramId: user.telegramId, sessionId, isCorrect });
+    await sendTextToChat(chatId, explanationText, followupKeyboard, ctx);
+    log.info("answer", "answer_question_explanation_sent", {
+      telegramId: user.telegramId,
+      sessionId,
+      isCorrect,
+    });
   } catch (error) {
     log.error("answer", "answer_question_explanation_failed", error, {
       telegramId: user.telegramId,
@@ -1475,6 +1500,20 @@ async function answerQuestion(ctx: Context, sessionId: string, optionId: string)
       chatId,
     });
   }
+
+  void ctx
+    .editMessageReplyMarkup(undefined)
+    .then(() => {
+      log.debug("answer", "answer_question_markup_cleared", { sessionId });
+    })
+    .catch((error: unknown) => {
+      log.warn("answer", "answer_question_markup_clear_failed", {
+        sessionId,
+        error: error instanceof Error ? error.message : String(error),
+      });
+    });
+
+  log.info("answer", "answer_question_done", { telegramId: user.telegramId, sessionId, isCorrect });
 }
 
 function registerCommands(): void {
@@ -1680,8 +1719,8 @@ function registerCommands(): void {
       chatId: user.chatId,
       language: user.language,
     });
-    await ctx.answerCbQuery();
     const sent = await sendQuestion(user, "manual", undefined, ctx);
+    await ctx.answerCbQuery();
     log.info("handler", "menu_quiz_done", {
       telegramId: user.telegramId,
       sent,
@@ -1711,8 +1750,8 @@ function registerCommands(): void {
     }
 
     const user = await upsertUser(from.id, chatId, from.first_name, from.username);
-    await ctx.answerCbQuery();
     await sendQuestion(user, "mistake", undefined, ctx);
+    await ctx.answerCbQuery();
   });
 
   getBot().action("menu|settings", async (ctx) => {
@@ -1789,8 +1828,8 @@ function registerCommands(): void {
     }
 
     await releaseUserFlow(user.telegramId);
-    await ctx.answerCbQuery();
     const sent = await sendQuestion(user, "manual", undefined, ctx);
+    await ctx.answerCbQuery();
     log.info("handler", "nav_next_quiz_done", { telegramId: user.telegramId, sent });
   });
 
@@ -1832,8 +1871,8 @@ function registerCommands(): void {
     }
 
     const user = await upsertUser(from.id, chatId, from.first_name, from.username);
-    await ctx.answerCbQuery();
     await sendQuestion(user, "manual", topic.slug, ctx);
+    await ctx.answerCbQuery();
   });
 
   getBot().action(/ref\|sign\|(.+)/, async (ctx) => {
