@@ -11,10 +11,7 @@ import {
   createQuizSession,
   deleteQuizSession,
   getAnswersForUser,
-  forceReleaseStaleProcessingLock,
-  releaseProcessingLock,
   releaseUserFlow,
-  tryAcquireProcessingLock,
   getMarkings,
   getQuestionByKey,
   getQuestionStatesForUser,
@@ -55,8 +52,8 @@ let commandsRegistered = false;
 let commandsMenuRegistered = false;
 let schedulesRegistered = false;
 let middlewareRegistered = false;
-const localProcessingUsers = new Set<number>();
-const nextQuizInFlight = new Set<number>();
+
+const DELIVERY_IN_PROGRESS_MS = 90_000;
 
 function getBot(): Telegraf {
   bot ??= new Telegraf(config.botToken);
@@ -158,97 +155,13 @@ function getChatId(ctx: Context): number | undefined {
   return messageChatId;
 }
 
-function needsProcessingLock(ctx: Context): boolean {
-  const callbackData =
-    ctx.callbackQuery && "data" in ctx.callbackQuery ? ctx.callbackQuery.data : undefined;
-
-  if (callbackData) {
-    return (
-      callbackData === "menu|quiz" ||
-      callbackData === "menu|mistakes" ||
-      callbackData === "nav|next-quiz" ||
-      callbackData.startsWith("topicquiz|") ||
-      callbackData.startsWith("answer|") ||
-      callbackData.startsWith("report|") ||
-      callbackData.startsWith("ref|")
-    );
-  }
-
-  const text = getTextMessage(ctx);
-  if (!text) {
+function isDeliveryInProgress(flow: UserFlowRecord): boolean {
+  if (flow.state !== "question_open" || !flow.activeSessionId) {
     return false;
   }
 
-  if (!text.startsWith("/")) {
-    return true;
-  }
-
-  const command = text.split(/\s+/)[0]?.split("@")[0]?.toLowerCase();
-  return command === "/quiz" || command === "/mistakes";
-}
-
-async function acquireUserProcessing(telegramId: number, updateId: number): Promise<boolean> {
-  if (localProcessingUsers.has(telegramId)) {
-    log.debug("bot", "processing_lock_local_busy", { telegramId, updateId });
-    return false;
-  }
-
-  let acquired = await tryAcquireProcessingLock(telegramId, updateId);
-  if (!acquired) {
-    const cleared = await forceReleaseStaleProcessingLock(telegramId);
-    if (cleared) {
-      acquired = await tryAcquireProcessingLock(telegramId, updateId);
-    }
-  }
-
-  if (!acquired) {
-    return false;
-  }
-
-  localProcessingUsers.add(telegramId);
-  return true;
-}
-
-async function releaseUserProcessing(telegramId: number, updateId: number): Promise<void> {
-  localProcessingUsers.delete(telegramId);
-  try {
-    await releaseProcessingLock(telegramId, updateId);
-  } catch (error) {
-    localProcessingUsers.delete(telegramId);
-    log.error("bot", "release_user_processing_failed", error, { telegramId, updateId });
-  }
-}
-
-async function rejectBusyUpdate(ctx: Context): Promise<void> {
-  log.warn("bot", "update_ignored_busy", describeCtx(ctx));
-
-  const busyText = "Подожди, обрабатываю предыдущее действие… / Մի վայրկյան սպասիր…";
-
-  if (ctx.callbackQuery) {
-    try {
-      await ctx.answerCbQuery(busyText);
-    } catch (error) {
-      log.warn("bot", "busy_callback_answer_failed", {
-        ...describeCtx(ctx),
-        error: error instanceof Error ? error.message : String(error),
-      });
-    }
-    return;
-  }
-
-  const chatId = getChatId(ctx);
-  if (chatId === undefined) {
-    return;
-  }
-
-  try {
-    await sendTextToChat(chatId, busyText, undefined, ctx);
-  } catch (error) {
-    log.warn("bot", "busy_text_reply_failed", {
-      ...describeCtx(ctx),
-      error: error instanceof Error ? error.message : String(error),
-    });
-  }
+  const ageMs = Date.now() - new Date(flow.updatedAt).getTime();
+  return ageMs >= 0 && ageMs < DELIVERY_IN_PROGRESS_MS;
 }
 
 function describeCtx(ctx: Context): Record<string, unknown> {
@@ -318,7 +231,25 @@ function isMenuCallback(callbackData: string): boolean {
   );
 }
 
-function buildStaleCallbackText(language: LanguageCode): string {
+type CallbackRejectReason = "stale_answer" | "stale_followup" | "flow_not_ready";
+
+function buildCallbackRejectText(language: LanguageCode, reason: CallbackRejectReason): string {
+  if (reason === "flow_not_ready") {
+    return t(
+      language,
+      "Секунду — ответ ещё сохраняется. Потом нажми «Следующий вопрос».",
+      "Մի վայրկյան — պատասխանը դեռ պահպանվում է։ Հետո սեղմիր «Հաջորդ հարց»։",
+    );
+  }
+
+  if (reason === "stale_followup") {
+    return t(
+      language,
+      "Это старое объяснение — используй кнопки под последним сообщением или меню.",
+      "Սա հին բացատրություն է — օգտագործիր վերջին հաղորդագրության կոճակները կամ մենյուն։",
+    );
+  }
+
   return t(
     language,
     "Это старый вопрос — используй меню (/) или «Начать квиз».",
@@ -404,26 +335,26 @@ async function clearQuestionAnswerKeyboard(
 async function rejectStaleCallback(
   ctx: Context,
   language: LanguageCode,
-  callbackData?: string,
+  callbackData: string | undefined,
+  reason: CallbackRejectReason,
 ): Promise<void> {
-  const text = buildStaleCallbackText(language);
+  const text = buildCallbackRejectText(language, reason);
 
   try {
     await ctx.answerCbQuery(text);
   } catch (error) {
     log.warn("bot", "stale_callback_answer_failed", {
       ...describeCtx(ctx),
+      reason,
       error: error instanceof Error ? error.message : String(error),
     });
   }
 
-  // Strip keyboards only on stale answer taps. Follow-up buttons (next/report/ref)
-  // must not be stripped on reject — a concurrent nav click can target the fresh
-  // explanation message while the answer handler is still finishing.
-  if (!callbackData?.startsWith("answer|")) {
+  if (reason !== "stale_answer") {
     log.debug("bot", "stale_callback_reject_no_strip", {
       ...describeCtx(ctx),
       callbackData,
+      reason,
     });
     return;
   }
@@ -438,7 +369,7 @@ async function rejectStaleCallback(
 async function validateQuizCallback(
   ctx: Context,
   callbackData: string,
-): Promise<{ allowed: boolean; language: LanguageCode }> {
+): Promise<{ allowed: boolean; language: LanguageCode; rejectReason?: CallbackRejectReason }> {
   const from = ctx.from;
   if (!from) {
     return { allowed: true, language: "ru" };
@@ -484,25 +415,64 @@ async function validateQuizCallback(
       });
     }
 
-    return { allowed, language: user.language };
+    return {
+      allowed,
+      language: user.language,
+      rejectReason: allowed ? undefined : "stale_answer",
+    };
   }
 
   if (callbackData === "nav|next-quiz") {
     const messageMatches =
       flow.activeExplanationMessageId !== undefined &&
       callbackMessageId === flow.activeExplanationMessageId;
-    const allowed = flow.state === "explanation_shown" && messageMatches;
 
-    if (!allowed) {
+    if (flow.state === "explanation_shown" && messageMatches) {
+      return { allowed: true, language: user.language };
+    }
+
+    if (
+      flow.state === "explanation_shown" &&
+      flow.activeExplanationMessageId !== undefined &&
+      callbackMessageId !== flow.activeExplanationMessageId
+    ) {
       log.info("bot", "stale_callback_next_quiz", {
         telegramId: user.telegramId,
         flowState: flow.state,
         activeExplanationMessageId: flow.activeExplanationMessageId,
         callbackMessageId,
       });
+      return { allowed: false, language: user.language, rejectReason: "stale_followup" };
     }
 
-    return { allowed, language: user.language };
+    if (
+      flow.state === "question_open" &&
+      flow.activeExplanationMessageId !== undefined &&
+      callbackMessageId === flow.activeExplanationMessageId
+    ) {
+      return { allowed: true, language: user.language };
+    }
+
+    if (flow.state === "question_open" && isDeliveryInProgress(flow)) {
+      log.info("bot", "nav_while_delivery_in_progress", {
+        telegramId: user.telegramId,
+        activeSessionId: flow.activeSessionId,
+        callbackMessageId,
+      });
+      return { allowed: true, language: user.language };
+    }
+
+    log.info("bot", "stale_callback_next_quiz", {
+      telegramId: user.telegramId,
+      flowState: flow.state,
+      activeExplanationMessageId: flow.activeExplanationMessageId,
+      callbackMessageId,
+    });
+    return {
+      allowed: false,
+      language: user.language,
+      rejectReason: flow.state === "question_open" ? "flow_not_ready" : "stale_followup",
+    };
   }
 
   const reportMatch = callbackData.match(/^report\|(.+)$/);
@@ -529,7 +499,11 @@ async function validateQuizCallback(
       });
     }
 
-    return { allowed, language: user.language };
+    return {
+      allowed,
+      language: user.language,
+      rejectReason: allowed ? undefined : "stale_followup",
+    };
   }
 
   const refMatch = callbackData.match(/^ref\|(sign|term)\|(.+)$/);
@@ -943,23 +917,6 @@ async function normalizeUserFlow(user: UserRecord, flow: UserFlowRecord): Promis
       activeQuestionMessageId: flow.activeQuestionMessageId,
     });
     return flow;
-  }
-
-  if (flow.state === "explanation_shown" && session.status === "pending") {
-    const normalized: UserFlowRecord = {
-      telegramId: user.telegramId,
-      state: "question_open",
-      activeSessionId: session.id,
-      activeQuestionMessageId: flow.activeQuestionMessageId,
-      activeExplanationMessageId: flow.activeExplanationMessageId,
-      updatedAt: nowIso(),
-    };
-    log.info("flow", "normalize_explanation_to_question_open", {
-      telegramId: user.telegramId,
-      sessionId: session.id,
-    });
-    await setUserFlow(normalized);
-    return normalized;
   }
 
   log.debug("flow", "normalize_unchanged", {
@@ -1408,6 +1365,123 @@ async function resendPendingQuestion(
   }
 }
 
+async function handleDuplicateQuestionDelivery(
+  user: UserRecord,
+  mode: QuizMode,
+  topicFilter: TopicSlug | undefined,
+  ctx: Context | undefined,
+): Promise<boolean> {
+  const currentFlow = await getFlowForUser(user);
+  if (currentFlow.state !== "question_open" || !currentFlow.activeSessionId) {
+    return false;
+  }
+
+  if (isDeliveryInProgress(currentFlow)) {
+    log.info("quiz", "send_question_delivery_already_running", {
+      telegramId: user.telegramId,
+      activeSessionId: currentFlow.activeSessionId,
+      flowUpdatedAt: currentFlow.updatedAt,
+    });
+    return true;
+  }
+
+  return resendPendingQuestion(user, currentFlow.activeSessionId, mode, topicFilter, ctx);
+}
+
+async function deliverClaimedQuestion(
+  user: UserRecord,
+  mode: QuizMode,
+  topicFilter: TopicSlug | undefined,
+  sessionId: string,
+  ctx: Context | undefined,
+  previousMessageIds: PreviousQuizMessageIds | undefined,
+  startedAt: number,
+): Promise<boolean> {
+  try {
+    const question = await selectNextQuestion(user, mode, topicFilter);
+    if (!question) {
+      log.warn("quiz", "send_question_no_question", {
+        telegramId: user.telegramId,
+        mode,
+        topicFilter,
+        sessionId,
+      });
+      await releaseUserFlow(user.telegramId);
+      if (mode !== "daily") {
+        await notifyQuizMessage(
+          user,
+          t(
+            user.language,
+            "Сейчас нет подходящих вопросов для отправки.",
+            "Այս պահին ուղարկելու հարմար հարց չկա։",
+          ),
+          ctx,
+        );
+      }
+      return false;
+    }
+
+    const session = createSession(user, question, mode, sessionId);
+    log.info("quiz", "send_question_session_prepared", {
+      telegramId: user.telegramId,
+      sessionId,
+      questionKey: question.key,
+    });
+
+    await createQuizSession(session);
+    log.info("quiz", "send_question_session_created", { telegramId: user.telegramId, sessionId });
+
+    await deliverQuestionMessage(
+      user,
+      question,
+      session,
+      mode,
+      topicFilter,
+      ctx,
+      previousMessageIds,
+    );
+    log.info("quiz", "send_question_success", {
+      telegramId: user.telegramId,
+      sessionId,
+      questionKey: question.key,
+      durationMs: Date.now() - startedAt,
+    });
+    return true;
+  } catch (error) {
+    log.error("quiz", "send_question_failed", error, {
+      telegramId: user.telegramId,
+      sessionId,
+      durationMs: Date.now() - startedAt,
+    });
+    await deleteQuizSession(sessionId).catch((cleanupError) => {
+      log.error("quiz", "send_question_cleanup_session_failed", cleanupError, { sessionId });
+    });
+    await releaseUserFlow(user.telegramId);
+    log.info("quiz", "send_question_flow_released_after_error", {
+      telegramId: user.telegramId,
+      sessionId,
+    });
+
+    if (mode !== "daily") {
+      await notifyQuizMessage(
+        user,
+        t(
+          user.language,
+          "Не удалось отправить вопрос. Попробуй еще раз через /quiz.",
+          "Չհաջողվեց ուղարկել հարցը։ Փորձիր կրկին /quiz հրամանով։",
+        ),
+        ctx,
+      ).catch((notifyError) => {
+        log.error("quiz", "send_question_notify_failure_failed", notifyError, {
+          telegramId: user.telegramId,
+        });
+      });
+    }
+
+    return false;
+  }
+}
+
 async function sendQuestion(
   user: UserRecord,
   mode: QuizMode,
@@ -1439,6 +1513,14 @@ async function sendQuestion(
   });
 
   if (flow.state === "question_open" && flow.activeSessionId) {
+    if (isDeliveryInProgress(flow)) {
+      log.info("quiz", "send_question_delivery_in_progress", {
+        telegramId: user.telegramId,
+        activeSessionId: flow.activeSessionId,
+      });
+      return true;
+    }
+
     log.info("quiz", "send_question_try_resend", {
       telegramId: user.telegramId,
       activeSessionId: flow.activeSessionId,
@@ -1509,129 +1591,39 @@ async function sendQuestion(
     return false;
   }
 
-  const question = await selectNextQuestion(user, mode, topicFilter);
-  if (!question) {
-    log.warn("quiz", "send_question_no_question", {
+  const sessionId = createSessionId();
+  const claimed = await tryTransitionFlowToQuestion(user.telegramId, sessionId, nowIso());
+  if (!claimed) {
+    log.warn("quiz", "send_question_flow_claim_failed", {
       telegramId: user.telegramId,
-      mode,
-      topicFilter,
+      sessionId,
     });
+    const duplicateHandled = await handleDuplicateQuestionDelivery(user, mode, topicFilter, ctx);
+    if (duplicateHandled) {
+      return true;
+    }
+
+    const currentFlow = await getFlowForUser(user);
     if (mode !== "daily") {
       await notifyQuizMessage(
         user,
-        t(
-          user.language,
-          "Сейчас нет подходящих вопросов для отправки.",
-          "Այս պահին ուղարկելու հարմար հարց չկա։",
-        ),
+        buildQuestionFlowBlockedText(user, currentFlow.state),
         ctx,
       );
     }
     return false;
   }
 
-  const sessionId = createSessionId();
-  const session = createSession(user, question, mode, sessionId);
-  let flowClaimed = false;
-
-  log.info("quiz", "send_question_session_prepared", {
-    telegramId: user.telegramId,
+  log.info("quiz", "send_question_flow_claimed", { telegramId: user.telegramId, sessionId });
+  return deliverClaimedQuestion(
+    user,
+    mode,
+    topicFilter,
     sessionId,
-    questionKey: question.key,
-  });
-
-  try {
-    const claimed = await tryTransitionFlowToQuestion(user.telegramId, sessionId, nowIso());
-    if (!claimed) {
-      log.warn("quiz", "send_question_flow_claim_failed", {
-        telegramId: user.telegramId,
-        sessionId,
-      });
-      const currentFlow = await getFlowForUser(user);
-      log.info("quiz", "send_question_flow_after_failed_claim", {
-        telegramId: user.telegramId,
-        state: currentFlow.state,
-        activeSessionId: currentFlow.activeSessionId,
-      });
-      if (currentFlow.state === "question_open" && currentFlow.activeSessionId) {
-        return resendPendingQuestion(
-          user,
-          currentFlow.activeSessionId,
-          mode,
-          topicFilter,
-          ctx,
-        );
-      }
-
-      if (mode !== "daily") {
-        await notifyQuizMessage(
-          user,
-          buildQuestionFlowBlockedText(user, currentFlow.state),
-          ctx,
-        );
-      }
-      return false;
-    }
-
-    flowClaimed = true;
-    log.info("quiz", "send_question_flow_claimed", { telegramId: user.telegramId, sessionId });
-
-    await createQuizSession(session);
-    log.info("quiz", "send_question_session_created", { telegramId: user.telegramId, sessionId });
-
-    await deliverQuestionMessage(
-      user,
-      question,
-      session,
-      mode,
-      topicFilter,
-      ctx,
-      previousMessageIds,
-    );
-    log.info("quiz", "send_question_success", {
-      telegramId: user.telegramId,
-      sessionId,
-      questionKey: question.key,
-      durationMs: Date.now() - startedAt,
-    });
-    return true;
-  } catch (error) {
-    log.error("quiz", "send_question_failed", error, {
-      telegramId: user.telegramId,
-      sessionId,
-      flowClaimed,
-      durationMs: Date.now() - startedAt,
-    });
-    await deleteQuizSession(sessionId).catch((cleanupError) => {
-      log.error("quiz", "send_question_cleanup_session_failed", cleanupError, { sessionId });
-    });
-
-    if (flowClaimed) {
-      await releaseUserFlow(user.telegramId);
-      log.info("quiz", "send_question_flow_released_after_error", {
-        telegramId: user.telegramId,
-        sessionId,
-      });
-    }
-
-    if (mode !== "daily") {
-      await notifyQuizMessage(
-        user,
-        t(
-          user.language,
-          "Не удалось отправить вопрос. Попробуй еще раз через /quiz.",
-          "Չհաջողվեց ուղարկել հարցը։ Փորձիր կրկին /quiz հրամանով։",
-        ),
-        ctx,
-      ).catch((notifyError) => {
-        log.error("quiz", "send_question_notify_failure_failed", notifyError, {
-          telegramId: user.telegramId,
-        });
-      });
-    }
-
-    return false;
-  }
+    ctx,
+    previousMessageIds,
+    startedAt,
+  );
 }
 
 function getOptionText(question: QuizQuestion, optionId: string | undefined): string {
@@ -1954,7 +1946,7 @@ async function answerQuestion(ctx: Context, sessionId: string, optionId: string)
       activeQuestionMessageId: flow.activeQuestionMessageId,
       callbackMessageId,
     });
-    await rejectStaleCallback(ctx, user.language);
+    await rejectStaleCallback(ctx, user.language, `answer|${sessionId}|${optionId}`, "stale_answer");
     return;
   }
 
@@ -2042,6 +2034,21 @@ async function answerQuestion(ctx: Context, sessionId: string, optionId: string)
     return;
   }
 
+  const flowUpdatedAt = nowIso();
+  await setUserFlow({
+    telegramId: user.telegramId,
+    state: "explanation_shown",
+    activeSessionId: sessionId,
+    activeQuestionMessageId: flow.activeQuestionMessageId ?? callbackMessageId,
+    activeExplanationMessageId: explanationMessageId,
+    updatedAt: flowUpdatedAt,
+  });
+  log.info("answer", "answer_question_flow_updated", {
+    telegramId: user.telegramId,
+    sessionId,
+    explanationMessageId,
+  });
+
   log.info("answer", "answer_question_store_start", {
     telegramId: user.telegramId,
     sessionId,
@@ -2050,7 +2057,6 @@ async function answerQuestion(ctx: Context, sessionId: string, optionId: string)
     questionKey: question.key,
   });
 
-  const flowUpdatedAt = nowIso();
   const stored = await completeQuizAnswer({
     answer: {
       telegramId: user.telegramId,
@@ -2069,12 +2075,6 @@ async function answerQuestion(ctx: Context, sessionId: string, optionId: string)
     isCorrect,
     sessionId: session.id,
     telegramId: user.telegramId,
-    flowTransition: {
-      activeSessionId: sessionId,
-      activeQuestionMessageId: flow.activeQuestionMessageId ?? callbackMessageId,
-      activeExplanationMessageId: explanationMessageId,
-      updatedAt: flowUpdatedAt,
-    },
   });
 
   if (!stored) {
@@ -2418,41 +2418,34 @@ function registerCommands(): void {
     }
 
     const user = await upsertUser(from.id, chatId, from.first_name, from.username);
+    const flow = await getFlowForUser(user);
+    log.info("handler", "nav_next_quiz_flow", {
+      telegramId: user.telegramId,
+      state: flow.state,
+      activeSessionId: flow.activeSessionId,
+    });
 
-    if (nextQuizInFlight.has(user.telegramId)) {
-      log.info("handler", "nav_next_quiz_in_flight", { telegramId: user.telegramId });
+    if (isDeliveryInProgress(flow)) {
       await ctx.answerCbQuery(
         t(user.language, "Уже отправляю вопрос…", "Հարցն արդեն ուղարկվում է…"),
       );
       return;
     }
 
-    nextQuizInFlight.add(user.telegramId);
-    try {
-      const flow = await getFlowForUser(user);
-      log.info("handler", "nav_next_quiz_flow", {
-        telegramId: user.telegramId,
-        state: flow.state,
-        activeSessionId: flow.activeSessionId,
-      });
-
-      await ctx.answerCbQuery();
-      const sent = await sendQuestion(user, "manual", undefined, ctx);
-      if (!sent) {
-        await notifyQuizMessage(
-          user,
-          t(
-            user.language,
-            "Не получилось отправить вопрос. Нажми «Следующий вопрос» ещё раз.",
-            "Չհաջողվեց ուղարկել հարցը։ Սեղմիր «Հաջորդ հարց» կրկին։",
-          ),
-          ctx,
-        );
-      }
-      log.info("handler", "nav_next_quiz_done", { telegramId: user.telegramId, sent });
-    } finally {
-      nextQuizInFlight.delete(user.telegramId);
+    await ctx.answerCbQuery();
+    const sent = await sendQuestion(user, "manual", undefined, ctx);
+    if (!sent) {
+      await notifyQuizMessage(
+        user,
+        t(
+          user.language,
+          "Не получилось отправить вопрос. Нажми «Следующий вопрос» ещё раз.",
+          "Չհաջողվեց ուղարկել հարցը։ Սեղմիր «Հաջորդ հարց» կրկին։",
+        ),
+        ctx,
+      );
     }
+    log.info("handler", "nav_next_quiz_done", { telegramId: user.telegramId, sent });
   });
 
   getBot().action(/topic\|(.+)/, async (ctx) => {
@@ -2614,36 +2607,17 @@ export function createBot(options?: { enableSchedules?: boolean }): Telegraf {
       if (callbackData) {
         const validation = await validateQuizCallback(ctx, callbackData);
         if (!validation.allowed) {
-          await rejectStaleCallback(ctx, validation.language, callbackData);
+          await rejectStaleCallback(
+            ctx,
+            validation.language,
+            callbackData,
+            validation.rejectReason ?? "stale_followup",
+          );
           return;
         }
       }
 
       return next();
-    });
-
-    instance.use(async (ctx, next) => {
-      const telegramId = ctx.from?.id;
-      if (telegramId === undefined) {
-        return next();
-      }
-
-      if (!needsProcessingLock(ctx)) {
-        return next();
-      }
-
-      const updateId = ctx.update.update_id;
-      const acquired = await acquireUserProcessing(telegramId, updateId);
-      if (!acquired) {
-        await rejectBusyUpdate(ctx);
-        return;
-      }
-
-      try {
-        await next();
-      } finally {
-        await releaseUserProcessing(telegramId, updateId);
-      }
     });
 
     instance.use(async (ctx, next) => {
