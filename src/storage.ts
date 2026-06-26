@@ -575,7 +575,7 @@ export async function tryStartUserFlow(
   return claimed;
 }
 
-const PROCESSING_LOCK_STALE_MS = 90_000;
+const PROCESSING_LOCK_STALE_MS = 30_000;
 
 export async function tryAcquireProcessingLock(
   telegramId: number,
@@ -602,15 +602,33 @@ export async function tryAcquireProcessingLock(
   return acquired;
 }
 
+export async function forceReleaseStaleProcessingLock(telegramId: number): Promise<boolean> {
+  const staleBefore = new Date(Date.now() - PROCESSING_LOCK_STALE_MS).toISOString();
+  const result = await execute(
+    "DELETE FROM user_processing_locks WHERE telegram_id = ? AND locked_at <= ?",
+    [telegramId, staleBefore],
+  );
+  const cleared = (result.rowsAffected ?? 0) > 0;
+  if (cleared) {
+    log.warn("storage", "force_release_stale_processing_lock", { telegramId, staleBefore });
+  }
+  return cleared;
+}
+
 export async function releaseProcessingLock(
   telegramId: number,
   updateId: number,
 ): Promise<void> {
   log.debug("storage", "release_processing_lock", { telegramId, updateId });
-  await execute(
+  const exact = await execute(
     "DELETE FROM user_processing_locks WHERE telegram_id = ? AND update_id = ?",
     [telegramId, updateId],
   );
+
+  if ((exact.rowsAffected ?? 0) === 0) {
+    log.warn("storage", "release_processing_lock_fallback", { telegramId, updateId });
+    await execute("DELETE FROM user_processing_locks WHERE telegram_id = ?", [telegramId]);
+  }
 }
 
 export async function releaseUserFlow(telegramId: number, updatedAt?: string): Promise<void> {

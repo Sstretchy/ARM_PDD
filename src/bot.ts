@@ -11,6 +11,7 @@ import {
   createQuizSession,
   deleteQuizSession,
   getAnswersForUser,
+  forceReleaseStaleProcessingLock,
   releaseProcessingLock,
   releaseUserFlow,
   tryAcquireProcessingLock,
@@ -156,13 +157,48 @@ function getChatId(ctx: Context): number | undefined {
   return messageChatId;
 }
 
+function needsProcessingLock(ctx: Context): boolean {
+  const callbackData =
+    ctx.callbackQuery && "data" in ctx.callbackQuery ? ctx.callbackQuery.data : undefined;
+
+  if (callbackData) {
+    return (
+      callbackData === "menu|quiz" ||
+      callbackData === "menu|mistakes" ||
+      callbackData === "nav|next-quiz" ||
+      callbackData.startsWith("answer|") ||
+      callbackData.startsWith("topicquiz|") ||
+      callbackData.startsWith("report|")
+    );
+  }
+
+  const text = getTextMessage(ctx);
+  if (!text) {
+    return false;
+  }
+
+  if (!text.startsWith("/")) {
+    return true;
+  }
+
+  const command = text.split(/\s+/)[0]?.split("@")[0]?.toLowerCase();
+  return command === "/quiz" || command === "/mistakes";
+}
+
 async function acquireUserProcessing(telegramId: number, updateId: number): Promise<boolean> {
   if (localProcessingUsers.has(telegramId)) {
     log.debug("bot", "processing_lock_local_busy", { telegramId, updateId });
     return false;
   }
 
-  const acquired = await tryAcquireProcessingLock(telegramId, updateId);
+  let acquired = await tryAcquireProcessingLock(telegramId, updateId);
+  if (!acquired) {
+    const cleared = await forceReleaseStaleProcessingLock(telegramId);
+    if (cleared) {
+      acquired = await tryAcquireProcessingLock(telegramId, updateId);
+    }
+  }
+
   if (!acquired) {
     return false;
   }
@@ -173,7 +209,12 @@ async function acquireUserProcessing(telegramId: number, updateId: number): Prom
 
 async function releaseUserProcessing(telegramId: number, updateId: number): Promise<void> {
   localProcessingUsers.delete(telegramId);
-  await releaseProcessingLock(telegramId, updateId);
+  try {
+    await releaseProcessingLock(telegramId, updateId);
+  } catch (error) {
+    localProcessingUsers.delete(telegramId);
+    log.error("bot", "release_user_processing_failed", error, { telegramId, updateId });
+  }
 }
 
 async function rejectBusyUpdate(ctx: Context): Promise<void> {
@@ -2190,6 +2231,10 @@ export function createBot(options?: { enableSchedules?: boolean }): Telegraf {
     instance.use(async (ctx, next) => {
       const telegramId = ctx.from?.id;
       if (telegramId === undefined) {
+        return next();
+      }
+
+      if (!needsProcessingLock(ctx)) {
         return next();
       }
 
