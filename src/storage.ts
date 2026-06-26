@@ -1208,24 +1208,6 @@ export async function completeQuizAnswer(params: {
       ],
     });
 
-    await transaction.execute({
-      sql: `
-        INSERT INTO user_flows (
-          telegram_id, state, active_session_id, updated_at
-        ) VALUES (?, ?, ?, ?)
-        ON CONFLICT(telegram_id) DO UPDATE SET
-          state = excluded.state,
-          active_session_id = excluded.active_session_id,
-          updated_at = excluded.updated_at
-      `,
-      args: [
-        params.telegramId,
-        "explanation_shown",
-        params.sessionId,
-        params.answeredAt,
-      ],
-    });
-
     await transaction.commit();
     log.info("storage", "complete_quiz_answer_done", {
       sessionId: params.sessionId,

@@ -350,12 +350,9 @@ async function stripMessageKeyboard(
   }
 
   try {
-    if (ctx) {
-      await ctx.telegram.editMessageReplyMarkup(chatId, messageId, undefined, undefined);
-      return;
-    }
-
-    await getBot().telegram.editMessageReplyMarkup(chatId, messageId, undefined, undefined);
+    await getBot().telegram.editMessageReplyMarkup(chatId, messageId, undefined, {
+      inline_keyboard: [],
+    });
   } catch (error) {
     log.debug("bot", "strip_message_keyboard_failed", {
       chatId,
@@ -363,6 +360,32 @@ async function stripMessageKeyboard(
       error: error instanceof Error ? error.message : String(error),
     });
   }
+}
+
+async function clearQuestionAnswerKeyboard(
+  ctx: Context,
+  chatId: number,
+  questionMessageId: number | undefined,
+): Promise<void> {
+  const callbackMessageId = getCallbackMessageId(ctx);
+
+  if (
+    callbackMessageId !== undefined &&
+    (questionMessageId === undefined || questionMessageId === callbackMessageId)
+  ) {
+    try {
+      await ctx.editMessageReplyMarkup(undefined);
+      return;
+    } catch (error) {
+      log.warn("bot", "clear_question_keyboard_callback_failed", {
+        chatId,
+        callbackMessageId,
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
+
+  await stripMessageKeyboard(chatId, questionMessageId ?? callbackMessageId, ctx);
 }
 
 async function rejectStaleCallback(ctx: Context, language: LanguageCode): Promise<void> {
@@ -1917,6 +1940,54 @@ async function answerQuestion(ctx: Context, sessionId: string, optionId: string)
   const isCorrect = optionId === question.correctOptionId;
   const states = await getQuestionStateMapForUser(user);
   const nextState = buildQuestionState(user, question, states.get(question.key), isCorrect);
+  const explanationText = buildAnswerExplanation(user, question, optionId);
+  const followupKeyboard = buildFollowupKeyboard(user.language, question);
+
+  await ctx.answerCbQuery(
+    isCorrect
+      ? t(user.language, "Верно", "Ճիշտ է")
+      : t(user.language, "Неверно", "Սխալ է"),
+  );
+
+  let explanationMessageId: number;
+  try {
+    log.info("answer", "answer_question_send_explanation", {
+      telegramId: user.telegramId,
+      chatId: user.chatId,
+      sessionId,
+      questionMessageId: flow.activeQuestionMessageId,
+      callbackMessageId,
+      explanationLength: explanationText.length,
+    });
+    const explanationMessage = await getBot().telegram.sendMessage(
+      user.chatId,
+      explanationText,
+      followupKeyboard,
+    );
+    explanationMessageId = explanationMessage.message_id;
+    log.info("answer", "answer_question_explanation_sent", {
+      telegramId: user.telegramId,
+      sessionId,
+      isCorrect,
+      explanationMessageId,
+    });
+  } catch (error) {
+    log.error("answer", "answer_question_explanation_failed", error, {
+      telegramId: user.telegramId,
+      sessionId,
+      chatId: user.chatId,
+    });
+    await notifyQuizMessage(
+      user,
+      t(
+        user.language,
+        "Не удалось отправить объяснение. Нажми на ответ ещё раз.",
+        "Չհաջողվեց ուղարկել բացատրությունը։ Կրկին սեղմիր պատասխանը։",
+      ),
+      ctx,
+    );
+    return;
+  }
 
   log.info("answer", "answer_question_store_start", {
     telegramId: user.telegramId,
@@ -1951,58 +2022,19 @@ async function answerQuestion(ctx: Context, sessionId: string, optionId: string)
       telegramId: user.telegramId,
       sessionId,
     });
-    await ctx.answerCbQuery(t(user.language, "Ответ уже принят", "Պատասխանն արդեն ընդունված է"));
     return;
   }
 
-  log.info("answer", "answer_question_stored", {
+  await clearQuestionAnswerKeyboard(ctx, chatId, flow.activeQuestionMessageId);
+
+  await setUserFlow({
     telegramId: user.telegramId,
-    sessionId,
-    isCorrect,
+    state: "explanation_shown",
+    activeSessionId: sessionId,
+    activeQuestionMessageId: flow.activeQuestionMessageId ?? callbackMessageId,
+    activeExplanationMessageId: explanationMessageId,
+    updatedAt: nowIso(),
   });
-
-  const explanationText = buildAnswerExplanation(user, question, optionId);
-  const followupKeyboard = buildFollowupKeyboard(user.language, question);
-
-  await ctx.answerCbQuery(
-    isCorrect
-      ? t(user.language, "Верно", "Ճիշտ է")
-      : t(user.language, "Неверно", "Սխալ է"),
-  );
-
-  await stripMessageKeyboard(chatId, flow.activeQuestionMessageId, ctx);
-
-  let explanationMessageId: number | undefined;
-  try {
-    log.info("answer", "answer_question_send_explanation", {
-      telegramId: user.telegramId,
-      chatId,
-      targetChatId: resolveDeliveryChatId(ctx, chatId),
-      sessionId,
-      questionMessageId: flow.activeQuestionMessageId,
-    });
-    explanationMessageId = await sendTextToChat(chatId, explanationText, followupKeyboard, ctx);
-    await setUserFlow({
-      telegramId: user.telegramId,
-      state: "explanation_shown",
-      activeSessionId: sessionId,
-      activeQuestionMessageId: flow.activeQuestionMessageId,
-      activeExplanationMessageId: explanationMessageId,
-      updatedAt: nowIso(),
-    });
-    log.info("answer", "answer_question_explanation_sent", {
-      telegramId: user.telegramId,
-      sessionId,
-      isCorrect,
-      explanationMessageId,
-    });
-  } catch (error) {
-    log.error("answer", "answer_question_explanation_failed", error, {
-      telegramId: user.telegramId,
-      sessionId,
-      chatId,
-    });
-  }
 
   log.info("answer", "answer_question_done", { telegramId: user.telegramId, sessionId, isCorrect });
 }
