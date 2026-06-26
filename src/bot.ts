@@ -53,7 +53,8 @@ let commandsMenuRegistered = false;
 let schedulesRegistered = false;
 let middlewareRegistered = false;
 
-const DELIVERY_IN_PROGRESS_MS = 90_000;
+const DELIVERY_WAIT_MS = 25_000;
+const DELIVERY_POLL_MS = 800;
 
 function getBot(): Telegraf {
   bot ??= new Telegraf(config.botToken);
@@ -155,13 +156,49 @@ function getChatId(ctx: Context): number | undefined {
   return messageChatId;
 }
 
-function isDeliveryInProgress(flow: UserFlowRecord): boolean {
+function isQuestionDelivered(flow: UserFlowRecord): boolean {
+  return flow.state === "question_open" && flow.activeQuestionMessageId !== undefined;
+}
+
+function isDeliveryClaimed(flow: UserFlowRecord): boolean {
   if (flow.state !== "question_open" || !flow.activeSessionId) {
     return false;
   }
 
+  if (flow.activeQuestionMessageId !== undefined) {
+    return false;
+  }
+
   const ageMs = Date.now() - new Date(flow.updatedAt).getTime();
-  return ageMs >= 0 && ageMs < DELIVERY_IN_PROGRESS_MS;
+  return ageMs >= 0 && ageMs < DELIVERY_WAIT_MS;
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function waitForQuestionDelivery(
+  telegramId: number,
+  expectedSessionId?: string,
+): Promise<UserFlowRecord | undefined> {
+  const deadline = Date.now() + DELIVERY_WAIT_MS;
+
+  while (Date.now() < deadline) {
+    const flow = await getUserFlow(telegramId);
+    if (isQuestionDelivered(flow)) {
+      if (!expectedSessionId || flow.activeSessionId === expectedSessionId) {
+        return flow;
+      }
+    }
+
+    if (!isDeliveryClaimed(flow)) {
+      return undefined;
+    }
+
+    await sleep(DELIVERY_POLL_MS);
+  }
+
+  return undefined;
 }
 
 function describeCtx(ctx: Context): Record<string, unknown> {
@@ -194,9 +231,7 @@ async function sendTextToChat(
   ctx?: Context,
 ): Promise<number> {
   const targetChatId = resolveDeliveryChatId(ctx, chatId);
-  const message = ctx
-    ? await ctx.telegram.sendMessage(targetChatId, text, extra)
-    : await getBot().telegram.sendMessage(targetChatId, text, extra);
+  const message = await getBot().telegram.sendMessage(targetChatId, text, extra);
   return message.message_id;
 }
 
@@ -209,9 +244,7 @@ async function sendPhotoToChat(
   ctx?: Context,
 ): Promise<number> {
   const targetChatId = resolveDeliveryChatId(ctx, chatId);
-  const message = ctx
-    ? await ctx.telegram.sendPhoto(targetChatId, photo, extra)
-    : await getBot().telegram.sendPhoto(targetChatId, photo, extra);
+  const message = await getBot().telegram.sendPhoto(targetChatId, photo, extra);
   return message.message_id;
 }
 
@@ -453,8 +486,12 @@ async function validateQuizCallback(
       return { allowed: true, language: user.language };
     }
 
-    if (flow.state === "question_open" && isDeliveryInProgress(flow)) {
-      log.info("bot", "nav_while_delivery_in_progress", {
+    if (flow.state === "question_open" && isQuestionDelivered(flow)) {
+      return { allowed: true, language: user.language };
+    }
+
+    if (flow.state === "question_open" && isDeliveryClaimed(flow)) {
+      log.info("bot", "nav_while_delivery_claimed", {
         telegramId: user.telegramId,
         activeSessionId: flow.activeSessionId,
         callbackMessageId,
@@ -1196,7 +1233,7 @@ async function deliverQuestionMessage(
   const text = buildQuestionText(question, user.language, mode, topicFilter);
   const chatId = user.chatId;
   const targetChatId = resolveDeliveryChatId(ctx, chatId);
-  const deliveryVia = ctx ? "ctx.telegram" : "bot.telegram";
+  const deliveryVia = "bot.telegram";
 
   log.info("delivery", "deliver_question_start", {
     telegramId: user.telegramId,
@@ -1271,13 +1308,25 @@ async function deliverQuestionMessage(
 
   if (questionMessageId === undefined) {
     log.debug("delivery", "send_text", { sessionId: session.id, deliveryVia, targetChatId });
-    questionMessageId = await sendTextToChat(chatId, text, keyboard, ctx);
-    log.info("delivery", "deliver_question_done", {
-      sessionId: session.id,
-      via: `${deliveryVia}.sendMessage`,
-      targetChatId,
-      questionMessageId,
-    });
+    try {
+      questionMessageId = await sendTextToChat(chatId, text, keyboard, ctx);
+      log.info("delivery", "deliver_question_done", {
+        sessionId: session.id,
+        via: `${deliveryVia}.sendMessage`,
+        targetChatId,
+        questionMessageId,
+      });
+    } catch (error) {
+      log.error("delivery", "send_text_failed", error, {
+        sessionId: session.id,
+        questionKey: question.key,
+        targetChatId,
+      });
+    }
+  }
+
+  if (questionMessageId === undefined) {
+    throw new Error(`Failed to deliver question for session ${session.id}`);
   }
 
   await setUserFlow({
@@ -1376,13 +1425,28 @@ async function handleDuplicateQuestionDelivery(
     return false;
   }
 
-  if (isDeliveryInProgress(currentFlow)) {
-    log.info("quiz", "send_question_delivery_already_running", {
+  if (isQuestionDelivered(currentFlow)) {
+    log.info("quiz", "send_question_already_delivered", {
       telegramId: user.telegramId,
       activeSessionId: currentFlow.activeSessionId,
-      flowUpdatedAt: currentFlow.updatedAt,
+      questionMessageId: currentFlow.activeQuestionMessageId,
     });
     return true;
+  }
+
+  if (isDeliveryClaimed(currentFlow)) {
+    const delivered = await waitForQuestionDelivery(
+      user.telegramId,
+      currentFlow.activeSessionId,
+    );
+    if (delivered) {
+      log.info("quiz", "send_question_delivery_completed_while_waiting", {
+        telegramId: user.telegramId,
+        activeSessionId: delivered.activeSessionId,
+        questionMessageId: delivered.activeQuestionMessageId,
+      });
+      return true;
+    }
   }
 
   return resendPendingQuestion(user, currentFlow.activeSessionId, mode, topicFilter, ctx);
@@ -1513,12 +1577,25 @@ async function sendQuestion(
   });
 
   if (flow.state === "question_open" && flow.activeSessionId) {
-    if (isDeliveryInProgress(flow)) {
-      log.info("quiz", "send_question_delivery_in_progress", {
+    if (isQuestionDelivered(flow)) {
+      log.info("quiz", "send_question_skip_already_delivered", {
         telegramId: user.telegramId,
         activeSessionId: flow.activeSessionId,
+        questionMessageId: flow.activeQuestionMessageId,
       });
       return true;
+    }
+
+    if (isDeliveryClaimed(flow)) {
+      const delivered = await waitForQuestionDelivery(user.telegramId, flow.activeSessionId);
+      if (delivered) {
+        log.info("quiz", "send_question_waited_for_delivery", {
+          telegramId: user.telegramId,
+          activeSessionId: delivered.activeSessionId,
+          questionMessageId: delivered.activeQuestionMessageId,
+        });
+        return true;
+      }
     }
 
     log.info("quiz", "send_question_try_resend", {
@@ -2409,30 +2486,120 @@ function registerCommands(): void {
 
   getBot().action("nav|next-quiz", async (ctx) => {
     log.info("handler", "nav_next_quiz_start", describeCtx(ctx));
+
+    try {
+      await ctx.answerCbQuery();
+    } catch (error) {
+      log.warn("handler", "nav_next_quiz_ack_failed", {
+        ...describeCtx(ctx),
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+
     const from = ctx.from;
     const chatId = getChatId(ctx);
+    const callbackMessageId = getCallbackMessageId(ctx);
     if (!from || !chatId) {
       log.warn("handler", "nav_next_quiz_missing_from_or_chat", describeCtx(ctx));
-      await ctx.answerCbQuery();
       return;
     }
 
     const user = await upsertUser(from.id, chatId, from.first_name, from.username);
-    const flow = await getFlowForUser(user);
+    let flow = await getFlowForUser(user);
     log.info("handler", "nav_next_quiz_flow", {
       telegramId: user.telegramId,
       state: flow.state,
       activeSessionId: flow.activeSessionId,
+      activeQuestionMessageId: flow.activeQuestionMessageId,
+      activeExplanationMessageId: flow.activeExplanationMessageId,
+      callbackMessageId,
     });
 
-    if (isDeliveryInProgress(flow)) {
-      await ctx.answerCbQuery(
-        t(user.language, "Уже отправляю вопрос…", "Հարցն արդեն ուղարկվում է…"),
+    if (
+      flow.activeExplanationMessageId !== undefined &&
+      callbackMessageId !== undefined &&
+      callbackMessageId !== flow.activeExplanationMessageId
+    ) {
+      log.info("handler", "nav_next_quiz_stale_explanation", {
+        telegramId: user.telegramId,
+        callbackMessageId,
+        activeExplanationMessageId: flow.activeExplanationMessageId,
+      });
+      await notifyQuizMessage(
+        user,
+        buildCallbackRejectText(user.language, "stale_followup"),
+        ctx,
       );
       return;
     }
 
-    await ctx.answerCbQuery();
+    if (isQuestionDelivered(flow)) {
+      log.info("handler", "nav_next_quiz_already_delivered", {
+        telegramId: user.telegramId,
+        questionMessageId: flow.activeQuestionMessageId,
+      });
+      return;
+    }
+
+    if (isDeliveryClaimed(flow) && flow.activeSessionId) {
+      log.info("handler", "nav_next_quiz_wait_delivery", {
+        telegramId: user.telegramId,
+        activeSessionId: flow.activeSessionId,
+      });
+      const delivered = await waitForQuestionDelivery(user.telegramId, flow.activeSessionId);
+      if (delivered) {
+        log.info("handler", "nav_next_quiz_delivery_completed_while_waiting", {
+          telegramId: user.telegramId,
+          questionMessageId: delivered.activeQuestionMessageId,
+        });
+        return;
+      }
+
+      log.warn("handler", "nav_next_quiz_stuck_delivery_resend", {
+        telegramId: user.telegramId,
+        activeSessionId: flow.activeSessionId,
+      });
+      const resent = await resendPendingQuestion(
+        user,
+        flow.activeSessionId,
+        "manual",
+        undefined,
+        ctx,
+      );
+      log.info("handler", "nav_next_quiz_resend_after_stuck", {
+        telegramId: user.telegramId,
+        resent,
+      });
+      if (!resent) {
+        await notifyQuizMessage(
+          user,
+          t(
+            user.language,
+            "Не получилось отправить вопрос. Нажми «Следующий вопрос» ещё раз.",
+            "Չհաջողվեց ուղարկել հարցը։ Սեղմիր «Հաջորդ հարց» կրկին։",
+          ),
+          ctx,
+        );
+      }
+      return;
+    }
+
+    if (flow.state !== "explanation_shown") {
+      log.warn("handler", "nav_next_quiz_wrong_flow_state", {
+        telegramId: user.telegramId,
+        state: flow.state,
+      });
+      await notifyQuizMessage(
+        user,
+        buildCallbackRejectText(
+          user.language,
+          flow.state === "question_open" ? "flow_not_ready" : "stale_followup",
+        ),
+        ctx,
+      );
+      return;
+    }
+
     const sent = await sendQuestion(user, "manual", undefined, ctx);
     if (!sent) {
       await notifyQuizMessage(
@@ -2604,7 +2771,7 @@ export function createBot(options?: { enableSchedules?: boolean }): Telegraf {
       const callbackData =
         callbackQuery && "data" in callbackQuery ? callbackQuery.data : undefined;
 
-      if (callbackData) {
+      if (callbackData && callbackData !== "nav|next-quiz") {
         const validation = await validateQuizCallback(ctx, callbackData);
         if (!validation.allowed) {
           await rejectStaleCallback(
@@ -2649,5 +2816,9 @@ export function createBot(options?: { enableSchedules?: boolean }): Telegraf {
   instance.catch((error: unknown, ctx: Context) => {
     log.error("bot", "unhandled_error", error, describeCtx(ctx));
   });
+
+  // Direct Bot API calls — do not bundle sends into the webhook HTTP response (unreliable on Vercel).
+  instance.telegram.webhookReply = false;
+
   return instance;
 }
