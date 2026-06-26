@@ -1118,6 +1118,12 @@ export async function completeQuizAnswer(params: {
   isCorrect: boolean;
   sessionId: string;
   telegramId: number;
+  flowTransition?: {
+    activeSessionId: string;
+    activeQuestionMessageId?: number;
+    activeExplanationMessageId: number;
+    updatedAt: string;
+  };
 }): Promise<boolean> {
   log.info("storage", "complete_quiz_answer_start", {
     sessionId: params.sessionId,
@@ -1207,6 +1213,30 @@ export async function completeQuizAnswer(params: {
         params.nextState.updatedAt,
       ],
     });
+
+    if (params.flowTransition) {
+      await transaction.execute({
+        sql: `
+          INSERT INTO user_flows (
+            telegram_id, state, active_session_id,
+            active_question_message_id, active_explanation_message_id, updated_at
+          ) VALUES (?, 'explanation_shown', ?, ?, ?, ?)
+          ON CONFLICT(telegram_id) DO UPDATE SET
+            state = 'explanation_shown',
+            active_session_id = excluded.active_session_id,
+            active_question_message_id = excluded.active_question_message_id,
+            active_explanation_message_id = excluded.active_explanation_message_id,
+            updated_at = excluded.updated_at
+        `,
+        args: [
+          params.telegramId,
+          params.flowTransition.activeSessionId,
+          params.flowTransition.activeQuestionMessageId ?? null,
+          params.flowTransition.activeExplanationMessageId,
+          params.flowTransition.updatedAt,
+        ],
+      });
+    }
 
     await transaction.commit();
     log.info("storage", "complete_quiz_answer_done", {

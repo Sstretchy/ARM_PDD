@@ -166,7 +166,8 @@ function needsProcessingLock(ctx: Context): boolean {
     return (
       callbackData === "menu|quiz" ||
       callbackData === "menu|mistakes" ||
-      callbackData.startsWith("topicquiz|")
+      callbackData.startsWith("topicquiz|") ||
+      callbackData.startsWith("answer|")
     );
   }
 
@@ -331,13 +332,22 @@ async function stripPreviousQuizMessages(
   chatId: number,
   previousMessageIds: PreviousQuizMessageIds | undefined,
   ctx?: Context,
+  excludeMessageIds?: number[],
 ): Promise<void> {
   if (!previousMessageIds) {
     return;
   }
 
-  await stripMessageKeyboard(chatId, previousMessageIds.question, ctx);
-  await stripMessageKeyboard(chatId, previousMessageIds.explanation, ctx);
+  const excluded = new Set(excludeMessageIds ?? []);
+  if (previousMessageIds.question !== undefined && !excluded.has(previousMessageIds.question)) {
+    await stripMessageKeyboard(chatId, previousMessageIds.question, ctx);
+  }
+  if (
+    previousMessageIds.explanation !== undefined &&
+    !excluded.has(previousMessageIds.explanation)
+  ) {
+    await stripMessageKeyboard(chatId, previousMessageIds.explanation, ctx);
+  }
 }
 
 async function stripMessageKeyboard(
@@ -374,7 +384,7 @@ async function clearQuestionAnswerKeyboard(
     (questionMessageId === undefined || questionMessageId === callbackMessageId)
   ) {
     try {
-      await ctx.editMessageReplyMarkup(undefined);
+      await ctx.editMessageReplyMarkup({ inline_keyboard: [] });
       return;
     } catch (error) {
       log.warn("bot", "clear_question_keyboard_callback_failed", {
@@ -809,6 +819,21 @@ function buildFollowupKeyboard(language: LanguageCode, question: QuizQuestion) {
   return Markup.inlineKeyboard(rows);
 }
 
+async function sendExplanationMessage(
+  user: UserRecord,
+  text: string,
+  keyboard: ReturnType<typeof buildFollowupKeyboard>,
+  ctx?: Context,
+): Promise<number> {
+  const replyMarkup = keyboard.reply_markup;
+  log.info("answer", "send_explanation_keyboard", {
+    telegramId: user.telegramId,
+    rowCount: replyMarkup.inline_keyboard.length,
+    buttonCount: replyMarkup.inline_keyboard.reduce((count, row) => count + row.length, 0),
+  });
+  return sendTextToChat(user.chatId, text, { reply_markup: replyMarkup }, ctx);
+}
+
 async function getQuestionStateMapForUser(user: UserRecord): Promise<Map<string, UserQuestionState>> {
   return new Map(
     (await getQuestionStatesForUser(user.telegramId)).map((state) => [state.questionKey, state]),
@@ -876,20 +901,30 @@ async function normalizeUserFlow(user: UserRecord, flow: UserFlowRecord): Promis
   }
 
   if (flow.state === "question_open" && session.status === "answered") {
-    const normalized: UserFlowRecord = {
-      telegramId: user.telegramId,
-      state: "explanation_shown",
-      activeSessionId: session.id,
-      activeQuestionMessageId: flow.activeQuestionMessageId,
-      activeExplanationMessageId: flow.activeExplanationMessageId,
-      updatedAt: nowIso(),
-    };
-    log.info("flow", "normalize_question_open_to_explanation", {
+    if (flow.activeExplanationMessageId !== undefined) {
+      const normalized: UserFlowRecord = {
+        telegramId: user.telegramId,
+        state: "explanation_shown",
+        activeSessionId: session.id,
+        activeQuestionMessageId: flow.activeQuestionMessageId,
+        activeExplanationMessageId: flow.activeExplanationMessageId,
+        updatedAt: nowIso(),
+      };
+      log.info("flow", "normalize_question_open_to_explanation", {
+        telegramId: user.telegramId,
+        sessionId: session.id,
+        activeExplanationMessageId: flow.activeExplanationMessageId,
+      });
+      await setUserFlow(normalized);
+      return normalized;
+    }
+
+    log.warn("flow", "normalize_answered_session_without_explanation_id", {
       telegramId: user.telegramId,
       sessionId: session.id,
+      activeQuestionMessageId: flow.activeQuestionMessageId,
     });
-    await setUserFlow(normalized);
-    return normalized;
+    return flow;
   }
 
   if (flow.state === "explanation_shown" && session.status === "pending") {
@@ -1959,12 +1994,12 @@ async function answerQuestion(ctx: Context, sessionId: string, optionId: string)
       callbackMessageId,
       explanationLength: explanationText.length,
     });
-    const explanationMessage = await getBot().telegram.sendMessage(
-      user.chatId,
+    explanationMessageId = await sendExplanationMessage(
+      user,
       explanationText,
       followupKeyboard,
+      ctx,
     );
-    explanationMessageId = explanationMessage.message_id;
     log.info("answer", "answer_question_explanation_sent", {
       telegramId: user.telegramId,
       sessionId,
@@ -1997,6 +2032,7 @@ async function answerQuestion(ctx: Context, sessionId: string, optionId: string)
     questionKey: question.key,
   });
 
+  const flowUpdatedAt = nowIso();
   const stored = await completeQuizAnswer({
     answer: {
       telegramId: user.telegramId,
@@ -2015,26 +2051,24 @@ async function answerQuestion(ctx: Context, sessionId: string, optionId: string)
     isCorrect,
     sessionId: session.id,
     telegramId: user.telegramId,
+    flowTransition: {
+      activeSessionId: sessionId,
+      activeQuestionMessageId: flow.activeQuestionMessageId ?? callbackMessageId,
+      activeExplanationMessageId: explanationMessageId,
+      updatedAt: flowUpdatedAt,
+    },
   });
 
   if (!stored) {
     log.warn("answer", "answer_question_store_rejected", {
       telegramId: user.telegramId,
       sessionId,
+      explanationMessageId,
     });
     return;
   }
 
   await clearQuestionAnswerKeyboard(ctx, chatId, flow.activeQuestionMessageId);
-
-  await setUserFlow({
-    telegramId: user.telegramId,
-    state: "explanation_shown",
-    activeSessionId: sessionId,
-    activeQuestionMessageId: flow.activeQuestionMessageId ?? callbackMessageId,
-    activeExplanationMessageId: explanationMessageId,
-    updatedAt: nowIso(),
-  });
 
   log.info("answer", "answer_question_done", { telegramId: user.telegramId, sessionId, isCorrect });
 }
