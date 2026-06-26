@@ -1359,11 +1359,28 @@ export function resolveQuestionImagePath(question: QuizQuestion): string | undef
   return existsSync(imagePath) ? imagePath : undefined;
 }
 
+function getProjectRootCandidates(): string[] {
+  const cwd = process.cwd();
+  const roots = [cwd, path.resolve(dataDir, "..")];
+
+  if (process.env.VERCEL === "1" || process.env.VERCEL_ENV) {
+    roots.push("/var/task");
+  }
+
+  return [...new Set(roots)];
+}
+
 export function resolveAssetImagePath(relativePath: string | undefined): string | undefined {
   if (!relativePath) {
     return undefined;
   }
 
-  const assetPath = path.resolve(process.cwd(), relativePath);
-  return existsSync(assetPath) ? assetPath : undefined;
+  for (const root of getProjectRootCandidates()) {
+    const assetPath = path.resolve(root, relativePath);
+    if (existsSync(assetPath)) {
+      return assetPath;
+    }
+  }
+
+  return undefined;
 }

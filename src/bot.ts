@@ -248,6 +248,34 @@ async function sendPhotoToChat(
   return message.message_id;
 }
 
+async function sendAnimationToChat(
+  chatId: number,
+  animation: { source: string },
+  extra?: object,
+  ctx?: Context,
+): Promise<number> {
+  const targetChatId = resolveDeliveryChatId(ctx, chatId);
+  const message = await getBot().telegram.sendAnimation(targetChatId, animation, extra);
+  return message.message_id;
+}
+
+async function sendSignImageToChat(
+  chatId: number,
+  imagePath: string,
+  extra?: object,
+  ctx?: Context,
+): Promise<void> {
+  const source = { source: imagePath };
+  const isGif = imagePath.toLowerCase().endsWith(".gif");
+
+  if (isGif) {
+    await sendAnimationToChat(chatId, source, extra, ctx);
+    return;
+  }
+
+  await sendPhotoToChat(chatId, source, extra, ctx);
+}
+
 function getCallbackMessageId(ctx: Context): number | undefined {
   const message = (
     ctx.callbackQuery as { message?: { message_id?: number } } | undefined
@@ -1919,8 +1947,9 @@ async function sendSignInfo(chatId: number, language: LanguageCode, query?: stri
     return;
   }
 
+  const titleLine = `${record.id} — ${getLocalizedSignTitle(record, language)}`;
   const text = [
-    `${record.id} — ${getLocalizedSignTitle(record, language)}`,
+    titleLine,
     getLocalizedSignMeaning(record, language),
     record.extra_info ? `${t(language, "Дополнительно", "Լրացուցիչ")}: ${record.extra_info}` : "",
   ]
@@ -1929,12 +1958,39 @@ async function sendSignInfo(chatId: number, language: LanguageCode, query?: stri
 
   const imagePath = resolveAssetImagePath(record.images?.[0]);
   const keyboard = buildRelatedEntityKeyboard(record, language);
-  if (imagePath) {
-    await getBot().telegram.sendPhoto(chatId, { source: imagePath }, { caption: text, ...keyboard });
+  const keyboardExtra = keyboard ? { reply_markup: keyboard.reply_markup } : undefined;
+
+  log.info("sign", "send_sign_info", {
+    chatId,
+    signId: record.id,
+    hasImage: Boolean(imagePath),
+    imagePath,
+    textLength: text.length,
+  });
+
+  if (!imagePath) {
+    log.warn("sign", "send_sign_info_image_missing", {
+      chatId,
+      signId: record.id,
+      imageRef: record.images?.[0],
+      cwd: process.cwd(),
+    });
+    await sendTextToChat(chatId, text, keyboardExtra);
     return;
   }
 
-  await getBot().telegram.sendMessage(chatId, text, keyboard);
+  try {
+    await sendSignImageToChat(chatId, imagePath);
+    await sendTextToChat(chatId, text, keyboardExtra);
+  } catch (error) {
+    log.error("sign", "send_sign_info_photo_failed", error, {
+      chatId,
+      signId: record.id,
+      imagePath,
+      cwd: process.cwd(),
+    });
+    await sendTextToChat(chatId, text, keyboardExtra);
+  }
 }
 
 async function sendTermInfo(chatId: number, language: LanguageCode, query?: string): Promise<void> {
