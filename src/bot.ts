@@ -873,11 +873,16 @@ async function answerQuestion(ctx: Context, sessionId: string, optionId: string)
   const explanationText = buildAnswerExplanation(user, question, optionId);
   const followupKeyboard = buildFollowupKeyboard(user.language, question);
 
+  await getBot().telegram.sendMessage(chatId, explanationText);
+
   try {
-    await getBot().telegram.sendMessage(chatId, explanationText, followupKeyboard);
+    await getBot().telegram.sendMessage(
+      chatId,
+      t(user.language, "Что дальше?", "Ի՞նչ հետո"),
+      followupKeyboard,
+    );
   } catch (error) {
-    console.error("Failed to send answer explanation with keyboard:", error);
-    await getBot().telegram.sendMessage(chatId, explanationText);
+    console.error("Failed to send follow-up keyboard:", error);
   }
 }
 
