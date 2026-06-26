@@ -45,24 +45,19 @@ function ensureDataDir(): void {
 }
 
 function readJsonFile<T>(filePath: string, fallback: T): T {
-  ensureDataDir();
-
   if (!existsSync(filePath)) {
-    writeJsonFile(filePath, fallback);
     return fallback;
   }
 
   const raw = readFileSync(filePath, "utf-8").trim();
   if (!raw) {
-    writeJsonFile(filePath, fallback);
     return fallback;
   }
 
   try {
     return JSON.parse(raw) as T;
   } catch (error) {
-    console.error(`Failed to parse JSON file ${filePath}, resetting to fallback:`, error);
-    writeJsonFile(filePath, fallback);
+    console.error(`Failed to parse JSON file ${filePath}, using fallback:`, error);
     return fallback;
   }
 }

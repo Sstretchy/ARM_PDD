@@ -1,2 +1,19 @@
 (node:17536) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
 (Use `node --trace-deprecation ...` to show where the warning was created)
+Failed to start bot: TelegramError: 409: Conflict: terminated by setWebhook request
+    at Telegram.callApi (C:\Users\Helga\Desktop\Мои проекты\ARM_PDD\node_modules\telegraf\lib\core\network\client.js:315:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async [Symbol.asyncIterator] (C:\Users\Helga\Desktop\Мои проекты\ARM_PDD\node_modules\telegraf\lib\core\network\polling.js:30:33)
+    at async Polling.loop (C:\Users\Helga\Desktop\Мои проекты\ARM_PDD\node_modules\telegraf\lib\core\network\polling.js:73:30)
+    at async Telegraf.launch (C:\Users\Helga\Desktop\Мои проекты\ARM_PDD\node_modules\telegraf\lib\telegraf.js:194:13)
+    at async main (C:\Users\Helga\Desktop\Мои проекты\ARM_PDD\src\index.ts:6:3) {
+  response: {
+    ok: false,
+    error_code: 409,
+    description: 'Conflict: terminated by setWebhook request'
+  },
+  on: {
+    method: 'getUpdates',
+    payload: { timeout: 50, offset: 101271207, allowed_updates: [] }
+  }
+}
