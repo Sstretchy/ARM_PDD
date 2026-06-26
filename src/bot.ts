@@ -166,8 +166,11 @@ function needsProcessingLock(ctx: Context): boolean {
     return (
       callbackData === "menu|quiz" ||
       callbackData === "menu|mistakes" ||
+      callbackData === "nav|next-quiz" ||
       callbackData.startsWith("topicquiz|") ||
-      callbackData.startsWith("answer|")
+      callbackData.startsWith("answer|") ||
+      callbackData.startsWith("report|") ||
+      callbackData.startsWith("ref|")
     );
   }
 
@@ -398,7 +401,11 @@ async function clearQuestionAnswerKeyboard(
   await stripMessageKeyboard(chatId, questionMessageId ?? callbackMessageId, ctx);
 }
 
-async function rejectStaleCallback(ctx: Context, language: LanguageCode): Promise<void> {
+async function rejectStaleCallback(
+  ctx: Context,
+  language: LanguageCode,
+  callbackData?: string,
+): Promise<void> {
   const text = buildStaleCallbackText(language);
 
   try {
@@ -408,6 +415,17 @@ async function rejectStaleCallback(ctx: Context, language: LanguageCode): Promis
       ...describeCtx(ctx),
       error: error instanceof Error ? error.message : String(error),
     });
+  }
+
+  // Strip keyboards only on stale answer taps. Follow-up buttons (next/report/ref)
+  // must not be stripped on reject — a concurrent nav click can target the fresh
+  // explanation message while the answer handler is still finishing.
+  if (!callbackData?.startsWith("answer|")) {
+    log.debug("bot", "stale_callback_reject_no_strip", {
+      ...describeCtx(ctx),
+      callbackData,
+    });
+    return;
   }
 
   const chatId = getChatId(ctx);
@@ -471,7 +489,7 @@ async function validateQuizCallback(
 
   if (callbackData === "nav|next-quiz") {
     const messageMatches =
-      flow.activeExplanationMessageId === undefined ||
+      flow.activeExplanationMessageId !== undefined &&
       callbackMessageId === flow.activeExplanationMessageId;
     const allowed = flow.state === "explanation_shown" && messageMatches;
 
@@ -494,7 +512,7 @@ async function validateQuizCallback(
       ? await getQuizSessionById(flow.activeSessionId)
       : undefined;
     const messageMatches =
-      flow.activeExplanationMessageId === undefined ||
+      flow.activeExplanationMessageId !== undefined &&
       callbackMessageId === flow.activeExplanationMessageId;
     const allowed =
       flow.state === "explanation_shown" &&
@@ -2596,7 +2614,7 @@ export function createBot(options?: { enableSchedules?: boolean }): Telegraf {
       if (callbackData) {
         const validation = await validateQuizCallback(ctx, callbackData);
         if (!validation.allowed) {
-          await rejectStaleCallback(ctx, validation.language);
+          await rejectStaleCallback(ctx, validation.language, callbackData);
           return;
         }
       }
