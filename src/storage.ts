@@ -92,6 +92,19 @@ function getRowNumber(row: RowMap, key: string): number {
   return Number(value ?? 0);
 }
 
+function getRowOptionalNumber(row: RowMap, key: string): number | undefined {
+  const value = row[key];
+  if (value === null || value === undefined) {
+    return undefined;
+  }
+
+  if (typeof value === "bigint") {
+    return Number(value);
+  }
+
+  return Number(value);
+}
+
 function getRowString(row: RowMap, key: string): string | undefined {
   const value = row[key];
   if (value === null || value === undefined) {
@@ -199,6 +212,8 @@ function mapUserFlow(row: RowMap): UserFlowRecord {
     telegramId: getRowNumber(row, "telegram_id"),
     state: (getRowString(row, "state") as UserFlowRecord["state"] | undefined) ?? "idle",
     activeSessionId: getRowString(row, "active_session_id"),
+    activeQuestionMessageId: getRowOptionalNumber(row, "active_question_message_id"),
+    activeExplanationMessageId: getRowOptionalNumber(row, "active_explanation_message_id"),
     updatedAt: getRowString(row, "updated_at") ?? new Date().toISOString(),
   };
 }
@@ -430,6 +445,8 @@ async function initializeDatabase(): Promise<void> {
         telegram_id INTEGER PRIMARY KEY,
         state TEXT NOT NULL,
         active_session_id TEXT,
+        active_question_message_id INTEGER,
+        active_explanation_message_id INTEGER,
         updated_at TEXT NOT NULL
       );
 
@@ -483,6 +500,8 @@ async function initializeDatabase(): Promise<void> {
     if ((await getCount("error_reports")) === 0) {
       await importLegacyErrorReports();
     }
+
+    await migrateUserFlowsMessageIds();
   })();
 
   return initPromise;
@@ -493,11 +512,35 @@ async function execute(sql: string, args?: InArgs) {
   return db.execute({ sql, args });
 }
 
+async function migrateUserFlowsMessageIds(): Promise<void> {
+  const columns = new Set(
+    (
+      await db.execute("PRAGMA table_info(user_flows)")
+    ).rows.map((row) => getRowString(row as RowMap, "name")),
+  );
+
+  if (!columns.has("active_question_message_id")) {
+    await db.execute(
+      "ALTER TABLE user_flows ADD COLUMN active_question_message_id INTEGER",
+    );
+    log.info("storage", "migrate_user_flows_add_question_message_id");
+  }
+
+  if (!columns.has("active_explanation_message_id")) {
+    await db.execute(
+      "ALTER TABLE user_flows ADD COLUMN active_explanation_message_id INTEGER",
+    );
+    log.info("storage", "migrate_user_flows_add_explanation_message_id");
+  }
+}
+
 function buildDefaultUserFlow(telegramId: number): UserFlowRecord {
   return {
     telegramId,
     state: "idle",
     activeSessionId: undefined,
+    activeQuestionMessageId: undefined,
+    activeExplanationMessageId: undefined,
     updatedAt: new Date().toISOString(),
   };
 }
@@ -524,22 +567,29 @@ export async function setUserFlow(flow: UserFlowRecord): Promise<void> {
     telegramId: flow.telegramId,
     state: flow.state,
     activeSessionId: flow.activeSessionId,
+    activeQuestionMessageId: flow.activeQuestionMessageId,
+    activeExplanationMessageId: flow.activeExplanationMessageId,
     updatedAt: flow.updatedAt,
   });
   await execute(
     `
       INSERT INTO user_flows (
-        telegram_id, state, active_session_id, updated_at
-      ) VALUES (?, ?, ?, ?)
+        telegram_id, state, active_session_id,
+        active_question_message_id, active_explanation_message_id, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?)
       ON CONFLICT(telegram_id) DO UPDATE SET
         state = excluded.state,
         active_session_id = excluded.active_session_id,
+        active_question_message_id = excluded.active_question_message_id,
+        active_explanation_message_id = excluded.active_explanation_message_id,
         updated_at = excluded.updated_at
     `,
     [
       flow.telegramId,
       flow.state,
       flow.activeSessionId ?? null,
+      flow.activeQuestionMessageId ?? null,
+      flow.activeExplanationMessageId ?? null,
       flow.updatedAt,
     ],
   );
@@ -554,11 +604,14 @@ export async function tryStartUserFlow(
   const result = await execute(
     `
       INSERT INTO user_flows (
-        telegram_id, state, active_session_id, updated_at
-      ) VALUES (?, ?, ?, ?)
+        telegram_id, state, active_session_id,
+        active_question_message_id, active_explanation_message_id, updated_at
+      ) VALUES (?, ?, ?, NULL, NULL, ?)
       ON CONFLICT(telegram_id) DO UPDATE SET
         state = excluded.state,
         active_session_id = excluded.active_session_id,
+        active_question_message_id = NULL,
+        active_explanation_message_id = NULL,
         updated_at = excluded.updated_at
       WHERE user_flows.state = 'idle'
     `,
@@ -634,6 +687,8 @@ export async function releaseUserFlow(telegramId: number, updatedAt?: string): P
     telegramId,
     state: "idle",
     activeSessionId: undefined,
+    activeQuestionMessageId: undefined,
+    activeExplanationMessageId: undefined,
     updatedAt: updatedAt ?? new Date().toISOString(),
   });
 }

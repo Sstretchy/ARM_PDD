@@ -101,6 +101,8 @@ export type UserFlowRecord = {
   telegramId: number;
   state: UserFlowState;
   activeSessionId?: string;
+  activeQuestionMessageId?: number;
+  activeExplanationMessageId?: number;
   updatedAt: string;
 };
 
