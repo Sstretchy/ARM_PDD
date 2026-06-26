@@ -14,6 +14,7 @@ import type {
   SignRecord,
   TermRecord,
   TopicSlug,
+  UserFlowRecord,
   UserQuestionState,
   UserRecord,
 } from "./types.js";
@@ -189,6 +190,15 @@ function mapQuizSession(row: RowMap): QuizSessionRecord {
       getRowString(row, "is_correct") === undefined
         ? undefined
         : getRowBoolean(row, "is_correct"),
+  };
+}
+
+function mapUserFlow(row: RowMap): UserFlowRecord {
+  return {
+    telegramId: getRowNumber(row, "telegram_id"),
+    state: (getRowString(row, "state") as UserFlowRecord["state"] | undefined) ?? "idle",
+    activeSessionId: getRowString(row, "active_session_id"),
+    updatedAt: getRowString(row, "updated_at") ?? new Date().toISOString(),
   };
 }
 
@@ -415,6 +425,13 @@ async function initializeDatabase(): Promise<void> {
         is_correct INTEGER
       );
 
+      CREATE TABLE IF NOT EXISTS user_flows (
+        telegram_id INTEGER PRIMARY KEY,
+        state TEXT NOT NULL,
+        active_session_id TEXT,
+        updated_at TEXT NOT NULL
+      );
+
       CREATE TABLE IF NOT EXISTS error_reports (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         telegram_id INTEGER NOT NULL,
@@ -435,6 +452,9 @@ async function initializeDatabase(): Promise<void> {
 
       CREATE INDEX IF NOT EXISTS idx_quiz_sessions_telegram_status_sent_at
       ON quiz_sessions (telegram_id, status, sent_at);
+
+      CREATE INDEX IF NOT EXISTS idx_user_flows_state_updated_at
+      ON user_flows (state, updated_at);
     `);
 
     if ((await getCount("users")) === 0) {
@@ -464,6 +484,66 @@ async function initializeDatabase(): Promise<void> {
 async function execute(sql: string, args?: InArgs) {
   await initializeDatabase();
   return db.execute({ sql, args });
+}
+
+function buildDefaultUserFlow(telegramId: number): UserFlowRecord {
+  return {
+    telegramId,
+    state: "idle",
+    activeSessionId: undefined,
+    updatedAt: new Date().toISOString(),
+  };
+}
+
+export async function getUserFlow(telegramId: number): Promise<UserFlowRecord> {
+  const result = await execute(
+    "SELECT * FROM user_flows WHERE telegram_id = ? LIMIT 1",
+    [telegramId],
+  );
+  const row = result.rows[0] as RowMap | undefined;
+  return row ? mapUserFlow(row) : buildDefaultUserFlow(telegramId);
+}
+
+export async function setUserFlow(flow: UserFlowRecord): Promise<void> {
+  await execute(
+    `
+      INSERT INTO user_flows (
+        telegram_id, state, active_session_id, updated_at
+      ) VALUES (?, ?, ?, ?)
+      ON CONFLICT(telegram_id) DO UPDATE SET
+        state = excluded.state,
+        active_session_id = excluded.active_session_id,
+        updated_at = excluded.updated_at
+    `,
+    [
+      flow.telegramId,
+      flow.state,
+      flow.activeSessionId ?? null,
+      flow.updatedAt,
+    ],
+  );
+}
+
+export async function tryStartUserFlow(
+  telegramId: number,
+  activeSessionId: string,
+  updatedAt: string,
+): Promise<boolean> {
+  const result = await execute(
+    `
+      INSERT INTO user_flows (
+        telegram_id, state, active_session_id, updated_at
+      ) VALUES (?, ?, ?, ?)
+      ON CONFLICT(telegram_id) DO UPDATE SET
+        state = excluded.state,
+        active_session_id = excluded.active_session_id,
+        updated_at = excluded.updated_at
+      WHERE user_flows.state = 'idle'
+    `,
+    [telegramId, "question_open", activeSessionId, updatedAt],
+  );
+
+  return result.rowsAffected > 0;
 }
 
 export async function getUsers(): Promise<UserRecord[]> {
@@ -771,6 +851,10 @@ export async function updateQuizSession(session: QuizSessionRecord): Promise<voi
   );
 }
 
+export async function deleteQuizSession(sessionId: string): Promise<void> {
+  await execute("DELETE FROM quiz_sessions WHERE id = ?", [sessionId]);
+}
+
 export async function getQuizSessionById(sessionId: string): Promise<QuizSessionRecord | undefined> {
   const result = await execute(
     "SELECT * FROM quiz_sessions WHERE id = ? LIMIT 1",
@@ -778,6 +862,122 @@ export async function getQuizSessionById(sessionId: string): Promise<QuizSession
   );
   const row = result.rows[0] as RowMap | undefined;
   return row ? mapQuizSession(row) : undefined;
+}
+
+export async function completeQuizAnswer(params: {
+  answer: AnswerRecord;
+  nextState: UserQuestionState;
+  selectedOptionId: string;
+  answeredAt: string;
+  isCorrect: boolean;
+  sessionId: string;
+  telegramId: number;
+}): Promise<boolean> {
+  await initializeDatabase();
+
+  const transaction = await db.transaction("write");
+
+  try {
+    const sessionUpdate = await transaction.execute({
+      sql: `
+        UPDATE quiz_sessions
+        SET status = 'answered', answered_at = ?, selected_option_id = ?, is_correct = ?
+        WHERE id = ? AND telegram_id = ? AND status = 'pending'
+      `,
+      args: [
+        params.answeredAt,
+        params.selectedOptionId,
+        params.isCorrect ? 1 : 0,
+        params.sessionId,
+        params.telegramId,
+      ],
+    });
+
+    if (sessionUpdate.rowsAffected === 0) {
+      await transaction.rollback();
+      return false;
+    }
+
+    await transaction.execute({
+      sql: `
+        INSERT INTO answers (
+          telegram_id, question_key, question_id, topic_slug, language, mode,
+          selected_option_id, is_correct, answered_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `,
+      args: [
+        params.answer.telegramId,
+        params.answer.questionKey,
+        params.answer.questionId,
+        params.answer.topicSlug,
+        params.answer.language,
+        params.answer.mode,
+        params.answer.selectedOptionId,
+        params.answer.isCorrect ? 1 : 0,
+        params.answer.answeredAt,
+      ],
+    });
+
+    await transaction.execute({
+      sql: `
+        INSERT INTO question_states (
+          telegram_id, question_key, language, topic_slug, status, correct_streak,
+          mistake_count, last_seen_at, next_review_at, last_answer_correct, updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT(telegram_id, question_key) DO UPDATE SET
+          language = excluded.language,
+          topic_slug = excluded.topic_slug,
+          status = excluded.status,
+          correct_streak = excluded.correct_streak,
+          mistake_count = excluded.mistake_count,
+          last_seen_at = excluded.last_seen_at,
+          next_review_at = excluded.next_review_at,
+          last_answer_correct = excluded.last_answer_correct,
+          updated_at = excluded.updated_at
+      `,
+      args: [
+        params.nextState.telegramId,
+        params.nextState.questionKey,
+        params.nextState.language,
+        params.nextState.topicSlug,
+        params.nextState.status,
+        params.nextState.correctStreak,
+        params.nextState.mistakeCount,
+        params.nextState.lastSeenAt ?? null,
+        params.nextState.nextReviewAt ?? null,
+        params.nextState.lastAnswerCorrect === undefined ? null : params.nextState.lastAnswerCorrect ? 1 : 0,
+        params.nextState.updatedAt,
+      ],
+    });
+
+    await transaction.execute({
+      sql: `
+        INSERT INTO user_flows (
+          telegram_id, state, active_session_id, updated_at
+        ) VALUES (?, ?, ?, ?)
+        ON CONFLICT(telegram_id) DO UPDATE SET
+          state = excluded.state,
+          active_session_id = excluded.active_session_id,
+          updated_at = excluded.updated_at
+      `,
+      args: [
+        params.telegramId,
+        "explanation_shown",
+        params.sessionId,
+        params.answeredAt,
+      ],
+    });
+
+    await transaction.commit();
+    return true;
+  } catch (error) {
+    if (!transaction.closed) {
+      await transaction.rollback();
+    }
+    throw error;
+  } finally {
+    transaction.close();
+  }
 }
 
 export function getSigns(): SignRecord[] {

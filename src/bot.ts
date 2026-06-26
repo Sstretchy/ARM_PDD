@@ -4,9 +4,10 @@ import type { Context } from "telegraf";
 
 import { config } from "./config.js";
 import {
-  appendAnswer,
   appendErrorReport,
+  completeQuizAnswer,
   createQuizSession,
+  deleteQuizSession,
   getAnswers,
   getMarkings,
   getQuestionByKey,
@@ -16,14 +17,15 @@ import {
   getQuizSessions,
   getSigns,
   getTerms,
+  getUserFlow,
   getUsers,
   resolveAssetImagePath,
   resolveQuestionImagePath,
   setSubscription,
+  setUserFlow,
   setUserLanguage,
+  tryStartUserFlow,
   updateUser,
-  updateQuizSession,
-  upsertQuestionState,
   upsertUser,
 } from "./storage.js";
 import type {
@@ -37,6 +39,7 @@ import type {
   TermRecord,
   TopicMeta,
   TopicSlug,
+  UserFlowRecord,
   UserQuestionState,
   UserRecord,
 } from "./types.js";
@@ -343,6 +346,89 @@ async function getSessionsForUser(user: UserRecord): Promise<QuizSessionRecord[]
   return (await getQuizSessions()).filter((session) => session.telegramId === user.telegramId);
 }
 
+function buildDefaultFlow(telegramId: number): UserFlowRecord {
+  return {
+    telegramId,
+    state: "idle",
+    activeSessionId: undefined,
+    updatedAt: nowIso(),
+  };
+}
+
+async function getFlowForUser(user: UserRecord): Promise<UserFlowRecord> {
+  const flow = await getUserFlow(user.telegramId);
+
+  if (flow.state === "idle") {
+    return flow;
+  }
+
+  if (!flow.activeSessionId) {
+    const fallback = buildDefaultFlow(user.telegramId);
+    await setUserFlow(fallback);
+    return fallback;
+  }
+
+  const session = await getQuizSessionById(flow.activeSessionId);
+  if (!session || session.telegramId !== user.telegramId) {
+    const fallback = buildDefaultFlow(user.telegramId);
+    await setUserFlow(fallback);
+    return fallback;
+  }
+
+  if (flow.state === "question_open" && session.status === "answered") {
+    const normalized: UserFlowRecord = {
+      telegramId: user.telegramId,
+      state: "explanation_shown",
+      activeSessionId: session.id,
+      updatedAt: nowIso(),
+    };
+    await setUserFlow(normalized);
+    return normalized;
+  }
+
+  if (flow.state === "explanation_shown" && session.status === "pending") {
+    const normalized: UserFlowRecord = {
+      telegramId: user.telegramId,
+      state: "question_open",
+      activeSessionId: session.id,
+      updatedAt: nowIso(),
+    };
+    await setUserFlow(normalized);
+    return normalized;
+  }
+
+  return flow;
+}
+
+async function setFlowForUser(
+  user: UserRecord,
+  state: UserFlowRecord["state"],
+  activeSessionId?: string,
+): Promise<void> {
+  await setUserFlow({
+    telegramId: user.telegramId,
+    state,
+    activeSessionId,
+    updatedAt: nowIso(),
+  });
+}
+
+function buildQuestionFlowBlockedText(user: UserRecord, state: UserFlowRecord["state"]): string {
+  if (state === "question_open") {
+    return t(
+      user.language,
+      "Сначала ответь на текущий вопрос.",
+      "Սկզբում պատասխանիր ընթացիկ հարցին։",
+    );
+  }
+
+  return t(
+    user.language,
+    "Сначала прочитай объяснение и потом нажми «Следующий вопрос».",
+    "Սկզբում կարդա բացատրությունը, հետո սեղմիր «Հաջորդ հարց»։",
+  );
+}
+
 function buildQuestionState(
   user: UserRecord,
   question: QuizQuestion,
@@ -479,12 +565,21 @@ function createSession(user: UserRecord, question: QuizQuestion, mode: QuizMode)
   };
 }
 
-function buildQuestionText(question: QuizQuestion, language: LanguageCode, mode: QuizMode): string {
+function buildQuestionText(
+  question: QuizQuestion,
+  language: LanguageCode,
+  mode: QuizMode,
+  topicFilter?: TopicSlug,
+): string {
   const topicTitle = getTopicTitle(question.topicSlug, language);
   const prefix =
     mode === "mistake"
       ? t(language, "Повтор ошибки", "Սխալի կրկնություն")
-      : t(language, "Вопрос дня", "Օրվա հարց");
+      : mode === "daily"
+        ? t(language, "Вопрос дня", "Օրվա հարց")
+        : topicFilter
+          ? t(language, "Вопрос по теме", "Հարց թեմայից")
+          : t(language, "Вопрос", "Հարց");
 
   return [
     `${prefix}`,
@@ -498,30 +593,76 @@ function buildQuestionText(question: QuizQuestion, language: LanguageCode, mode:
 }
 
 async function sendQuestion(user: UserRecord, mode: QuizMode, topicFilter?: TopicSlug): Promise<boolean> {
-  const question = await selectNextQuestion(user, mode, topicFilter);
-  if (!question) {
-    await getBot().telegram.sendMessage(
-      user.chatId,
-      t(
-        user.language,
-        "Сейчас нет подходящих вопросов для отправки.",
-        "Այս պահին ուղարկելու հարմար հարց չկա։",
-      ),
-    );
+  const flow = await getFlowForUser(user);
+  if (flow.state !== "idle") {
+    if (mode !== "daily") {
+      await getBot().telegram.sendMessage(
+        user.chatId,
+        buildQuestionFlowBlockedText(user, flow.state),
+      );
+    }
     return false;
   }
 
-  const session = createSession(user, question, mode);
-  await createQuizSession(session);
+  const sessionId = `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
+  const claimed = await tryStartUserFlow(user.telegramId, sessionId, nowIso());
+  if (!claimed) {
+    const currentFlow = await getFlowForUser(user);
+    if (mode !== "daily") {
+      await getBot().telegram.sendMessage(
+        user.chatId,
+        buildQuestionFlowBlockedText(user, currentFlow.state),
+      );
+    }
+    return false;
+  }
+
+  const question = await selectNextQuestion(user, mode, topicFilter);
+  if (!question) {
+    await setFlowForUser(user, "idle");
+    if (mode !== "daily") {
+      await getBot().telegram.sendMessage(
+        user.chatId,
+        t(
+          user.language,
+          "Сейчас нет подходящих вопросов для отправки.",
+          "Այս պահին ուղարկելու հարմար հարց չկա։",
+        ),
+      );
+    }
+    return false;
+  }
+
+  const session = {
+    ...createSession(user, question, mode),
+    id: sessionId,
+  };
+
+  try {
+    await createQuizSession(session);
+  } catch (error) {
+    await setFlowForUser(user, "idle");
+    throw error;
+  }
 
   const imagePath = resolveQuestionImagePath(question);
   const keyboard = buildQuestionKeyboard(question, session.id);
-  const text = buildQuestionText(question, user.language, mode);
+  const text = buildQuestionText(question, user.language, mode, topicFilter);
 
-  if (imagePath) {
-    await getBot().telegram.sendPhoto(user.chatId, { source: imagePath }, { caption: text, ...keyboard });
-  } else {
+  try {
+    if (imagePath) {
+      try {
+        await getBot().telegram.sendPhoto(user.chatId, { source: imagePath });
+      } catch (error) {
+        console.error(`Failed to send question image for ${question.key}:`, error);
+      }
+    }
+
     await getBot().telegram.sendMessage(user.chatId, text, keyboard);
+  } catch (error) {
+    await deleteQuizSession(session.id);
+    await setFlowForUser(user, "idle");
+    throw error;
   }
 
   return true;
@@ -826,7 +967,7 @@ async function answerQuestion(ctx: Context, sessionId: string, optionId: string)
   }
 
   if (session.status === "answered") {
-    await ctx.answerCbQuery(t(user.language, "Ответ уже принят", "Պատասխանը արդեն ընդունված է"));
+    await ctx.answerCbQuery(t(user.language, "Ответ уже принят", "Պատասխանն արդեն ընդունված է"));
     return;
   }
 
@@ -836,30 +977,38 @@ async function answerQuestion(ctx: Context, sessionId: string, optionId: string)
     return;
   }
 
-  session.status = "answered";
-  session.answeredAt = nowIso();
-  session.selectedOptionId = optionId;
-  session.isCorrect = optionId === question.correctOptionId;
-  await updateQuizSession(session);
+  const answeredAt = nowIso();
+  const isCorrect = optionId === question.correctOptionId;
+  const states = await getQuestionStatesForUser(user);
+  const nextState = buildQuestionState(user, question, states.get(question.key), isCorrect);
 
-  await appendAnswer({
-    telegramId: user.telegramId,
-    questionKey: question.key,
-    questionId: question.id,
-    topicSlug: question.topicSlug,
-    language: question.language,
-    mode: session.mode,
+  const stored = await completeQuizAnswer({
+    answer: {
+      telegramId: user.telegramId,
+      questionKey: question.key,
+      questionId: question.id,
+      topicSlug: question.topicSlug,
+      language: question.language,
+      mode: session.mode,
+      selectedOptionId: optionId,
+      isCorrect,
+      answeredAt,
+    },
+    nextState,
     selectedOptionId: optionId,
-    isCorrect: session.isCorrect,
-    answeredAt: session.answeredAt,
+    answeredAt,
+    isCorrect,
+    sessionId: session.id,
+    telegramId: user.telegramId,
   });
 
-  const states = await getQuestionStatesForUser(user);
-  const nextState = buildQuestionState(user, question, states.get(question.key), session.isCorrect);
-  await upsertQuestionState(nextState);
+  if (!stored) {
+    await ctx.answerCbQuery(t(user.language, "Ответ уже принят", "Պատասխանն արդեն ընդունված է"));
+    return;
+  }
 
   await ctx.answerCbQuery(
-    session.isCorrect
+    isCorrect
       ? t(user.language, "Верно", "Ճիշտ է")
       : t(user.language, "Неверно", "Սխալ է"),
   );
@@ -873,16 +1022,10 @@ async function answerQuestion(ctx: Context, sessionId: string, optionId: string)
   const explanationText = buildAnswerExplanation(user, question, optionId);
   const followupKeyboard = buildFollowupKeyboard(user.language, question);
 
-  await getBot().telegram.sendMessage(chatId, explanationText);
-
   try {
-    await getBot().telegram.sendMessage(
-      chatId,
-      t(user.language, "Что дальше?", "Ի՞նչ հետո"),
-      followupKeyboard,
-    );
+    await getBot().telegram.sendMessage(chatId, explanationText, followupKeyboard);
   } catch (error) {
-    console.error("Failed to send follow-up keyboard:", error);
+    console.error("Failed to send explanation message:", error);
   }
 }
 
@@ -1079,7 +1222,7 @@ function registerCommands(): void {
     }
 
     const user = await upsertUser(from.id, chatId, from.first_name, from.username);
-    await ctx.answerCbQuery(t(user.language, "Открываю квиз", "Բացում եմ քուիզը"));
+    await ctx.answerCbQuery();
     await sendQuestion(user, "manual");
   });
 
@@ -1106,7 +1249,7 @@ function registerCommands(): void {
     }
 
     const user = await upsertUser(from.id, chatId, from.first_name, from.username);
-    await ctx.answerCbQuery(t(user.language, "Проверяю ошибки", "Ստուգում եմ սխալները"));
+    await ctx.answerCbQuery();
     await sendQuestion(user, "mistake");
   });
 
@@ -1166,9 +1309,14 @@ function registerCommands(): void {
     }
 
     const user = await upsertUser(from.id, chatId, from.first_name, from.username);
-    await ctx.answerCbQuery(
-      t(user.language, "Следующий вопрос", "Հաջորդ հարց"),
-    );
+    const flow = await getFlowForUser(user);
+    if (flow.state === "question_open") {
+      await ctx.answerCbQuery(buildQuestionFlowBlockedText(user, flow.state));
+      return;
+    }
+
+    await setFlowForUser(user, "idle");
+    await ctx.answerCbQuery();
     await sendQuestion(user, "manual");
   });
 
@@ -1210,9 +1358,7 @@ function registerCommands(): void {
     }
 
     const user = await upsertUser(from.id, chatId, from.first_name, from.username);
-    await ctx.answerCbQuery(
-      t(user.language, "Отправляю вопрос", "Ուղարկում եմ հարց"),
-    );
+    await ctx.answerCbQuery();
     await sendQuestion(user, "manual", topic.slug);
   });
 

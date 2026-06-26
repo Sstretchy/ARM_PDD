@@ -95,6 +95,15 @@ export type UserRecord = {
   updatedAt: string;
 };
 
+export type UserFlowState = "idle" | "question_open" | "explanation_shown";
+
+export type UserFlowRecord = {
+  telegramId: number;
+  state: UserFlowState;
+  activeSessionId?: string;
+  updatedAt: string;
+};
+
 export type QuizMode = "daily" | "manual" | "mistake";
 
 export type QuestionStatus = "new" | "learning" | "mistake" | "repeat" | "mastered";
