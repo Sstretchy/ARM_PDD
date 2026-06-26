@@ -295,6 +295,50 @@ type PreviousQuizMessageIds = {
   explanation?: number;
 };
 
+type SendQuestionOptions = {
+  /** Menu/commands: abandon the current round and start fresh. */
+  overrideFlow?: boolean;
+};
+
+async function abandonActiveRound(
+  user: UserRecord,
+  flow: UserFlowRecord,
+  ctx?: Context,
+): Promise<void> {
+  if (flow.state === "idle") {
+    return;
+  }
+
+  log.info("flow", "abandon_active_round", {
+    telegramId: user.telegramId,
+    state: flow.state,
+    activeSessionId: flow.activeSessionId,
+    activeQuestionMessageId: flow.activeQuestionMessageId,
+    activeExplanationMessageId: flow.activeExplanationMessageId,
+  });
+
+  if (flow.activeSessionId) {
+    const session = await getQuizSessionById(flow.activeSessionId);
+    if (session?.status === "pending") {
+      await deleteQuizSession(flow.activeSessionId);
+      log.info("flow", "abandon_deleted_pending_session", {
+        telegramId: user.telegramId,
+        sessionId: flow.activeSessionId,
+      });
+    }
+  }
+
+  await stripPreviousQuizMessages(
+    user.chatId,
+    {
+      question: flow.activeQuestionMessageId,
+      explanation: flow.activeExplanationMessageId,
+    },
+    ctx,
+  );
+  await releaseUserFlow(user.telegramId);
+}
+
 async function stripPreviousQuizMessages(
   chatId: number,
   previousMessageIds: PreviousQuizMessageIds | undefined,
@@ -1551,6 +1595,7 @@ async function sendQuestion(
   mode: QuizMode,
   topicFilter?: TopicSlug,
   ctx?: Context,
+  options?: SendQuestionOptions,
 ): Promise<boolean> {
   const startedAt = Date.now();
   log.info("quiz", "send_question_start", {
@@ -1558,6 +1603,7 @@ async function sendQuestion(
     chatId: user.chatId,
     mode,
     topicFilter,
+    overrideFlow: options?.overrideFlow ?? false,
     ctxChatId: ctx?.chat?.id,
     updateId: ctx?.update.update_id,
   });
@@ -1569,14 +1615,23 @@ async function sendQuestion(
     return false;
   }
 
-  const flow = await getFlowForUser(user);
+  let flow = await getFlowForUser(user);
   log.info("quiz", "send_question_flow_loaded", {
     telegramId: user.telegramId,
     state: flow.state,
     activeSessionId: flow.activeSessionId,
   });
 
-  if (flow.state === "question_open" && flow.activeSessionId) {
+  if (options?.overrideFlow && flow.state !== "idle") {
+    await abandonActiveRound(user, flow, ctx);
+    flow = await getFlowForUser(user);
+    log.info("quiz", "send_question_flow_after_override", {
+      telegramId: user.telegramId,
+      state: flow.state,
+    });
+  }
+
+  if (!options?.overrideFlow && flow.state === "question_open" && flow.activeSessionId) {
     if (isQuestionDelivered(flow)) {
       log.info("quiz", "send_question_skip_already_delivered", {
         telegramId: user.telegramId,
@@ -2245,7 +2300,7 @@ function registerCommands(): void {
     }
 
     const user = await upsertUser(from.id, ctx.chat.id, from.first_name, from.username);
-    const sent = await sendQuestion(user, "manual", undefined, ctx);
+    const sent = await sendQuestion(user, "manual", undefined, ctx, { overrideFlow: true });
     log.info("handler", "command_quiz_done", { telegramId: user.telegramId, sent });
   });
 
@@ -2256,7 +2311,7 @@ function registerCommands(): void {
     }
 
     const user = await upsertUser(from.id, ctx.chat.id, from.first_name, from.username);
-    await sendQuestion(user, "mistake", undefined, ctx);
+    await sendQuestion(user, "mistake", undefined, ctx, { overrideFlow: true });
   });
 
   getBot().command("progress", async (ctx) => {
@@ -2388,7 +2443,7 @@ function registerCommands(): void {
       chatId: user.chatId,
       language: user.language,
     });
-    const sent = await sendQuestion(user, "manual", undefined, ctx);
+    const sent = await sendQuestion(user, "manual", undefined, ctx, { overrideFlow: true });
     await ctx.answerCbQuery();
     log.info("handler", "menu_quiz_done", {
       telegramId: user.telegramId,
@@ -2433,7 +2488,7 @@ function registerCommands(): void {
     }
 
     const user = await upsertUser(from.id, chatId, from.first_name, from.username);
-    await sendQuestion(user, "mistake", undefined, ctx);
+    await sendQuestion(user, "mistake", undefined, ctx, { overrideFlow: true });
     await ctx.answerCbQuery();
   });
 
@@ -2658,7 +2713,7 @@ function registerCommands(): void {
     }
 
     const user = await upsertUser(from.id, chatId, from.first_name, from.username);
-    await sendQuestion(user, "manual", topic.slug, ctx);
+    await sendQuestion(user, "manual", topic.slug, ctx, { overrideFlow: true });
     await ctx.answerCbQuery();
   });
 
