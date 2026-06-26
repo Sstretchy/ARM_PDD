@@ -870,11 +870,15 @@ async function answerQuestion(ctx: Context, sessionId: string, optionId: string)
     // Ignore markup edit failures for old messages.
   }
 
-  await getBot().telegram.sendMessage(
-    chatId,
-    buildAnswerExplanation(user, question, optionId),
-    buildFollowupKeyboard(user.language, question),
-  );
+  const explanationText = buildAnswerExplanation(user, question, optionId);
+  const followupKeyboard = buildFollowupKeyboard(user.language, question);
+
+  try {
+    await getBot().telegram.sendMessage(chatId, explanationText, followupKeyboard);
+  } catch (error) {
+    console.error("Failed to send answer explanation with keyboard:", error);
+    await getBot().telegram.sendMessage(chatId, explanationText);
+  }
 }
 
 function registerCommands(): void {
@@ -905,8 +909,8 @@ function registerCommands(): void {
         t(user.language, "Это новый бот-репетитор по ПДД Армении.", "Սա նոր ՊԴԴ ուսուցիչ-բոտն է Հայաստանի համար։"),
         t(
           user.language,
-          "Он шлет 7 вопросов в день, принимает ответы кнопками, дает объяснение и потом возвращает ошибки на повтор.",
-          "Այն օրական ուղարկում է 7 հարց, ընդունում է պատասխանները կոճակներով, տալիս է բացատրություն և հետո կրկին վերադարձնում է սխալները։",
+          "Он шлет 7 вопросов в день, дает объяснение и потом возвращает ошибки на повтор.",
+          "Այն օրական ուղարկում է 7 հարց, տալիս է բացատրություն և հետո կրկին վերադարձնում է սխալները։",
         ),
         buildMainMenuText(user.language),
       ].join("\n\n"),
