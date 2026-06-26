@@ -920,6 +920,12 @@ function buildFollowupKeyboard(language: LanguageCode, question: QuizQuestion) {
   return Markup.inlineKeyboard(rows);
 }
 
+function buildNextQuizKeyboard(language: LanguageCode) {
+  return Markup.inlineKeyboard([
+    Markup.button.callback(t(language, "Следующий вопрос", "Հաջորդ հարց"), "nav|next-quiz"),
+  ]);
+}
+
 async function sendExplanationMessage(
   user: UserRecord,
   text: string,
@@ -2087,13 +2093,39 @@ async function maybeCaptureErrorReport(ctx: Context): Promise<boolean> {
   user.updatedAt = nowIso();
   await updateUser(user);
 
-  await ctx.reply(
-    t(
-      user.language,
-      "Репорт сохранен. Спасибо, это поможет исправить вопрос.",
-      "Ռեպորտը պահպանվեց։ Շնորհակալություն, սա կօգնի շտկել հարցը։",
-    ),
+  const flow = await getFlowForUser(user);
+  if (flow.activeExplanationMessageId !== undefined) {
+    await stripMessageKeyboard(chatId, flow.activeExplanationMessageId, ctx);
+  }
+
+  const confirmationText = t(
+    user.language,
+    "Репорт сохранен. Спасибо, это поможет исправить вопрос.",
+    "Ռեպորտը պահպանվեց։ Շնորհակալություն, սա կօգնի շտկել հարցը։",
   );
+  const confirmationMessageId = await sendTextToChat(
+    chatId,
+    confirmationText,
+    { reply_markup: buildNextQuizKeyboard(user.language).reply_markup },
+    ctx,
+  );
+
+  if (flow.state === "explanation_shown" && flow.activeSessionId) {
+    await setUserFlow({
+      telegramId: user.telegramId,
+      state: "explanation_shown",
+      activeSessionId: flow.activeSessionId,
+      activeQuestionMessageId: flow.activeQuestionMessageId,
+      activeExplanationMessageId: confirmationMessageId,
+      updatedAt: nowIso(),
+    });
+    log.info("report", "error_report_flow_handoff", {
+      telegramId: user.telegramId,
+      sessionId: flow.activeSessionId,
+      previousExplanationMessageId: flow.activeExplanationMessageId,
+      confirmationMessageId,
+    });
+  }
 
   return true;
 }
@@ -2616,6 +2648,15 @@ function registerCommands(): void {
     }
 
     const user = await upsertUser(from.id, chatId, from.first_name, from.username);
+    if (user.pendingErrorReportQuestionKey) {
+      user.pendingErrorReportQuestionKey = undefined;
+      user.updatedAt = nowIso();
+      await updateUser(user);
+      log.info("handler", "nav_next_quiz_clear_pending_report", {
+        telegramId: user.telegramId,
+      });
+    }
+
     let flow = await getFlowForUser(user);
     log.info("handler", "nav_next_quiz_flow", {
       telegramId: user.telegramId,
