@@ -546,6 +546,15 @@ export async function tryStartUserFlow(
   return result.rowsAffected > 0;
 }
 
+export async function releaseUserFlow(telegramId: number, updatedAt?: string): Promise<void> {
+  await setUserFlow({
+    telegramId,
+    state: "idle",
+    activeSessionId: undefined,
+    updatedAt: updatedAt ?? new Date().toISOString(),
+  });
+}
+
 export async function getUsers(): Promise<UserRecord[]> {
   const result = await execute("SELECT * FROM users ORDER BY telegram_id ASC");
   return result.rows.map((row: unknown) => mapUser(row as RowMap));

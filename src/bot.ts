@@ -9,6 +9,7 @@ import {
   createQuizSession,
   deleteQuizSession,
   getAnswers,
+  releaseUserFlow,
   getMarkings,
   getQuestionByKey,
   getQuestionStates,
@@ -164,6 +165,25 @@ function pickRandom<T>(items: T[]): T | undefined {
 
 function nowIso(): string {
   return new Date().toISOString();
+}
+
+const STALE_FLOW_MS = 15 * 60 * 1000;
+
+function createSessionId(): string {
+  return `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function isFlowStale(flow: UserFlowRecord): boolean {
+  if (flow.state === "idle") {
+    return false;
+  }
+
+  const updatedAt = new Date(flow.updatedAt).getTime();
+  if (Number.isNaN(updatedAt)) {
+    return true;
+  }
+
+  return Date.now() - updatedAt > STALE_FLOW_MS;
 }
 
 function addHours(date: Date, hours: number): string {
@@ -372,24 +392,25 @@ function buildDefaultFlow(telegramId: number): UserFlowRecord {
   };
 }
 
-async function getFlowForUser(user: UserRecord): Promise<UserFlowRecord> {
-  const flow = await getUserFlow(user.telegramId);
-
+async function normalizeUserFlow(user: UserRecord, flow: UserFlowRecord): Promise<UserFlowRecord> {
   if (flow.state === "idle") {
     return flow;
   }
 
+  if (isFlowStale(flow)) {
+    await releaseUserFlow(user.telegramId);
+    return buildDefaultFlow(user.telegramId);
+  }
+
   if (!flow.activeSessionId) {
-    const fallback = buildDefaultFlow(user.telegramId);
-    await setUserFlow(fallback);
-    return fallback;
+    await releaseUserFlow(user.telegramId);
+    return buildDefaultFlow(user.telegramId);
   }
 
   const session = await getQuizSessionById(flow.activeSessionId);
   if (!session || session.telegramId !== user.telegramId) {
-    const fallback = buildDefaultFlow(user.telegramId);
-    await setUserFlow(fallback);
-    return fallback;
+    await releaseUserFlow(user.telegramId);
+    return buildDefaultFlow(user.telegramId);
   }
 
   if (flow.state === "question_open" && session.status === "answered") {
@@ -415,6 +436,11 @@ async function getFlowForUser(user: UserRecord): Promise<UserFlowRecord> {
   }
 
   return flow;
+}
+
+async function getFlowForUser(user: UserRecord): Promise<UserFlowRecord> {
+  const flow = await getUserFlow(user.telegramId);
+  return normalizeUserFlow(user, flow);
 }
 
 async function setFlowForUser(
@@ -567,9 +593,14 @@ async function selectNextQuestion(
   return pickRandom(available);
 }
 
-function createSession(user: UserRecord, question: QuizQuestion, mode: QuizMode): QuizSessionRecord {
+function createSession(
+  user: UserRecord,
+  question: QuizQuestion,
+  mode: QuizMode,
+  sessionId?: string,
+): QuizSessionRecord {
   return {
-    id: `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`,
+    id: sessionId ?? createSessionId(),
     telegramId: user.telegramId,
     chatId: user.chatId,
     questionKey: question.key,
@@ -609,80 +640,193 @@ function buildQuestionText(
   ].join("\n");
 }
 
-async function sendQuestion(user: UserRecord, mode: QuizMode, topicFilter?: TopicSlug): Promise<boolean> {
-  const flow = await getFlowForUser(user);
-  if (flow.state !== "idle") {
-    if (mode !== "daily") {
-      await getBot().telegram.sendMessage(
-        user.chatId,
-        buildQuestionFlowBlockedText(user, flow.state),
-      );
+async function deliverQuestionMessage(
+  user: UserRecord,
+  question: QuizQuestion,
+  session: QuizSessionRecord,
+  mode: QuizMode,
+  topicFilter?: TopicSlug,
+  ctx?: Context,
+): Promise<void> {
+  const imagePath = resolveQuestionImagePath(question);
+  const keyboard = buildQuestionKeyboard(question, session.id);
+  const text = buildQuestionText(question, user.language, mode, topicFilter);
+  const chatId = user.chatId;
+
+  if (imagePath) {
+    try {
+      if (ctx?.chat?.id === chatId) {
+        await ctx.replyWithPhoto({ source: imagePath });
+      } else {
+        await getBot().telegram.sendPhoto(chatId, { source: imagePath });
+      }
+    } catch (error) {
+      console.error(`Failed to send question image for ${question.key}:`, error);
     }
+  }
+
+  if (ctx?.chat?.id === chatId) {
+    await ctx.reply(text, keyboard);
+    return;
+  }
+
+  await getBot().telegram.sendMessage(chatId, text, keyboard);
+}
+
+async function notifyQuizMessage(
+  user: UserRecord,
+  text: string,
+  ctx?: Context,
+): Promise<void> {
+  if (ctx?.chat?.id === user.chatId) {
+    await ctx.reply(text);
+    return;
+  }
+
+  await getBot().telegram.sendMessage(user.chatId, text);
+}
+
+async function resendPendingQuestion(
+  user: UserRecord,
+  sessionId: string,
+  mode: QuizMode,
+  topicFilter?: TopicSlug,
+  ctx?: Context,
+): Promise<boolean> {
+  const session = await getQuizSessionById(sessionId);
+  if (!session || session.telegramId !== user.telegramId || session.status !== "pending") {
     return false;
   }
 
-  const sessionId = `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
-  const claimed = await tryStartUserFlow(user.telegramId, sessionId, nowIso());
-  if (!claimed) {
-    const currentFlow = await getFlowForUser(user);
+  const question = getQuestionByKey(session.questionKey);
+  if (!question) {
+    await deleteQuizSession(session.id);
+    await releaseUserFlow(user.telegramId);
+    return false;
+  }
+
+  try {
+    await deliverQuestionMessage(user, question, session, session.mode, topicFilter, ctx);
+    await setUserFlow({
+      telegramId: user.telegramId,
+      state: "question_open",
+      activeSessionId: session.id,
+      updatedAt: nowIso(),
+    });
+    return true;
+  } catch (error) {
+    console.error(`Failed to resend pending question ${session.id}:`, error);
+    return false;
+  }
+}
+
+async function sendQuestion(
+  user: UserRecord,
+  mode: QuizMode,
+  topicFilter?: TopicSlug,
+  ctx?: Context,
+): Promise<boolean> {
+  if (!user.chatId) {
+    console.error(`Cannot send question: missing chatId for user ${user.telegramId}`);
+    return false;
+  }
+
+  const flow = await getFlowForUser(user);
+
+  if (flow.state === "question_open" && flow.activeSessionId) {
+    const resent = await resendPendingQuestion(
+      user,
+      flow.activeSessionId,
+      mode,
+      topicFilter,
+      ctx,
+    );
+    if (resent) {
+      return true;
+    }
+  }
+
+  if (flow.state !== "idle") {
     if (mode !== "daily") {
-      await getBot().telegram.sendMessage(
-        user.chatId,
-        buildQuestionFlowBlockedText(user, currentFlow.state),
-      );
+      await notifyQuizMessage(user, buildQuestionFlowBlockedText(user, flow.state), ctx);
     }
     return false;
   }
 
   const question = await selectNextQuestion(user, mode, topicFilter);
   if (!question) {
-    await setFlowForUser(user, "idle");
     if (mode !== "daily") {
-      await getBot().telegram.sendMessage(
-        user.chatId,
+      await notifyQuizMessage(
+        user,
         t(
           user.language,
           "Сейчас нет подходящих вопросов для отправки.",
           "Այս պահին ուղարկելու հարմար հարց չկա։",
         ),
+        ctx,
       );
     }
     return false;
   }
 
-  const session = {
-    ...createSession(user, question, mode),
-    id: sessionId,
-  };
+  const sessionId = createSessionId();
+  const session = createSession(user, question, mode, sessionId);
+  let flowClaimed = false;
 
   try {
-    await createQuizSession(session);
-  } catch (error) {
-    await setFlowForUser(user, "idle");
-    throw error;
-  }
-
-  const imagePath = resolveQuestionImagePath(question);
-  const keyboard = buildQuestionKeyboard(question, session.id);
-  const text = buildQuestionText(question, user.language, mode, topicFilter);
-
-  try {
-    if (imagePath) {
-      try {
-        await getBot().telegram.sendPhoto(user.chatId, { source: imagePath });
-      } catch (error) {
-        console.error(`Failed to send question image for ${question.key}:`, error);
+    const claimed = await tryStartUserFlow(user.telegramId, sessionId, nowIso());
+    if (!claimed) {
+      const currentFlow = await getFlowForUser(user);
+      if (currentFlow.state === "question_open" && currentFlow.activeSessionId) {
+        return resendPendingQuestion(
+          user,
+          currentFlow.activeSessionId,
+          mode,
+          topicFilter,
+          ctx,
+        );
       }
+
+      if (mode !== "daily") {
+        await notifyQuizMessage(
+          user,
+          buildQuestionFlowBlockedText(user, currentFlow.state),
+          ctx,
+        );
+      }
+      return false;
     }
 
-    await getBot().telegram.sendMessage(user.chatId, text, keyboard);
+    flowClaimed = true;
+    await createQuizSession(session);
+    await deliverQuestionMessage(user, question, session, mode, topicFilter, ctx);
+    return true;
   } catch (error) {
-    await deleteQuizSession(session.id);
-    await setFlowForUser(user, "idle");
-    throw error;
-  }
+    console.error(`Failed to send question to ${user.telegramId}:`, error);
+    await deleteQuizSession(sessionId).catch((cleanupError) => {
+      console.error(`Failed to delete quiz session ${sessionId}:`, cleanupError);
+    });
 
-  return true;
+    if (flowClaimed) {
+      await releaseUserFlow(user.telegramId);
+    }
+
+    if (mode !== "daily") {
+      await notifyQuizMessage(
+        user,
+        t(
+          user.language,
+          "Не удалось отправить вопрос. Попробуй еще раз через /quiz.",
+          "Չհաջողվեց ուղարկել հարցը։ Փորձիր կրկին /quiz հրամանով։",
+        ),
+        ctx,
+      ).catch((notifyError) => {
+        console.error(`Failed to notify user ${user.telegramId} about send failure:`, notifyError);
+      });
+    }
+
+    return false;
+  }
 }
 
 function getOptionText(question: QuizQuestion, optionId: string | undefined): string {
@@ -1120,7 +1264,7 @@ function registerCommands(): void {
     }
 
     const user = await upsertUser(from.id, ctx.chat.id, from.first_name, from.username);
-    await sendQuestion(user, "manual");
+    await sendQuestion(user, "manual", undefined, ctx);
   });
 
   getBot().command("mistakes", async (ctx) => {
@@ -1130,7 +1274,7 @@ function registerCommands(): void {
     }
 
     const user = await upsertUser(from.id, ctx.chat.id, from.first_name, from.username);
-    await sendQuestion(user, "mistake");
+    await sendQuestion(user, "mistake", undefined, ctx);
   });
 
   getBot().command("progress", async (ctx) => {
@@ -1240,7 +1384,7 @@ function registerCommands(): void {
 
     const user = await upsertUser(from.id, chatId, from.first_name, from.username);
     await ctx.answerCbQuery();
-    await sendQuestion(user, "manual");
+    await sendQuestion(user, "manual", undefined, ctx);
   });
 
   getBot().action("menu|topics", async (ctx) => {
@@ -1267,7 +1411,7 @@ function registerCommands(): void {
 
     const user = await upsertUser(from.id, chatId, from.first_name, from.username);
     await ctx.answerCbQuery();
-    await sendQuestion(user, "mistake");
+    await sendQuestion(user, "mistake", undefined, ctx);
   });
 
   getBot().action("menu|settings", async (ctx) => {
@@ -1332,9 +1476,9 @@ function registerCommands(): void {
       return;
     }
 
-    await setFlowForUser(user, "idle");
+    await releaseUserFlow(user.telegramId);
     await ctx.answerCbQuery();
-    await sendQuestion(user, "manual");
+    await sendQuestion(user, "manual", undefined, ctx);
   });
 
   getBot().action(/topic\|(.+)/, async (ctx) => {
@@ -1376,7 +1520,7 @@ function registerCommands(): void {
 
     const user = await upsertUser(from.id, chatId, from.first_name, from.username);
     await ctx.answerCbQuery();
-    await sendQuestion(user, "manual", topic.slug);
+    await sendQuestion(user, "manual", topic.slug, ctx);
   });
 
   getBot().action(/ref\|sign\|(.+)/, async (ctx) => {
