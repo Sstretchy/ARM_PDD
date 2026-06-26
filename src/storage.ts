@@ -4,6 +4,7 @@ import path from "node:path";
 import type { InArgs } from "@libsql/client/node";
 
 import { db } from "./db.js";
+import { log } from "./logger.js";
 import type {
   AnswerRecord,
   ErrorReportRecord,
@@ -496,15 +497,29 @@ function buildDefaultUserFlow(telegramId: number): UserFlowRecord {
 }
 
 export async function getUserFlow(telegramId: number): Promise<UserFlowRecord> {
+  log.debug("storage", "get_user_flow_start", { telegramId });
   const result = await execute(
     "SELECT * FROM user_flows WHERE telegram_id = ? LIMIT 1",
     [telegramId],
   );
   const row = result.rows[0] as RowMap | undefined;
-  return row ? mapUserFlow(row) : buildDefaultUserFlow(telegramId);
+  const flow = row ? mapUserFlow(row) : buildDefaultUserFlow(telegramId);
+  log.debug("storage", "get_user_flow_done", {
+    telegramId,
+    state: flow.state,
+    activeSessionId: flow.activeSessionId,
+    found: Boolean(row),
+  });
+  return flow;
 }
 
 export async function setUserFlow(flow: UserFlowRecord): Promise<void> {
+  log.info("storage", "set_user_flow", {
+    telegramId: flow.telegramId,
+    state: flow.state,
+    activeSessionId: flow.activeSessionId,
+    updatedAt: flow.updatedAt,
+  });
   await execute(
     `
       INSERT INTO user_flows (
@@ -529,6 +544,7 @@ export async function tryStartUserFlow(
   activeSessionId: string,
   updatedAt: string,
 ): Promise<boolean> {
+  log.info("storage", "try_start_user_flow_start", { telegramId, activeSessionId, updatedAt });
   const result = await execute(
     `
       INSERT INTO user_flows (
@@ -543,10 +559,18 @@ export async function tryStartUserFlow(
     [telegramId, "question_open", activeSessionId, updatedAt],
   );
 
-  return result.rowsAffected > 0;
+  const claimed = result.rowsAffected > 0;
+  log.info("storage", "try_start_user_flow_done", {
+    telegramId,
+    activeSessionId,
+    claimed,
+    rowsAffected: result.rowsAffected,
+  });
+  return claimed;
 }
 
 export async function releaseUserFlow(telegramId: number, updatedAt?: string): Promise<void> {
+  log.info("storage", "release_user_flow", { telegramId, updatedAt });
   await setUserFlow({
     telegramId,
     state: "idle",
@@ -566,6 +590,7 @@ export async function upsertUser(
   firstName?: string,
   username?: string,
 ): Promise<UserRecord> {
+  log.debug("storage", "upsert_user_start", { telegramId, chatId, firstName, username });
   const existingResult = await execute(
     "SELECT * FROM users WHERE telegram_id = ? LIMIT 1",
     [telegramId],
@@ -583,7 +608,7 @@ export async function upsertUser(
       [chatId, firstName ?? null, username ?? null, now, telegramId],
     );
 
-    return {
+    const updated = {
       ...mapUser(existing),
       chatId,
       firstName,
@@ -591,6 +616,12 @@ export async function upsertUser(
       isSubscribed: true,
       updatedAt: now,
     };
+    log.debug("storage", "upsert_user_updated", {
+      telegramId,
+      chatId: updated.chatId,
+      language: updated.language,
+    });
+    return updated;
   }
 
   const created: UserRecord = {
@@ -625,6 +656,11 @@ export async function upsertUser(
     ],
   );
 
+  log.info("storage", "upsert_user_created", {
+    telegramId: created.telegramId,
+    chatId: created.chatId,
+    language: created.language,
+  });
   return created;
 }
 
@@ -796,6 +832,14 @@ export async function getQuizSessions(): Promise<QuizSessionRecord[]> {
 }
 
 export async function createQuizSession(session: QuizSessionRecord): Promise<void> {
+  log.info("storage", "create_quiz_session", {
+    sessionId: session.id,
+    telegramId: session.telegramId,
+    chatId: session.chatId,
+    questionKey: session.questionKey,
+    mode: session.mode,
+    status: session.status,
+  });
   await execute(
     `
       INSERT INTO quiz_sessions (
@@ -861,16 +905,26 @@ export async function updateQuizSession(session: QuizSessionRecord): Promise<voi
 }
 
 export async function deleteQuizSession(sessionId: string): Promise<void> {
+  log.info("storage", "delete_quiz_session", { sessionId });
   await execute("DELETE FROM quiz_sessions WHERE id = ?", [sessionId]);
 }
 
 export async function getQuizSessionById(sessionId: string): Promise<QuizSessionRecord | undefined> {
+  log.debug("storage", "get_quiz_session_start", { sessionId });
   const result = await execute(
     "SELECT * FROM quiz_sessions WHERE id = ? LIMIT 1",
     [sessionId],
   );
   const row = result.rows[0] as RowMap | undefined;
-  return row ? mapQuizSession(row) : undefined;
+  const session = row ? mapQuizSession(row) : undefined;
+  log.debug("storage", "get_quiz_session_done", {
+    sessionId,
+    found: Boolean(session),
+    status: session?.status,
+    telegramId: session?.telegramId,
+    questionKey: session?.questionKey,
+  });
+  return session;
 }
 
 export async function completeQuizAnswer(params: {
@@ -882,6 +936,13 @@ export async function completeQuizAnswer(params: {
   sessionId: string;
   telegramId: number;
 }): Promise<boolean> {
+  log.info("storage", "complete_quiz_answer_start", {
+    sessionId: params.sessionId,
+    telegramId: params.telegramId,
+    questionKey: params.answer.questionKey,
+    selectedOptionId: params.selectedOptionId,
+    isCorrect: params.isCorrect,
+  });
   await initializeDatabase();
 
   const transaction = await db.transaction("write");
@@ -903,6 +964,11 @@ export async function completeQuizAnswer(params: {
     });
 
     if (sessionUpdate.rowsAffected === 0) {
+      log.warn("storage", "complete_quiz_answer_session_not_pending", {
+        sessionId: params.sessionId,
+        telegramId: params.telegramId,
+        rowsAffected: sessionUpdate.rowsAffected,
+      });
       await transaction.rollback();
       return false;
     }
@@ -978,8 +1044,18 @@ export async function completeQuizAnswer(params: {
     });
 
     await transaction.commit();
+    log.info("storage", "complete_quiz_answer_done", {
+      sessionId: params.sessionId,
+      telegramId: params.telegramId,
+      isCorrect: params.isCorrect,
+      nextStatus: params.nextState.status,
+    });
     return true;
   } catch (error) {
+    log.error("storage", "complete_quiz_answer_failed", error, {
+      sessionId: params.sessionId,
+      telegramId: params.telegramId,
+    });
     if (!transaction.closed) {
       await transaction.rollback();
     }
