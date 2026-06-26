@@ -1,6 +1,7 @@
 import cron from "node-cron";
 import { Markup, Telegraf } from "telegraf";
 import type { Context } from "telegraf";
+import type { BotCommand } from "telegraf/types";
 
 import { config } from "./config.js";
 import { log } from "./logger.js";
@@ -50,6 +51,7 @@ import type {
 
 let bot: Telegraf | undefined;
 let commandsRegistered = false;
+let commandsMenuRegistered = false;
 let schedulesRegistered = false;
 let middlewareRegistered = false;
 const localProcessingUsers = new Set<number>();
@@ -331,6 +333,50 @@ function buildStartKeyboard(language: LanguageCode) {
       Markup.button.callback(t(language, "Случайный термин", "Պատահական տերմին"), "menu|term"),
     ],
   ]);
+}
+
+const BOT_COMMANDS_RU: BotCommand[] = [
+  { command: "start", description: "Главное меню" },
+  { command: "quiz", description: "Начать квиз" },
+  { command: "topics", description: "10 групп вопросов" },
+  { command: "mistakes", description: "Повтор ошибок" },
+  { command: "progress", description: "Прогресс обучения" },
+  { command: "settings", description: "Язык и настройки" },
+  { command: "sign", description: "Случайный знак или разметка" },
+  { command: "term", description: "Случайный термин" },
+  { command: "stop", description: "Остановить ежедневные вопросы" },
+];
+
+const BOT_COMMANDS_AM: BotCommand[] = [
+  { command: "start", description: "Գլխավոր մենյու" },
+  { command: "quiz", description: "Սկսել քուիզը" },
+  { command: "topics", description: "10 հարցաշարային խմբեր" },
+  { command: "mistakes", description: "Սխալների կրկնություն" },
+  { command: "progress", description: "Ուսուցման առաջընթաց" },
+  { command: "settings", description: "Լեզու և կարգավորումներ" },
+  { command: "sign", description: "Պատահական նշան կամ գծանշում" },
+  { command: "term", description: "Պատահական տերմին" },
+  { command: "stop", description: "Դադարեցնել ամենօրյա հարցերը" },
+];
+
+async function registerBotCommandsMenu(): Promise<void> {
+  if (commandsMenuRegistered) {
+    return;
+  }
+
+  commandsMenuRegistered = true;
+
+  try {
+    await getBot().telegram.setMyCommands(BOT_COMMANDS_RU);
+    await getBot().telegram.setMyCommands(BOT_COMMANDS_AM, { language_code: "hy" });
+    log.info("bot", "commands_menu_registered", {
+      ruCount: BOT_COMMANDS_RU.length,
+      amCount: BOT_COMMANDS_AM.length,
+    });
+  } catch (error) {
+    commandsMenuRegistered = false;
+    log.error("bot", "commands_menu_register_failed", error);
+  }
 }
 
 function buildMainMenuText(language: LanguageCode): string {
@@ -2082,6 +2128,7 @@ export function createBot(options?: { enableSchedules?: boolean }): Telegraf {
   }
 
   registerCommands();
+  void registerBotCommandsMenu();
   if (options?.enableSchedules) {
     registerSchedules();
   }

@@ -14,7 +14,8 @@
     "preview:signs": "node scripts/build-signs-preview.mjs",
     "scrape:drv": "node scripts/scrape-drv-test-practice.mjs",
     "start": "tsx src/index.ts",
-    "check": "tsc --noEmit -p tsconfig.json"
+    "check": "tsc --noEmit -p tsconfig.json",
+    "db:reset": "node scripts/reset-db.mjs --yes"
   },
   "keywords": [
     "telegram",
