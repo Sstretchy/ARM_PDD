@@ -41,9 +41,14 @@ import type {
   UserRecord,
 } from "./types.js";
 
-const bot = new Telegraf(config.botToken);
+let bot: Telegraf | undefined;
 let commandsRegistered = false;
 let schedulesRegistered = false;
+
+function getBot(): Telegraf {
+  bot ??= new Telegraf(config.botToken);
+  return bot;
+}
 
 const TOPICS: TopicMeta[] = [
   {
@@ -495,7 +500,7 @@ function buildQuestionText(question: QuizQuestion, language: LanguageCode, mode:
 async function sendQuestion(user: UserRecord, mode: QuizMode, topicFilter?: TopicSlug): Promise<boolean> {
   const question = await selectNextQuestion(user, mode, topicFilter);
   if (!question) {
-    await bot.telegram.sendMessage(
+    await getBot().telegram.sendMessage(
       user.chatId,
       t(
         user.language,
@@ -514,9 +519,9 @@ async function sendQuestion(user: UserRecord, mode: QuizMode, topicFilter?: Topi
   const text = buildQuestionText(question, user.language, mode);
 
   if (imagePath) {
-    await bot.telegram.sendPhoto(user.chatId, { source: imagePath }, { caption: text, ...keyboard });
+    await getBot().telegram.sendPhoto(user.chatId, { source: imagePath }, { caption: text, ...keyboard });
   } else {
-    await bot.telegram.sendMessage(user.chatId, text, keyboard);
+    await getBot().telegram.sendMessage(user.chatId, text, keyboard);
   }
 
   return true;
@@ -675,7 +680,7 @@ async function sendSignInfo(chatId: number, language: LanguageCode, query?: stri
     pickRandom(pool);
 
   if (!record) {
-    await bot.telegram.sendMessage(
+    await getBot().telegram.sendMessage(
       chatId,
       t(language, "Знаки пока не загружены.", "Նշանները դեռ բեռնված չեն։"),
     );
@@ -693,11 +698,11 @@ async function sendSignInfo(chatId: number, language: LanguageCode, query?: stri
   const imagePath = resolveAssetImagePath(record.images?.[0]);
   const keyboard = buildRelatedEntityKeyboard(record, language);
   if (imagePath) {
-    await bot.telegram.sendPhoto(chatId, { source: imagePath }, { caption: text, ...keyboard });
+    await getBot().telegram.sendPhoto(chatId, { source: imagePath }, { caption: text, ...keyboard });
     return;
   }
 
-  await bot.telegram.sendMessage(chatId, text, keyboard);
+  await getBot().telegram.sendMessage(chatId, text, keyboard);
 }
 
 async function sendTermInfo(chatId: number, language: LanguageCode, query?: string): Promise<void> {
@@ -714,7 +719,7 @@ async function sendTermInfo(chatId: number, language: LanguageCode, query?: stri
     pickRandom(terms);
 
   if (!term) {
-    await bot.telegram.sendMessage(
+    await getBot().telegram.sendMessage(
       chatId,
       t(language, "Термины пока не загружены.", "Տերմինները դեռ բեռնված չեն։"),
     );
@@ -729,11 +734,11 @@ async function sendTermInfo(chatId: number, language: LanguageCode, query?: stri
     .filter(Boolean)
     .join("\n\n");
 
-  await bot.telegram.sendMessage(chatId, text);
+  await getBot().telegram.sendMessage(chatId, text);
 }
 
 async function sendDailySummary(user: UserRecord): Promise<void> {
-  await bot.telegram.sendMessage(user.chatId, await buildDailySummaryText(user));
+  await getBot().telegram.sendMessage(user.chatId, await buildDailySummaryText(user));
 }
 
 async function startErrorReportFlow(ctx: Context, questionKey: string): Promise<void> {
@@ -865,7 +870,7 @@ async function answerQuestion(ctx: Context, sessionId: string, optionId: string)
     // Ignore markup edit failures for old messages.
   }
 
-  await bot.telegram.sendMessage(
+  await getBot().telegram.sendMessage(
     chatId,
     buildAnswerExplanation(user, question, optionId),
     buildFollowupKeyboard(user.language, question),
@@ -879,7 +884,7 @@ function registerCommands(): void {
 
   commandsRegistered = true;
 
-  bot.on("text", async (ctx, next) => {
+  getBot().on("text", async (ctx, next) => {
     const captured = await maybeCaptureErrorReport(ctx);
     if (captured) {
       return;
@@ -888,7 +893,7 @@ function registerCommands(): void {
     return next();
   });
 
-  bot.start(async (ctx) => {
+  getBot().start(async (ctx) => {
     const from = ctx.from;
     if (!from) {
       return;
@@ -913,7 +918,7 @@ function registerCommands(): void {
     );
   });
 
-  bot.command("settings", async (ctx) => {
+  getBot().command("settings", async (ctx) => {
     const from = ctx.from;
     if (!from) {
       return;
@@ -926,7 +931,7 @@ function registerCommands(): void {
     );
   });
 
-  bot.command("language", async (ctx) => {
+  getBot().command("language", async (ctx) => {
     const from = ctx.from;
     if (!from) {
       return;
@@ -939,7 +944,7 @@ function registerCommands(): void {
     );
   });
 
-  bot.command("quiz", async (ctx) => {
+  getBot().command("quiz", async (ctx) => {
     const from = ctx.from;
     if (!from) {
       return;
@@ -949,7 +954,7 @@ function registerCommands(): void {
     await sendQuestion(user, "manual");
   });
 
-  bot.command("mistakes", async (ctx) => {
+  getBot().command("mistakes", async (ctx) => {
     const from = ctx.from;
     if (!from) {
       return;
@@ -959,7 +964,7 @@ function registerCommands(): void {
     await sendQuestion(user, "mistake");
   });
 
-  bot.command("progress", async (ctx) => {
+  getBot().command("progress", async (ctx) => {
     const from = ctx.from;
     if (!from) {
       return;
@@ -969,7 +974,7 @@ function registerCommands(): void {
     await ctx.reply(await buildProgressText(user));
   });
 
-  bot.command("topics", async (ctx) => {
+  getBot().command("topics", async (ctx) => {
     const from = ctx.from;
     if (!from) {
       return;
@@ -982,7 +987,7 @@ function registerCommands(): void {
     await ctx.reply(lines.join("\n"), buildTopicsKeyboard());
   });
 
-  bot.command("sign", async (ctx) => {
+  getBot().command("sign", async (ctx) => {
     const from = ctx.from;
     if (!from) {
       return;
@@ -992,7 +997,7 @@ function registerCommands(): void {
     await sendSignInfo(user.chatId, user.language, getCommandArg(ctx));
   });
 
-  bot.command("signs", async (ctx) => {
+  getBot().command("signs", async (ctx) => {
     const from = ctx.from;
     if (!from) {
       return;
@@ -1002,7 +1007,7 @@ function registerCommands(): void {
     await sendSignInfo(user.chatId, user.language, getCommandArg(ctx));
   });
 
-  bot.command("term", async (ctx) => {
+  getBot().command("term", async (ctx) => {
     const from = ctx.from;
     if (!from) {
       return;
@@ -1012,7 +1017,7 @@ function registerCommands(): void {
     await sendTermInfo(user.chatId, user.language, getCommandArg(ctx));
   });
 
-  bot.command("stop", async (ctx) => {
+  getBot().command("stop", async (ctx) => {
     const from = ctx.from;
     if (!from) {
       return;
@@ -1033,7 +1038,7 @@ function registerCommands(): void {
     );
   });
 
-  bot.action(/settings\|lang\|(am|ru)/, async (ctx) => {
+  getBot().action(/settings\|lang\|(am|ru)/, async (ctx) => {
     const from = ctx.from;
     const chatId = ctx.chat?.id;
     if (!from || !chatId) {
@@ -1051,12 +1056,12 @@ function registerCommands(): void {
     );
   });
 
-  bot.action(/report\|(.+)/, async (ctx) => {
+  getBot().action(/report\|(.+)/, async (ctx) => {
     const [, questionKey] = ctx.match;
     await startErrorReportFlow(ctx, questionKey);
   });
 
-  bot.action("menu|quiz", async (ctx) => {
+  getBot().action("menu|quiz", async (ctx) => {
     const from = ctx.from;
     const chatId = ctx.chat?.id;
     if (!from || !chatId) {
@@ -1069,7 +1074,7 @@ function registerCommands(): void {
     await sendQuestion(user, "manual");
   });
 
-  bot.action("menu|topics", async (ctx) => {
+  getBot().action("menu|topics", async (ctx) => {
     const from = ctx.from;
     const chatId = ctx.chat?.id;
     if (!from || !chatId) {
@@ -1083,7 +1088,7 @@ function registerCommands(): void {
     await ctx.reply(lines.join("\n"), buildTopicsKeyboard());
   });
 
-  bot.action("menu|mistakes", async (ctx) => {
+  getBot().action("menu|mistakes", async (ctx) => {
     const from = ctx.from;
     const chatId = ctx.chat?.id;
     if (!from || !chatId) {
@@ -1096,7 +1101,7 @@ function registerCommands(): void {
     await sendQuestion(user, "mistake");
   });
 
-  bot.action("menu|settings", async (ctx) => {
+  getBot().action("menu|settings", async (ctx) => {
     const from = ctx.from;
     const chatId = ctx.chat?.id;
     if (!from || !chatId) {
@@ -1112,7 +1117,7 @@ function registerCommands(): void {
     );
   });
 
-  bot.action("menu|sign", async (ctx) => {
+  getBot().action("menu|sign", async (ctx) => {
     const from = ctx.from;
     const chatId = ctx.chat?.id;
     if (!from || !chatId) {
@@ -1125,7 +1130,7 @@ function registerCommands(): void {
     await sendSignInfo(chatId, user.language);
   });
 
-  bot.action("menu|term", async (ctx) => {
+  getBot().action("menu|term", async (ctx) => {
     const from = ctx.from;
     const chatId = ctx.chat?.id;
     if (!from || !chatId) {
@@ -1138,12 +1143,12 @@ function registerCommands(): void {
     await sendTermInfo(chatId, user.language);
   });
 
-  bot.action(/answer\|([^|]+)\|([^|]+)/, async (ctx) => {
+  getBot().action(/answer\|([^|]+)\|([^|]+)/, async (ctx) => {
     const [, sessionId, optionId] = ctx.match;
     await answerQuestion(ctx, sessionId, optionId);
   });
 
-  bot.action("nav|next-quiz", async (ctx) => {
+  getBot().action("nav|next-quiz", async (ctx) => {
     const from = ctx.from;
     const chatId = ctx.chat?.id;
     if (!from || !chatId) {
@@ -1158,7 +1163,7 @@ function registerCommands(): void {
     await sendQuestion(user, "manual");
   });
 
-  bot.action(/topic\|(.+)/, async (ctx) => {
+  getBot().action(/topic\|(.+)/, async (ctx) => {
     const from = ctx.from;
     const chatId = ctx.chat?.id;
     if (!from || !chatId) {
@@ -1180,7 +1185,7 @@ function registerCommands(): void {
     ]));
   });
 
-  bot.action(/topicquiz\|(.+)/, async (ctx) => {
+  getBot().action(/topicquiz\|(.+)/, async (ctx) => {
     const from = ctx.from;
     const chatId = ctx.chat?.id;
     if (!from || !chatId) {
@@ -1202,7 +1207,7 @@ function registerCommands(): void {
     await sendQuestion(user, "manual", topic.slug);
   });
 
-  bot.action(/ref\|sign\|(.+)/, async (ctx) => {
+  getBot().action(/ref\|sign\|(.+)/, async (ctx) => {
     const from = ctx.from;
     const chatId = ctx.chat?.id;
     if (!from || !chatId) {
@@ -1216,7 +1221,7 @@ function registerCommands(): void {
     await sendSignInfo(chatId, user.language, signId);
   });
 
-  bot.action(/ref\|term\|(.+)/, async (ctx) => {
+  getBot().action(/ref\|term\|(.+)/, async (ctx) => {
     const from = ctx.from;
     const chatId = ctx.chat?.id;
     if (!from || !chatId) {
@@ -1274,14 +1279,14 @@ export async function runScheduledTouch(slotIndex: number): Promise<void> {
   }
 }
 
-bot.catch((error: unknown, ctx: Context) => {
-  console.error(`Bot error on update ${ctx.update.update_id}:`, error);
-});
-
 export function createBot(options?: { enableSchedules?: boolean }): Telegraf {
   registerCommands();
   if (options?.enableSchedules) {
     registerSchedules();
   }
-  return bot;
+  const instance = getBot();
+  instance.catch((error: unknown, ctx: Context) => {
+    console.error(`Bot error on update ${ctx.update.update_id}:`, error);
+  });
+  return instance;
 }

@@ -39,16 +39,24 @@ function getCronListEnv(name: string, fallback: string[]): string[] {
 }
 
 export const config: AppConfig = {
-  botToken: getRequiredEnv("BOT_TOKEN"),
-  timezone: process.env.TIMEZONE ?? "Asia/Yerevan",
-  touchCrons: getCronListEnv("TOUCH_CRONS", [
-    "30 9 * * *",
-    "30 11 * * *",
-    "30 13 * * *",
-    "30 15 * * *",
-    "30 17 * * *",
-    "0 20 * * *",
-    "0 22 * * *",
-  ]),
-  lessonSize: getNumberEnv("LESSON_SIZE", 3),
+  get botToken() {
+    return getRequiredEnv("BOT_TOKEN");
+  },
+  get timezone() {
+    return process.env.TIMEZONE ?? "Asia/Yerevan";
+  },
+  get touchCrons() {
+    return getCronListEnv("TOUCH_CRONS", [
+      "30 9 * * *",
+      "30 11 * * *",
+      "30 13 * * *",
+      "30 15 * * *",
+      "30 17 * * *",
+      "0 20 * * *",
+      "0 22 * * *",
+    ]);
+  },
+  get lessonSize() {
+    return getNumberEnv("LESSON_SIZE", 3);
+  },
 };
