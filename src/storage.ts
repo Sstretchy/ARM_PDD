@@ -628,6 +628,43 @@ export async function tryStartUserFlow(
   return claimed;
 }
 
+export async function tryTransitionFlowToQuestion(
+  telegramId: number,
+  activeSessionId: string,
+  updatedAt: string,
+): Promise<boolean> {
+  log.info("storage", "try_transition_flow_to_question_start", {
+    telegramId,
+    activeSessionId,
+    updatedAt,
+  });
+  const result = await execute(
+    `
+      INSERT INTO user_flows (
+        telegram_id, state, active_session_id,
+        active_question_message_id, active_explanation_message_id, updated_at
+      ) VALUES (?, ?, ?, NULL, NULL, ?)
+      ON CONFLICT(telegram_id) DO UPDATE SET
+        state = excluded.state,
+        active_session_id = excluded.active_session_id,
+        active_question_message_id = NULL,
+        active_explanation_message_id = NULL,
+        updated_at = excluded.updated_at
+      WHERE user_flows.state IN ('idle', 'explanation_shown')
+    `,
+    [telegramId, "question_open", activeSessionId, updatedAt],
+  );
+
+  const claimed = result.rowsAffected > 0;
+  log.info("storage", "try_transition_flow_to_question_done", {
+    telegramId,
+    activeSessionId,
+    claimed,
+    rowsAffected: result.rowsAffected,
+  });
+  return claimed;
+}
+
 const PROCESSING_LOCK_STALE_MS = 30_000;
 
 export async function tryAcquireProcessingLock(

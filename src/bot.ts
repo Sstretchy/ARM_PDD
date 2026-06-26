@@ -30,7 +30,7 @@ import {
   setSubscription,
   setUserFlow,
   setUserLanguage,
-  tryStartUserFlow,
+  tryTransitionFlowToQuestion,
   updateUser,
   upsertUser,
 } from "./storage.js";
@@ -320,6 +320,24 @@ function buildStaleCallbackText(language: LanguageCode): string {
     "Это старый вопрос — используй меню (/) или «Начать квиз».",
     "Սա հին հարց է — օգտագործիր մենյուն (/) կամ «Սկսել քուիզը»։",
   );
+}
+
+type PreviousQuizMessageIds = {
+  question?: number;
+  explanation?: number;
+};
+
+async function stripPreviousQuizMessages(
+  chatId: number,
+  previousMessageIds: PreviousQuizMessageIds | undefined,
+  ctx?: Context,
+): Promise<void> {
+  if (!previousMessageIds) {
+    return;
+  }
+
+  await stripMessageKeyboard(chatId, previousMessageIds.question, ctx);
+  await stripMessageKeyboard(chatId, previousMessageIds.explanation, ctx);
 }
 
 async function stripMessageKeyboard(
@@ -1138,6 +1156,7 @@ async function deliverQuestionMessage(
   mode: QuizMode,
   topicFilter?: TopicSlug,
   ctx?: Context,
+  previousMessageIds?: PreviousQuizMessageIds,
 ): Promise<void> {
   const imagePath = resolveQuestionImagePath(question);
   const keyboard = buildQuestionKeyboard(question, session.id);
@@ -1145,10 +1164,6 @@ async function deliverQuestionMessage(
   const chatId = user.chatId;
   const targetChatId = resolveDeliveryChatId(ctx, chatId);
   const deliveryVia = ctx ? "ctx.telegram" : "bot.telegram";
-  const currentFlow = await getUserFlow(user.telegramId);
-
-  await stripMessageKeyboard(chatId, currentFlow.activeQuestionMessageId, ctx);
-  await stripMessageKeyboard(chatId, currentFlow.activeExplanationMessageId, ctx);
 
   log.info("delivery", "deliver_question_start", {
     telegramId: user.telegramId,
@@ -1164,8 +1179,8 @@ async function deliverQuestionMessage(
     mode,
     topicFilter,
     textLength: text.length,
-    strippedQuestionMessageId: currentFlow.activeQuestionMessageId,
-    strippedExplanationMessageId: currentFlow.activeExplanationMessageId,
+    previousQuestionMessageId: previousMessageIds?.question,
+    previousExplanationMessageId: previousMessageIds?.explanation,
   });
 
   let questionMessageId: number | undefined;
@@ -1240,6 +1255,8 @@ async function deliverQuestionMessage(
     activeExplanationMessageId: undefined,
     updatedAt: nowIso(),
   });
+
+  await stripPreviousQuizMessages(chatId, previousMessageIds, ctx);
 }
 
 async function notifyQuizMessage(
@@ -1299,7 +1316,11 @@ async function resendPendingQuestion(
   }
 
   try {
-    await deliverQuestionMessage(user, question, session, session.mode, topicFilter, ctx);
+    const currentFlow = await getUserFlow(user.telegramId);
+    await deliverQuestionMessage(user, question, session, session.mode, topicFilter, ctx, {
+      question: currentFlow.activeQuestionMessageId,
+      explanation: currentFlow.activeExplanationMessageId,
+    });
     log.info("quiz", "resend_pending_done", { telegramId: user.telegramId, sessionId });
     return true;
   } catch (error) {
@@ -1366,6 +1387,14 @@ async function sendQuestion(
     });
   }
 
+  const previousMessageIds: PreviousQuizMessageIds | undefined =
+    flow.state === "explanation_shown"
+      ? {
+          question: flow.activeQuestionMessageId,
+          explanation: flow.activeExplanationMessageId,
+        }
+      : undefined;
+
   if (flow.state === "explanation_shown") {
     if (mode === "daily") {
       log.debug("quiz", "send_question_skip_daily_explanation_pending", {
@@ -1375,15 +1404,12 @@ async function sendQuestion(
       return false;
     }
 
-    log.info("quiz", "send_question_auto_release_explanation", {
+    log.info("quiz", "send_question_from_explanation", {
       telegramId: user.telegramId,
       activeSessionId: flow.activeSessionId,
-      activeQuestionMessageId: flow.activeQuestionMessageId,
-      activeExplanationMessageId: flow.activeExplanationMessageId,
+      previousQuestionMessageId: previousMessageIds?.question,
+      previousExplanationMessageId: previousMessageIds?.explanation,
     });
-    await stripMessageKeyboard(user.chatId, flow.activeQuestionMessageId, ctx);
-    await stripMessageKeyboard(user.chatId, flow.activeExplanationMessageId, ctx);
-    await releaseUserFlow(user.telegramId);
   } else if (flow.state === "question_open") {
     log.warn("quiz", "send_question_blocked_open_question", {
       telegramId: user.telegramId,
@@ -1439,7 +1465,7 @@ async function sendQuestion(
   });
 
   try {
-    const claimed = await tryStartUserFlow(user.telegramId, sessionId, nowIso());
+    const claimed = await tryTransitionFlowToQuestion(user.telegramId, sessionId, nowIso());
     if (!claimed) {
       log.warn("quiz", "send_question_flow_claim_failed", {
         telegramId: user.telegramId,
@@ -1461,33 +1487,6 @@ async function sendQuestion(
         );
       }
 
-      if (currentFlow.state === "explanation_shown") {
-        await stripMessageKeyboard(
-          user.chatId,
-          currentFlow.activeQuestionMessageId,
-          ctx,
-        );
-        await stripMessageKeyboard(
-          user.chatId,
-          currentFlow.activeExplanationMessageId,
-          ctx,
-        );
-        await releaseUserFlow(user.telegramId);
-        const retryClaimed = await tryStartUserFlow(user.telegramId, sessionId, nowIso());
-        if (retryClaimed) {
-          flowClaimed = true;
-          await createQuizSession(session);
-          await deliverQuestionMessage(user, question, session, mode, topicFilter, ctx);
-          log.info("quiz", "send_question_success_after_retry", {
-            telegramId: user.telegramId,
-            sessionId,
-            questionKey: question.key,
-            durationMs: Date.now() - startedAt,
-          });
-          return true;
-        }
-      }
-
       if (mode !== "daily") {
         await notifyQuizMessage(
           user,
@@ -1504,7 +1503,15 @@ async function sendQuestion(
     await createQuizSession(session);
     log.info("quiz", "send_question_session_created", { telegramId: user.telegramId, sessionId });
 
-    await deliverQuestionMessage(user, question, session, mode, topicFilter, ctx);
+    await deliverQuestionMessage(
+      user,
+      question,
+      session,
+      mode,
+      topicFilter,
+      ctx,
+      previousMessageIds,
+    );
     log.info("quiz", "send_question_success", {
       telegramId: user.telegramId,
       sessionId,
@@ -1963,6 +1970,8 @@ async function answerQuestion(ctx: Context, sessionId: string, optionId: string)
       : t(user.language, "Неверно", "Սխալ է"),
   );
 
+  await stripMessageKeyboard(chatId, flow.activeQuestionMessageId, ctx);
+
   let explanationMessageId: number | undefined;
   try {
     log.info("answer", "answer_question_send_explanation", {
@@ -1970,6 +1979,7 @@ async function answerQuestion(ctx: Context, sessionId: string, optionId: string)
       chatId,
       targetChatId: resolveDeliveryChatId(ctx, chatId),
       sessionId,
+      questionMessageId: flow.activeQuestionMessageId,
     });
     explanationMessageId = await sendTextToChat(chatId, explanationText, followupKeyboard, ctx);
     await setUserFlow({
@@ -1993,18 +2003,6 @@ async function answerQuestion(ctx: Context, sessionId: string, optionId: string)
       chatId,
     });
   }
-
-  void ctx
-    .editMessageReplyMarkup(undefined)
-    .then(() => {
-      log.debug("answer", "answer_question_markup_cleared", { sessionId });
-    })
-    .catch((error: unknown) => {
-      log.warn("answer", "answer_question_markup_clear_failed", {
-        sessionId,
-        error: error instanceof Error ? error.message : String(error),
-      });
-    });
 
   log.info("answer", "answer_question_done", { telegramId: user.telegramId, sessionId, isCorrect });
 }
