@@ -9,14 +9,16 @@ import {
   completeQuizAnswer,
   createQuizSession,
   deleteQuizSession,
-  getAnswers,
+  getAnswersForUser,
+  releaseProcessingLock,
   releaseUserFlow,
+  tryAcquireProcessingLock,
   getMarkings,
   getQuestionByKey,
-  getQuestionStates,
+  getQuestionStatesForUser,
   getQuestions,
   getQuizSessionById,
-  getQuizSessions,
+  getQuizSessionsForUser,
   getSigns,
   getTerms,
   getUserFlow,
@@ -50,6 +52,7 @@ let bot: Telegraf | undefined;
 let commandsRegistered = false;
 let schedulesRegistered = false;
 let middlewareRegistered = false;
+const localProcessingUsers = new Set<number>();
 
 function getBot(): Telegraf {
   bot ??= new Telegraf(config.botToken);
@@ -149,6 +152,45 @@ function getChatId(ctx: Context): number | undefined {
 
   const messageChatId = (ctx.message as { chat?: { id?: number } } | undefined)?.chat?.id;
   return messageChatId;
+}
+
+async function acquireUserProcessing(telegramId: number, updateId: number): Promise<boolean> {
+  if (localProcessingUsers.has(telegramId)) {
+    log.debug("bot", "processing_lock_local_busy", { telegramId, updateId });
+    return false;
+  }
+
+  const acquired = await tryAcquireProcessingLock(telegramId, updateId);
+  if (!acquired) {
+    return false;
+  }
+
+  localProcessingUsers.add(telegramId);
+  return true;
+}
+
+async function releaseUserProcessing(telegramId: number, updateId: number): Promise<void> {
+  localProcessingUsers.delete(telegramId);
+  await releaseProcessingLock(telegramId, updateId);
+}
+
+async function rejectBusyUpdate(ctx: Context): Promise<void> {
+  log.warn("bot", "update_ignored_busy", describeCtx(ctx));
+
+  if (!ctx.callbackQuery) {
+    return;
+  }
+
+  try {
+    await ctx.answerCbQuery(
+      t("ru", "Подожди, обрабатываю предыдущее действие…", "Մի վայրկյան սպասիր, նախորդ գործողությունը մշակվում է…"),
+    );
+  } catch (error) {
+    log.warn("bot", "busy_callback_answer_failed", {
+      ...describeCtx(ctx),
+      error: error instanceof Error ? error.message : String(error),
+    });
+  }
 }
 
 function describeCtx(ctx: Context): Record<string, unknown> {
@@ -307,11 +349,8 @@ function buildMainMenuText(language: LanguageCode): string {
 
 async function buildDailySummaryText(user: UserRecord): Promise<string> {
   const todayKey = getLocalDateKey(new Date());
-  const todayAnswers = (await getAnswers()).filter(
-    (answer) =>
-      answer.telegramId === user.telegramId &&
-      answer.language === user.language &&
-      getLocalDateKey(new Date(answer.answeredAt)) === todayKey,
+  const todayAnswers = (await getAnswersForUser(user.telegramId, user.language)).filter(
+    (answer) => getLocalDateKey(new Date(answer.answeredAt)) === todayKey,
   );
 
   if (todayAnswers.length === 0) {
@@ -425,16 +464,14 @@ function buildFollowupKeyboard(language: LanguageCode, question: QuizQuestion) {
   return Markup.inlineKeyboard(rows);
 }
 
-async function getQuestionStatesForUser(user: UserRecord): Promise<Map<string, UserQuestionState>> {
+async function getQuestionStateMapForUser(user: UserRecord): Promise<Map<string, UserQuestionState>> {
   return new Map(
-    (await getQuestionStates())
-      .filter((state) => state.telegramId === user.telegramId)
-      .map((state) => [state.questionKey, state]),
+    (await getQuestionStatesForUser(user.telegramId)).map((state) => [state.questionKey, state]),
   );
 }
 
 async function getSessionsForUser(user: UserRecord): Promise<QuizSessionRecord[]> {
-  return (await getQuizSessions()).filter((session) => session.telegramId === user.telegramId);
+  return getQuizSessionsForUser(user.telegramId);
 }
 
 function buildDefaultFlow(telegramId: number): UserFlowRecord {
@@ -629,7 +666,7 @@ async function selectNextQuestion(
     return undefined;
   }
 
-  const states = await getQuestionStatesForUser(user);
+  const states = await getQuestionStateMapForUser(user);
   const sessions = await getSessionsForUser(user);
   const pendingKeys = new Set(
     sessions.filter((session) => session.status === "pending").map((session) => session.questionKey),
@@ -962,7 +999,31 @@ async function sendQuestion(
     });
   }
 
-  if (flow.state !== "idle") {
+  if (flow.state === "explanation_shown") {
+    if (mode === "daily") {
+      log.debug("quiz", "send_question_skip_daily_explanation_pending", {
+        telegramId: user.telegramId,
+        activeSessionId: flow.activeSessionId,
+      });
+      return false;
+    }
+
+    log.info("quiz", "send_question_auto_release_explanation", {
+      telegramId: user.telegramId,
+      activeSessionId: flow.activeSessionId,
+    });
+    await releaseUserFlow(user.telegramId);
+  } else if (flow.state === "question_open") {
+    log.warn("quiz", "send_question_blocked_open_question", {
+      telegramId: user.telegramId,
+      activeSessionId: flow.activeSessionId,
+      mode,
+    });
+    if (mode !== "daily") {
+      await notifyQuizMessage(user, buildQuestionFlowBlockedText(user, "question_open"), ctx);
+    }
+    return false;
+  } else if (flow.state !== "idle") {
     log.warn("quiz", "send_question_blocked_by_flow", {
       telegramId: user.telegramId,
       state: flow.state,
@@ -1122,9 +1183,10 @@ function buildAnswerExplanation(user: UserRecord, question: QuizQuestion, select
 }
 
 async function buildProgressText(user: UserRecord): Promise<string> {
-  const states = (await getQuestionStates())
-    .filter((state) => state.telegramId === user.telegramId && state.language === user.language);
-  const answers = (await getAnswers()).filter((answer) => answer.telegramId === user.telegramId && answer.language === user.language);
+  const states = (await getQuestionStatesForUser(user.telegramId)).filter(
+    (state) => state.language === user.language,
+  );
+  const answers = await getAnswersForUser(user.telegramId, user.language);
   const counts: Record<QuestionStatus, number> = {
     new: 0,
     learning: 0,
@@ -1292,7 +1354,7 @@ async function sendTermInfo(chatId: number, language: LanguageCode, query?: stri
   }
 
   const text = [
-    `${getLocalizedTermTitle(term, language)} (${term.slug})`,
+    getLocalizedTermTitle(term, language),
     getLocalizedTermDefinition(term, language),
     term.comment ? `${t(language, "Комментарий", "Մեկնաբանություն")}: ${term.comment}` : "",
   ]
@@ -1425,7 +1487,7 @@ async function answerQuestion(ctx: Context, sessionId: string, optionId: string)
 
   const answeredAt = nowIso();
   const isCorrect = optionId === question.correctOptionId;
-  const states = await getQuestionStatesForUser(user);
+  const states = await getQuestionStateMapForUser(user);
   const nextState = buildQuestionState(user, question, states.get(question.key), isCorrect);
 
   log.info("answer", "answer_question_store_start", {
@@ -1978,6 +2040,27 @@ export function createBot(options?: { enableSchedules?: boolean }): Telegraf {
 
   if (!middlewareRegistered) {
     middlewareRegistered = true;
+
+    instance.use(async (ctx, next) => {
+      const telegramId = ctx.from?.id;
+      if (telegramId === undefined) {
+        return next();
+      }
+
+      const updateId = ctx.update.update_id;
+      const acquired = await acquireUserProcessing(telegramId, updateId);
+      if (!acquired) {
+        await rejectBusyUpdate(ctx);
+        return;
+      }
+
+      try {
+        await next();
+      } finally {
+        await releaseUserProcessing(telegramId, updateId);
+      }
+    });
+
     instance.use(async (ctx, next) => {
       const startedAt = Date.now();
       const meta = describeCtx(ctx);

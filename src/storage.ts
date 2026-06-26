@@ -433,6 +433,12 @@ async function initializeDatabase(): Promise<void> {
         updated_at TEXT NOT NULL
       );
 
+      CREATE TABLE IF NOT EXISTS user_processing_locks (
+        telegram_id INTEGER PRIMARY KEY,
+        locked_at TEXT NOT NULL,
+        update_id INTEGER NOT NULL
+      );
+
       CREATE TABLE IF NOT EXISTS error_reports (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         telegram_id INTEGER NOT NULL,
@@ -567,6 +573,44 @@ export async function tryStartUserFlow(
     rowsAffected: result.rowsAffected,
   });
   return claimed;
+}
+
+const PROCESSING_LOCK_STALE_MS = 90_000;
+
+export async function tryAcquireProcessingLock(
+  telegramId: number,
+  updateId: number,
+): Promise<boolean> {
+  const now = new Date().toISOString();
+  const staleBefore = new Date(Date.now() - PROCESSING_LOCK_STALE_MS).toISOString();
+  log.debug("storage", "try_acquire_processing_lock", { telegramId, updateId });
+
+  const result = await execute(
+    `
+      INSERT INTO user_processing_locks (telegram_id, locked_at, update_id)
+      VALUES (?, ?, ?)
+      ON CONFLICT(telegram_id) DO UPDATE SET
+        locked_at = excluded.locked_at,
+        update_id = excluded.update_id
+      WHERE user_processing_locks.locked_at <= ?
+    `,
+    [telegramId, now, updateId, staleBefore],
+  );
+
+  const acquired = result.rowsAffected > 0;
+  log.info("storage", "try_acquire_processing_lock_done", { telegramId, updateId, acquired });
+  return acquired;
+}
+
+export async function releaseProcessingLock(
+  telegramId: number,
+  updateId: number,
+): Promise<void> {
+  log.debug("storage", "release_processing_lock", { telegramId, updateId });
+  await execute(
+    "DELETE FROM user_processing_locks WHERE telegram_id = ? AND update_id = ?",
+    [telegramId, updateId],
+  );
 }
 
 export async function releaseUserFlow(telegramId: number, updatedAt?: string): Promise<void> {
@@ -740,6 +784,22 @@ export async function getAnswers(): Promise<AnswerRecord[]> {
   return result.rows.map((row: unknown) => mapAnswer(row as RowMap));
 }
 
+export async function getAnswersForUser(
+  telegramId: number,
+  language?: LanguageCode,
+): Promise<AnswerRecord[]> {
+  const result = language
+    ? await execute(
+        "SELECT * FROM answers WHERE telegram_id = ? AND language = ? ORDER BY answered_at ASC, id ASC",
+        [telegramId, language],
+      )
+    : await execute(
+        "SELECT * FROM answers WHERE telegram_id = ? ORDER BY answered_at ASC, id ASC",
+        [telegramId],
+      );
+  return result.rows.map((row: unknown) => mapAnswer(row as RowMap));
+}
+
 export async function appendAnswer(answer: AnswerRecord): Promise<void> {
   await execute(
     `
@@ -792,6 +852,14 @@ export async function getQuestionStates(): Promise<UserQuestionState[]> {
   return result.rows.map((row: unknown) => mapQuestionState(row as RowMap));
 }
 
+export async function getQuestionStatesForUser(telegramId: number): Promise<UserQuestionState[]> {
+  const result = await execute(
+    "SELECT * FROM question_states WHERE telegram_id = ? ORDER BY updated_at ASC",
+    [telegramId],
+  );
+  return result.rows.map((row: unknown) => mapQuestionState(row as RowMap));
+}
+
 export async function upsertQuestionState(state: UserQuestionState): Promise<void> {
   await execute(
     `
@@ -828,6 +896,14 @@ export async function upsertQuestionState(state: UserQuestionState): Promise<voi
 
 export async function getQuizSessions(): Promise<QuizSessionRecord[]> {
   const result = await execute("SELECT * FROM quiz_sessions ORDER BY sent_at ASC, id ASC");
+  return result.rows.map((row: unknown) => mapQuizSession(row as RowMap));
+}
+
+export async function getQuizSessionsForUser(telegramId: number): Promise<QuizSessionRecord[]> {
+  const result = await execute(
+    "SELECT * FROM quiz_sessions WHERE telegram_id = ? ORDER BY sent_at ASC, id ASC",
+    [telegramId],
+  );
   return result.rows.map((row: unknown) => mapQuizSession(row as RowMap));
 }
 
