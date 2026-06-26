@@ -1,0 +1,1371 @@
+{
+  "9-2": {
+    "comment": "Поворотник не нужен, если ты просто следуешь изгибу дороги, а не меняешь направление по своему манёвру.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "starting_movement_simple",
+          "carriageway",
+          "road",
+          "maneuver_simple",
+          "turn_simple",
+          "stop",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-3": {
+    "comment": "На путях при вынужденной остановке подай сигнал: один длинный и три коротких.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "railway_crossing",
+          "stop",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-6": {
+    "comment": "Жёлтый маячок предупреждает, но не даёт преимущества как синий со звуком.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "traffic_priority",
+          "vehicle",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-8": {
+    "comment": "При ослеплении включи аварийку, потом переключи свет и остановись безопасно.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-9": {
+    "comment": "Звуковой сигнал в городе — только для предотвращения аварии, не «для нервов».",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "traffic_accident",
+          "built_up_area",
+          "road",
+          "driver",
+          "overtaking_simple"
+        ]
+      }
+    ]
+  },
+  "9-10": {
+    "comment": "Ночью на неосвещённой дороге нужен свет — ближний или дальний по ситуации.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "motor_vehicle",
+          "vehicle",
+          "night_time",
+          "road"
+        ]
+      }
+    ]
+  },
+  "9-11": {
+    "comment": "Шлагбаум и красный свет на переезде — не обсуждаются, жди разрешения.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-12": {
+    "comment": "На переезде смотри на все элементы: знаки, свет, шлагбаум и дежурного.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "railway_crossing",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-13": {
+    "comment": "На автомагистрали пешеходам ходить нельзя — скорость слишком высокая.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "built_up_area",
+          "road",
+          "pedestrian"
+        ]
+      }
+    ]
+  },
+  "9-14": {
+    "comment": "Аварийка нужна после ДТП, при буксировке и при вынужденной остановке в опасном месте.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "motor_vehicle",
+          "traffic_accident",
+          "vehicle",
+          "forced_stop",
+          "road",
+          "stop",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-15": {
+    "comment": "Если есть регулировщик, перекрёсток считается регулируемым даже при погасшем светофоре.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "traffic_controller",
+          "intersection"
+        ]
+      }
+    ]
+  },
+  "9-16": {
+    "comment": "Жёлтый — готовься остановиться; проезжать можно только если остановка уже опасна.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "traffic_controller",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-17": {
+    "comment": "Поворотник включают заранее, особенно автобусу.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "lane_change_simple",
+          "bus",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-19": {
+    "comment": "В жилой зоне поворотник обязателен, даже если кажется, что никого нет.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-25": {
+    "comment": "Задние противотуманки — только в тумане или сильном дожде, не «для красоты».",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "night_time",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-30": {
+    "comment": "Звук в городе — только при реальной опасности.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "public_transport_vehicle",
+          "traffic_accident",
+          "vehicle",
+          "built_up_area",
+          "road",
+          "bus",
+          "driver",
+          "overtaking_simple"
+        ]
+      }
+    ]
+  },
+  "9-31": {
+    "comment": "Автобус ночью тоже должен быть хорошо виден — включай нужный свет.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "night_time",
+          "road",
+          "bus"
+        ]
+      }
+    ]
+  },
+  "9-32": {
+    "comment": "Перестроение сигнализируй заранее, не когда уже ржешь в соседнюю полосу.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "lane_change_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-33": {
+    "comment": "Днём в выделенной полосе ближний свет помогает быть заметным.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "public_transport_vehicle",
+          "vehicle",
+          "bus"
+        ]
+      }
+    ]
+  },
+  "9-34": {
+    "comment": "На путях при остановке подай сигнал тревоги: один длинный, три коротких.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "railway_crossing",
+          "stop",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-35": {
+    "comment": "Синий и красный маячок со звуком — уступи и будь готов остановиться.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-36": {
+    "comment": "Красный маячок на стоящей машине — остановись и жди указаний.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-37": {
+    "comment": "Сигнал должен быть заблаговременным, а не одновременно с манёвром.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-39": {
+    "comment": "Перед остановкой подай сигнал, даже если сзади пока никого не видно.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "built_up_area",
+          "stop",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-40": {
+    "comment": "Синий маячок со звуком даёт преимущество — уступи дорогу.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-41": {
+    "comment": "Жёлтый маячок не даёт права ехать как хочешь — только предупреждает.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "traffic_priority",
+          "vehicle",
+          "road",
+          "bus"
+        ]
+      }
+    ]
+  },
+  "9-44": {
+    "comment": "На перекрёстке обгон запрещён, даже если «главная» твоя.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "railway_crossing",
+          "intersection",
+          "overtaking_simple"
+        ]
+      }
+    ]
+  },
+  "9-46": {
+    "comment": "Одного маячка без сирены для преимущества обычно мало.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-48": {
+    "comment": "Обгон на перекрёстке запрещён независимо от типа перекрёстка.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "unregulated_intersection_simple",
+          "regulated_intersection_simple",
+          "intersection",
+          "overtaking_simple"
+        ]
+      }
+    ]
+  },
+  "9-49": {
+    "comment": "Даже на главной дороге внутри перекрёстка обгонять нельзя.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "intersection",
+          "road",
+          "overtaking_simple"
+        ]
+      }
+    ]
+  },
+  "9-50": {
+    "comment": "Перед переездом обгон опасен — дождись его прохождения.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "railway_crossing",
+          "overtaking_simple"
+        ]
+      }
+    ]
+  },
+  "9-51": {
+    "comment": "Ночью и в плохую погоду свет обязателен, даже если улица освещена.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "motor_vehicle",
+          "vehicle",
+          "night_time",
+          "road"
+        ]
+      }
+    ]
+  },
+  "9-52": {
+    "comment": "Луч-прожектор — не для города и не при встречном потоке.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "night_time",
+          "built_up_area",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-54": {
+    "comment": "Через переезд можно, если ТС самоходное; если его только тянут как неисправное — нельзя.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "railway_crossing",
+          "road"
+        ]
+      }
+    ]
+  },
+  "9-55": {
+    "comment": "Аварийка обязательна при ДТП и буксировке.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "motor_vehicle",
+          "traffic_accident",
+          "vehicle",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-56": {
+    "comment": "Через переезд можно, если машина может ехать сама под своим управлением.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "railway_crossing",
+          "road"
+        ]
+      }
+    ]
+  },
+  "9-57": {
+    "comment": "Аварийка обязательна при ДТП и буксировке.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "motor_vehicle",
+          "traffic_accident",
+          "vehicle",
+          "road"
+        ]
+      }
+    ]
+  },
+  "9-58": {
+    "comment": "Знак аварийной остановки ставят на 15 м в городе и 30 м вне города.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "built_up_area",
+          "stop",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-59": {
+    "comment": "В жилой зоне пешеходы могут быть на проезжей части — будь готов уступить.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "carriageway",
+          "road",
+          "pedestrian"
+        ]
+      }
+    ]
+  },
+  "9-60": {
+    "comment": "Перед переездом обгон запрещён — не рискуй «проскочить».",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "railway_crossing",
+          "overtaking_simple"
+        ]
+      }
+    ]
+  },
+  "9-62": {
+    "comment": "Свисток регулировщика — внимание, а не команда «стоп» сама по себе.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "traffic_controller"
+        ]
+      }
+    ]
+  },
+  "9-63": {
+    "comment": "Перед изгибом дороги поворотник не нужен, если ты не меняешь полосу или направление.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "carriageway",
+          "road",
+          "bus",
+          "turn_simple",
+          "stop",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-64": {
+    "comment": "Аварийка после ДТП предупреждает других о danger.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "traffic_accident",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-65": {
+    "comment": "Преимущество у патруля только при синем маячке и сирене одновременно.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "automobile",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-68": {
+    "comment": "Если зелёный свет разрешает, знак «Уступи» на тот же проезд не отменяет светофор.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-73": {
+    "comment": "На пешеходном переходе запрет на обгон действует даже без пешеходов.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "pedestrian_crossing",
+          "pedestrian",
+          "overtaking_simple"
+        ]
+      }
+    ]
+  },
+  "9-84": {
+    "comment": "Днём при организованной перевозке детей нужен именно ближний свет, не аварийка и не дальний.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "bus"
+        ]
+      }
+    ]
+  },
+  "9-86": {
+    "comment": "Выезд из своей полосы для обгона тоже считается обгоном.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "traffic_lane",
+          "overtaking_simple"
+        ]
+      }
+    ]
+  },
+  "9-89": {
+    "comment": "Переезд только в установленном месте — «никого нет» не аргумент.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "railway_crossing",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-93": {
+    "comment": "Поворотник включают заранее, а не в момент манёвра.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": []
+      }
+    ]
+  },
+  "9-99": {
+    "comment": "Асфальт на грунтовке не делает дорогу главной автоматически.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "intersection",
+          "road"
+        ]
+      }
+    ]
+  },
+  "9-101": {
+    "comment": "Рукой сигнал показывают до начала манёвра, а не после.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "turn_simple"
+        ]
+      }
+    ]
+  },
+  "9-102": {
+    "comment": "На автомагистраль нельзя заехать, если машина не может ехать быстрее 40 км/ч.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle"
+        ]
+      }
+    ]
+  },
+  "9-105": {
+    "comment": "Белый маячок сам по себе не даёт права ехать как спецтранспорт.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "traffic_priority",
+          "vehicle",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-106": {
+    "comment": "Ручной сигнал прекращают, когда манёвр уже начался.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-108": {
+    "comment": "Переключайся на ближний при встречке примерно за 150 м.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle"
+        ]
+      }
+    ]
+  },
+  "9-112": {
+    "comment": "Перед обгоном оцени видимость, встречку и запреты — при сомнении лучше не обгонять.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-113": {
+    "comment": "Аварийка нужна и при вынужденной остановке там, где стоять нельзя.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "traffic_accident",
+          "vehicle",
+          "forced_stop",
+          "road",
+          "stop"
+        ]
+      }
+    ]
+  },
+  "9-114": {
+    "comment": "Мотоцикл днём тоже едет с ближним светом.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "motorcycle",
+          "passenger"
+        ]
+      }
+    ]
+  },
+  "9-115": {
+    "comment": "Синий маячок со звуком — уступи, даже если ты на автобусе.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "public_transport_vehicle",
+          "vehicle",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-116": {
+    "comment": "На путях при остановке сразу подай сигнал тревоги.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "railway_crossing",
+          "bus",
+          "stop",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-118": {
+    "comment": "Стоянка и АЗС не отменяют правило: любой манёвр всё равно надо заранее показывать.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-121": {
+    "comment": "Обгоняемый не обязан “уступать”, но не имеет права мешать: ускоряться, прижимать или делать другие действия против обгона.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "road",
+          "driver",
+          "overtaking_simple"
+        ]
+      }
+    ]
+  },
+  "9-123": {
+    "comment": "Красный маячок на стоящей машине — полная остановка и ожидание.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "public_transport_vehicle",
+          "vehicle",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-124": {
+    "comment": "Нужно сразу два “да”: встречная полоса свободна, и никто сзади уже не начал обгон / впереди не показывает левый поворот.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "traffic_lane",
+          "road",
+          "turn_simple",
+          "overtaking_simple"
+        ]
+      }
+    ]
+  }
+}

@@ -1,41 +1,130 @@
-import { existsSync } from "node:fs";
-import path from "node:path";
-
 import cron from "node-cron";
 import { Markup, Telegraf } from "telegraf";
 import type { Context } from "telegraf";
 
 import { config } from "./config.js";
 import {
-  getConcepts,
-  getFines,
+  appendAnswer,
+  appendErrorReport,
+  createQuizSession,
+  getAnswers,
+  getMarkings,
+  getQuestionByKey,
+  getQuestionStates,
+  getQuestions,
+  getQuizSessionById,
+  getQuizSessions,
   getSigns,
-  getTopicRules,
-  getTopicSections,
-  getTopics,
+  getTerms,
   getUsers,
+  resolveAssetImagePath,
+  resolveQuestionImagePath,
   setSubscription,
+  setUserLanguage,
   updateUser,
+  updateQuizSession,
+  upsertQuestionState,
   upsertUser,
 } from "./storage.js";
 import type {
-  ConceptRecord,
-  FineRecord,
+  LanguageCode,
+  MarkingRecord,
+  QuizMode,
+  QuizQuestion,
+  QuizSessionRecord,
+  QuestionStatus,
   SignRecord,
-  TopicRecord,
-  TopicRuleRecord,
-  TopicSection,
+  TermRecord,
+  TopicMeta,
+  TopicSlug,
+  UserQuestionState,
   UserRecord,
 } from "./types.js";
 
 const bot = new Telegraf(config.botToken);
 
+const TOPICS: TopicMeta[] = [
+  {
+    slug: "maneuvers-and-lane-position",
+    order: 1,
+    title: { ru: "Маневры и расположение на дороге", am: "Մանևրեր և ճանապարհին դիրքավորում" },
+  },
+  {
+    slug: "terms-and-general-rules",
+    order: 2,
+    title: { ru: "Термины и общие правила", am: "Տերմիններ և ընդհանուր կանոններ" },
+  },
+  {
+    slug: "vehicle-technical-condition",
+    order: 3,
+    title: { ru: "Техническое состояние ТС", am: "Տրանսպորտային միջոցի տեխնիկական վիճակ" },
+  },
+  {
+    slug: "road-signs",
+    order: 4,
+    title: { ru: "Дорожные знаки", am: "Ճանապարհային նշաններ" },
+  },
+  {
+    slug: "intersection-priority",
+    order: 5,
+    title: { ru: "Приоритет на перекрестках", am: "Առաջնահերթություն խաչմերուկներում" },
+  },
+  {
+    slug: "traffic-lights-and-intersections",
+    order: 6,
+    title: { ru: "Светофоры и перекрестки", am: "Լուսացույցներ և խաչմերուկներ" },
+  },
+  {
+    slug: "stopping-parking-and-markings",
+    order: 7,
+    title: { ru: "Остановка, стоянка и разметка", am: "Կանգառ, կայանում և գծանշում" },
+  },
+  {
+    slug: "speed-towing-and-passengers",
+    order: 8,
+    title: { ru: "Скорость, буксировка и пассажиры", am: "Արագություն, քարշակում և ուղևորներ" },
+  },
+  {
+    slug: "overtaking-signals-and-railway-crossings",
+    order: 9,
+    title: { ru: "Обгон, сигналы и ж/д переезды", am: "Առաջանցում, ազդանշաններ և երկաթուղային անցումներ" },
+  },
+  {
+    slug: "first-aid",
+    order: 10,
+    title: { ru: "Первая помощь", am: "Առաջին օգնություն" },
+  },
+];
+
+function t(language: LanguageCode, ru: string, am: string): string {
+  return language === "am" ? am : ru;
+}
+
+function getTopicMeta(topicSlug: TopicSlug): TopicMeta {
+  return TOPICS.find((topic) => topic.slug === topicSlug) ?? TOPICS[0];
+}
+
+function getTopicTitle(topicSlug: TopicSlug, language: LanguageCode): string {
+  return getTopicMeta(topicSlug).title[language];
+}
+
 function getSubscribedUsers(): UserRecord[] {
   return getUsers().filter((user) => user.isSubscribed);
 }
 
-function getVisibleName(user: UserRecord): string {
-  return user.firstName ?? user.username ?? "друг";
+function getTextMessage(ctx: Context): string {
+  const message = ctx.message;
+  if (!message || !("text" in message)) {
+    return "";
+  }
+
+  return message.text.trim();
+}
+
+function getCommandArg(ctx: Context): string {
+  const text = getTextMessage(ctx);
+  const [, ...rest] = text.split(/\s+/);
+  return rest.join(" ").trim();
 }
 
 function pickRandom<T>(items: T[]): T | undefined {
@@ -46,313 +135,873 @@ function pickRandom<T>(items: T[]): T | undefined {
   return items[Math.floor(Math.random() * items.length)];
 }
 
-function incrementDeliveryCounter(user: UserRecord): void {
-  user.lessonCursor += 1;
-  user.updatedAt = new Date().toISOString();
-  updateUser(user);
+function nowIso(): string {
+  return new Date().toISOString();
 }
 
-function getPrimaryImagePath(sign: SignRecord): string | undefined {
-  const image = sign.images?.[0];
-  if (!image) {
-    return undefined;
-  }
-
-  const imagePath = path.resolve(process.cwd(), image);
-  return existsSync(imagePath) ? imagePath : undefined;
+function addHours(date: Date, hours: number): string {
+  return new Date(date.getTime() + hours * 60 * 60 * 1000).toISOString();
 }
 
-function getPrimaryTopic(sign: SignRecord): TopicRecord | undefined {
-  const topicId = sign.topicIds?.[0];
-  if (!topicId) {
-    return undefined;
-  }
-
-  return getTopics().find((topic) => topic.id === topicId);
+function addDays(date: Date, days: number): string {
+  return new Date(date.getTime() + days * 24 * 60 * 60 * 1000).toISOString();
 }
 
-function getTopicRule(topic: TopicRecord | undefined): TopicRuleRecord | undefined {
-  if (!topic?.ruleIds?.length) {
-    return undefined;
-  }
-
-  const rules = getTopicRules().filter((rule) => topic.ruleIds?.includes(rule.id));
-  return pickRandom(rules);
+function getLocalDateKey(date: Date): string {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: config.timezone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(date);
 }
 
-function getTopicSection(topic: TopicRecord | undefined): TopicSection | undefined {
-  if (!topic) {
-    return undefined;
+function isDue(nextReviewAt: string | undefined, now: Date): boolean {
+  if (!nextReviewAt) {
+    return true;
   }
 
-  const record = getTopicSections().find((entry) => entry.topicId === topic.id);
-  return pickRandom(record?.sections ?? []);
+  return new Date(nextReviewAt).getTime() <= now.getTime();
 }
 
-function getTopicFine(topic: TopicRecord | undefined): FineRecord | undefined {
-  if (!topic?.fineIds?.length) {
-    return undefined;
-  }
-
-  const fines = getFines().filter((fine) => topic.fineIds?.includes(fine.id));
-  return pickRandom(fines);
+function buildLanguageKeyboard() {
+  return Markup.inlineKeyboard([
+    [
+      Markup.button.callback("Русский", "settings|lang|ru"),
+      Markup.button.callback("Հայերեն", "settings|lang|am"),
+    ],
+  ]);
 }
 
-function buildSignHeader(sign: SignRecord, topic: TopicRecord | undefined): string {
-  const lines = [`${sign.id} — ${sign.title}`];
-
-  if (topic) {
-    lines.push(`Тема: ${topic.title}`);
-  }
-
-  return lines.join("\n");
+function buildStartKeyboard(language: LanguageCode) {
+  return Markup.inlineKeyboard([
+    [
+      Markup.button.callback(t(language, "Начать квиз", "Սկսել քուիզը"), "menu|quiz"),
+      Markup.button.callback(t(language, "Темы", "Թեմաներ"), "menu|topics"),
+    ],
+    [
+      Markup.button.callback(t(language, "Ошибки", "Սխալներ"), "menu|mistakes"),
+      Markup.button.callback(t(language, "Настройки", "Կարգավորումներ"), "menu|settings"),
+    ],
+    [
+      Markup.button.callback(t(language, "Случайный знак", "Պատահական նշան"), "menu|sign"),
+      Markup.button.callback(t(language, "Случайный термин", "Պատահական տերմին"), "menu|term"),
+    ],
+  ]);
 }
 
-function buildSignExplanation(
-  sign: SignRecord,
-  topic: TopicRecord | undefined,
-  rule: TopicRuleRecord | undefined,
-  section: TopicSection | undefined,
-  fine: FineRecord | undefined,
-): string {
-  const lines = [`Что это: ${sign.comment || sign.title}.`];
+function buildMainMenuText(language: LanguageCode): string {
+  return [
+    t(language, "Команды:", "Հրամաններ՝"),
+    "/quiz",
+    `/topics ${t(language, "— 10 групп вопросов", "— 10 հարցաշարային խմբեր")}`,
+    `/sign ${t(language, "— случайный знак или разметка", "— նշան ըստ id կամ պատահական")}`,
+    `/term ${t(language, "— случайный термин", "— տերմին ըստ slug կամ պատահական")}`,
+    `/mistakes ${t(language, "— повтор ошибок", "— սխալների կրկնություն")}`,
+    `/progress ${t(language, "— прогресс", "— առաջընթաց")}`,
+    `/settings ${t(language, "— язык", "— լեզու")}`,
+    "/stop",
+  ].join("\n");
+}
 
-  if (topic?.notes?.[0]) {
-    lines.push(`Зачем это важно: ${topic.notes[0]}`);
+function buildDailySummaryText(user: UserRecord): string {
+  const todayKey = getLocalDateKey(new Date());
+  const todayAnswers = getAnswers().filter(
+    (answer) =>
+      answer.telegramId === user.telegramId &&
+      answer.language === user.language &&
+      getLocalDateKey(new Date(answer.answeredAt)) === todayKey,
+  );
+
+  if (todayAnswers.length === 0) {
+    return t(
+      user.language,
+      "Итог дня: сегодня еще нет ответов. Следующий вопрос придет по расписанию или через /quiz.",
+      "Օրվա ամփոփում․ այսօր դեռ պատասխաններ չկան։ Հաջորդ հարցը կգա ըստ ժամանակացույցի կամ /quiz-ով։",
+    );
   }
 
-  if (rule) {
-    lines.push(`Правило: ${rule.title}. ${rule.text}`);
+  const correctCount = todayAnswers.filter((answer) => answer.isCorrect).length;
+  const mistakeCount = todayAnswers.length - correctCount;
+  const byTopic = new Map<TopicSlug, { total: number; mistakes: number }>();
+
+  for (const answer of todayAnswers) {
+    const stats = byTopic.get(answer.topicSlug) ?? { total: 0, mistakes: 0 };
+    stats.total += 1;
+    if (!answer.isCorrect) {
+      stats.mistakes += 1;
+    }
+    byTopic.set(answer.topicSlug, stats);
   }
 
-  if (section) {
-    lines.push(`Нюанс: ${section.title}. ${section.text}`);
-  }
+  const weakTopics = [...byTopic.entries()]
+    .filter(([, stats]) => stats.mistakes > 0)
+    .sort((a, b) => b[1].mistakes - a[1].mistakes || b[1].total - a[1].total)
+    .slice(0, 3)
+    .map(
+      ([slug, stats]) =>
+        `${getTopicMeta(slug).order}. ${getTopicTitle(slug, user.language)}: ${stats.mistakes}`,
+    );
 
-  if (fine) {
-    lines.push(`Штраф по теме: ${fine.title}. ${fine.penalty}`);
-  }
+  const lines = [
+    t(user.language, "Итог дня", "Օրվա ամփոփում"),
+    `${t(user.language, "Ответов", "Պատասխաններ")}: ${todayAnswers.length}`,
+    `${t(user.language, "Верных", "Ճիշտ")}: ${correctCount}`,
+    `${t(user.language, "Ошибок", "Սխալ")}: ${mistakeCount}`,
+  ];
 
-  if (sign.relatedIds?.length) {
-    lines.push(`Связанные знаки: ${sign.relatedIds.join(", ")}.`);
+  if (weakTopics.length > 0) {
+    lines.push(
+      `${t(user.language, "Слабые темы сегодня", "Այսօրվա թույլ թեմաները")}:\n${weakTopics.join("\n")}`,
+    );
+  } else {
+    lines.push(
+      t(
+        user.language,
+        "Сегодня без ошибок или ошибки не выделяются по темам.",
+        "Այսօր կամ սխալ չի եղել, կամ թեմաներով թույլ տեղ չի առանձնացել։",
+      ),
+    );
   }
 
   return lines.join("\n\n");
 }
 
-function buildMenuText(): string {
-  return [
-    "Команды бота:",
-    "/signs — случайный знак",
-    "/progress — краткий прогресс",
-    "/stop — остановить рассылку",
-  ].join("\n");
-}
-
-function getConceptsBySlugs(slugs: string[]): ConceptRecord[] {
-  const concepts = getConcepts();
-  return [...new Set(slugs)]
-    .map((slug) => concepts.find((concept) => concept.slug === slug))
-    .filter((concept): concept is ConceptRecord => Boolean(concept));
-}
-
-function getSignAndTopicConcepts(sign: SignRecord, topic: TopicRecord | undefined): ConceptRecord[] {
-  const signSlugs = sign.conceptSlugs || [];
-  const topicSlugs = topic?.conceptSlugs || [];
-  return getConceptsBySlugs([...signSlugs, ...topicSlugs]);
-}
-
-function buildConceptText(concept: ConceptRecord): string {
-  const lines = [concept.term, concept.definition];
-
-  if (concept.comment) {
-    lines.push(`Пояснение: ${concept.comment}`);
-  }
-
-  return lines.join("\n");
-}
-
-function buildConceptKeyboard(concept: ConceptRecord) {
-  if ((concept.linkedSigns?.length ?? 0) === 0 || !concept.slug) {
-    return undefined;
-  }
-
-  return Markup.inlineKeyboard([
-    [Markup.button.callback("Показать знаки понятия", `nav|concept-signs|${concept.slug}`)],
+function buildTopicsKeyboard(): ReturnType<typeof Markup.inlineKeyboard> {
+  const rows = TOPICS.map((topic) => [
+    Markup.button.callback(`${topic.order}`, `topic|${topic.slug}`),
   ]);
+  return Markup.inlineKeyboard(rows);
 }
 
-async function sendConceptMessages(chatId: number, concepts: ConceptRecord[], title?: string): Promise<void> {
-  if (title) {
-    await bot.telegram.sendMessage(chatId, title);
-  }
-
-  for (const concept of concepts) {
-    const keyboard = buildConceptKeyboard(concept);
-    if (keyboard) {
-      await bot.telegram.sendMessage(chatId, buildConceptText(concept), keyboard);
-      continue;
-    }
-
-    await bot.telegram.sendMessage(chatId, buildConceptText(concept));
-  }
+function buildQuestionKeyboard(question: QuizQuestion, sessionId: string) {
+  const rows = question.options.map((option) => [
+    Markup.button.callback(option.text, `answer|${sessionId}|${option.id}`),
+  ]);
+  return Markup.inlineKeyboard(rows);
 }
 
-async function sendConceptLinkedSigns(chatId: number, concept: ConceptRecord): Promise<void> {
-  const linkedWithImages = (concept.linkedSigns || []).filter((sign) => {
-    const firstImage = sign.images?.[0];
-    if (!firstImage) {
-      return false;
-    }
-
-    const imagePath = path.resolve(process.cwd(), firstImage);
-    return existsSync(imagePath);
-  });
-
-  if (linkedWithImages.length === 0) {
-    await bot.telegram.sendMessage(chatId, "У этого понятия пока нет локальных картинок для связанных знаков.");
-    return;
-  }
-
-  const lines = [`Знаки для понятия: ${concept.term}`];
-  linkedWithImages.forEach((sign, index) => {
-    lines.push(`${index + 1}. ${sign.id} — ${sign.title}`);
-  });
-  await bot.telegram.sendMessage(chatId, lines.join("\n"));
-
-  await bot.telegram.sendMediaGroup(
-    chatId,
-    linkedWithImages.map((sign) => {
-      const imagePath = path.resolve(process.cwd(), sign.images[0]);
-      return {
-        type: "photo" as const,
-        media: { source: imagePath },
-      };
-    }),
-  );
+function buildQuestionOptionsText(question: QuizQuestion): string {
+  return question.options
+    .map((option) => `${option.id}) ${option.text}`)
+    .join("\n");
 }
 
-function buildSignKeyboard(sign: SignRecord, topic: TopicRecord | undefined) {
+function buildFollowupKeyboard(language: LanguageCode, question: QuizQuestion) {
   const rows = [];
+  const firstSignId = question.entityRefs.find((entry) => entry.type === "sign")?.ids[0];
+  const firstTermSlug = question.entityRefs.find((entry) => entry.type === "term")?.ids[0];
 
-  if ((sign.relatedCards?.length ?? 0) > 0) {
-    rows.push([Markup.button.callback("Показать знаки из объяснения", `nav|related|${sign.id}`)]);
+  if (firstSignId) {
+    rows.push([
+      Markup.button.callback(
+        t(language, `О знаке ${firstSignId}`, `Նշանի մասին ${firstSignId}`),
+        `ref|sign|${firstSignId}`,
+      ),
+    ]);
   }
 
-  if ((sign.conceptSlugs?.length ?? 0) > 0 || (topic?.conceptSlugs?.length ?? 0) > 0) {
-    rows.push([Markup.button.callback("Показать понятия", `nav|concepts|${sign.id}`)]);
+  if (firstTermSlug) {
+    rows.push([
+      Markup.button.callback(
+        t(language, "О термине", "Տերմինի մասին"),
+        `ref|term|${firstTermSlug}`,
+      ),
+    ]);
   }
 
   rows.push([
-    Markup.button.callback("Меню", "nav|menu"),
-    Markup.button.callback("Следующий знак", "nav|next-sign"),
+    Markup.button.callback(
+      t(language, "Отметить ошибку", "Նշել սխալը"),
+      `report|${question.key}`,
+    ),
+  ]);
+
+  rows.push([
+    Markup.button.callback(t(language, "Следующий вопрос", "Հաջորդ հարց"), "nav|next-quiz"),
   ]);
 
   return Markup.inlineKeyboard(rows);
 }
 
-function buildRelatedSignsText(sign: SignRecord): string {
-  const lines = ["Знаки из объяснения:"];
-
-  sign.relatedCards.forEach((card, index) => {
-    lines.push(`${index + 1}. ${card.id}`);
-  });
-
-  return lines.join("\n");
-}
-
-async function sendRelatedSignsPreview(chatId: number, sign: SignRecord): Promise<void> {
-  const relatedWithImages = (sign.relatedCards || []).filter((card) => {
-    const firstImage = card.images?.[0];
-    if (!firstImage) {
-      return false;
-    }
-
-    const imagePath = path.resolve(process.cwd(), firstImage);
-    return existsSync(imagePath);
-  });
-
-  if (relatedWithImages.length === 0) {
-    await bot.telegram.sendMessage(chatId, "Для связанных знаков пока нет локальных картинок.");
-    return;
-  }
-
-  await bot.telegram.sendMessage(chatId, buildRelatedSignsText({ ...sign, relatedCards: relatedWithImages }));
-
-  await bot.telegram.sendMediaGroup(
-    chatId,
-    relatedWithImages.map((card) => {
-      const imagePath = path.resolve(process.cwd(), card.images[0]);
-      return {
-        type: "photo" as const,
-        media: { source: imagePath },
-      };
-    }),
+function getQuestionStatesForUser(user: UserRecord): Map<string, UserQuestionState> {
+  return new Map(
+    getQuestionStates()
+      .filter((state) => state.telegramId === user.telegramId)
+      .map((state) => [state.questionKey, state]),
   );
 }
 
-async function sendRandomSign(user: UserRecord): Promise<void> {
-  const signs = getSigns();
-  const sign = pickRandom(signs);
+function getSessionsForUser(user: UserRecord): QuizSessionRecord[] {
+  return getQuizSessions().filter((session) => session.telegramId === user.telegramId);
+}
 
-  if (!sign) {
-    await bot.telegram.sendMessage(user.chatId, "В базе пока нет знаков.");
+function buildQuestionState(
+  user: UserRecord,
+  question: QuizQuestion,
+  current: UserQuestionState | undefined,
+  isCorrect: boolean,
+): UserQuestionState {
+  const now = new Date();
+  const mistakeCount = isCorrect ? current?.mistakeCount ?? 0 : (current?.mistakeCount ?? 0) + 1;
+  const correctStreak = isCorrect ? (current?.correctStreak ?? 0) + 1 : 0;
+
+  let status: QuestionStatus;
+  let nextReviewAt: string;
+
+  if (!isCorrect) {
+    status = "mistake";
+    nextReviewAt = addHours(now, 6);
+  } else if (correctStreak >= 3) {
+    status = "mastered";
+    nextReviewAt = addDays(now, 7);
+  } else if ((current?.status ?? "new") === "new") {
+    status = "learning";
+    nextReviewAt = addDays(now, 1);
+  } else {
+    status = "repeat";
+    nextReviewAt = addDays(now, 1);
+  }
+
+  return {
+    telegramId: user.telegramId,
+    questionKey: question.key,
+    language: question.language,
+    topicSlug: question.topicSlug,
+    status,
+    correctStreak,
+    mistakeCount,
+    lastSeenAt: nowIso(),
+    nextReviewAt,
+    lastAnswerCorrect: isCorrect,
+    updatedAt: nowIso(),
+  };
+}
+
+function selectNextQuestion(
+  user: UserRecord,
+  mode: QuizMode,
+  topicFilter?: TopicSlug,
+): QuizQuestion | undefined {
+  const allQuestions = getQuestions(user.language).filter((question) =>
+    topicFilter ? question.topicSlug === topicFilter : true,
+  );
+  if (allQuestions.length === 0) {
+    return undefined;
+  }
+
+  const states = getQuestionStatesForUser(user);
+  const sessions = getSessionsForUser(user);
+  const pendingKeys = new Set(
+    sessions.filter((session) => session.status === "pending").map((session) => session.questionKey),
+  );
+  const todayKey = getLocalDateKey(new Date());
+  const sentTodayKeys = new Set(
+    sessions
+      .filter((session) => getLocalDateKey(new Date(session.sentAt)) === todayKey)
+      .map((session) => session.questionKey),
+  );
+  const now = new Date();
+
+  const available = allQuestions.filter((question) => !pendingKeys.has(question.key));
+
+  if (mode === "mistake") {
+    const dueMistakes = available.filter((question) => {
+      const state = states.get(question.key);
+      return (
+        state &&
+        (state.status === "mistake" || state.status === "repeat" || state.status === "learning") &&
+        isDue(state.nextReviewAt, now)
+      );
+    });
+
+    return pickRandom(dueMistakes);
+  }
+
+  const dueMistakes = available.filter((question) => {
+    const state = states.get(question.key);
+    return (
+      state &&
+      (state.status === "mistake" || state.status === "repeat") &&
+      isDue(state.nextReviewAt, now) &&
+      !sentTodayKeys.has(question.key)
+    );
+  });
+  if (dueMistakes.length > 0) {
+    return pickRandom(dueMistakes);
+  }
+
+  const dueLearning = available.filter((question) => {
+    const state = states.get(question.key);
+    return (
+      state &&
+      state.status === "learning" &&
+      isDue(state.nextReviewAt, now) &&
+      !sentTodayKeys.has(question.key)
+    );
+  });
+  if (dueLearning.length > 0) {
+    return pickRandom(dueLearning);
+  }
+
+  const freshQuestions = available.filter((question) => !states.has(question.key) && !sentTodayKeys.has(question.key));
+  if (freshQuestions.length > 0) {
+    return pickRandom(freshQuestions);
+  }
+
+  const unsentToday = available.filter((question) => !sentTodayKeys.has(question.key));
+  if (unsentToday.length > 0) {
+    return pickRandom(unsentToday);
+  }
+
+  return pickRandom(available);
+}
+
+function createSession(user: UserRecord, question: QuizQuestion, mode: QuizMode): QuizSessionRecord {
+  return {
+    id: `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`,
+    telegramId: user.telegramId,
+    chatId: user.chatId,
+    questionKey: question.key,
+    questionId: question.id,
+    topicSlug: question.topicSlug,
+    language: question.language,
+    mode,
+    status: "pending",
+    sentAt: nowIso(),
+  };
+}
+
+function buildQuestionText(question: QuizQuestion, language: LanguageCode, mode: QuizMode): string {
+  const topicTitle = getTopicTitle(question.topicSlug, language);
+  const prefix =
+    mode === "mistake"
+      ? t(language, "Повтор ошибки", "Սխալի կրկնություն")
+      : t(language, "Вопрос дня", "Օրվա հարց");
+
+  return [
+    `${prefix}`,
+    `${t(language, "Группа", "Խումբ")} ${getTopicMeta(question.topicSlug).order}: ${topicTitle}`,
+    "",
+    question.question,
+    "",
+    `${t(language, "Варианты", "Տարբերակներ")}:`,
+    buildQuestionOptionsText(question),
+  ].join("\n");
+}
+
+async function sendQuestion(user: UserRecord, mode: QuizMode, topicFilter?: TopicSlug): Promise<boolean> {
+  const question = selectNextQuestion(user, mode, topicFilter);
+  if (!question) {
+    await bot.telegram.sendMessage(
+      user.chatId,
+      t(
+        user.language,
+        "Сейчас нет подходящих вопросов для отправки.",
+        "Այս պահին ուղարկելու հարմար հարց չկա։",
+      ),
+    );
+    return false;
+  }
+
+  const session = createSession(user, question, mode);
+  createQuizSession(session);
+
+  const imagePath = resolveQuestionImagePath(question);
+  const keyboard = buildQuestionKeyboard(question, session.id);
+  const text = buildQuestionText(question, user.language, mode);
+
+  if (imagePath) {
+    await bot.telegram.sendPhoto(user.chatId, { source: imagePath }, { caption: text, ...keyboard });
+  } else {
+    await bot.telegram.sendMessage(user.chatId, text, keyboard);
+  }
+
+  return true;
+}
+
+function getOptionText(question: QuizQuestion, optionId: string | undefined): string {
+  if (!optionId) {
+    return "—";
+  }
+
+  return question.options.find((option) => option.id === optionId)?.text ?? optionId;
+}
+
+function buildAnswerExplanation(user: UserRecord, question: QuizQuestion, selectedOptionId: string): string {
+  const isCorrect = selectedOptionId === question.correctOptionId;
+  const lines = [
+    isCorrect
+      ? t(user.language, "Ответ верный.", "Պատասխանը ճիշտ է։")
+      : t(user.language, "Ответ неверный.", "Պատասխանը սխալ է։"),
+    `${t(user.language, "Выбрано", "Ընտրված է")}: ${getOptionText(question, selectedOptionId)}`,
+    `${t(user.language, "Правильный ответ", "Ճիշտ պատասխանը")}: ${getOptionText(question, question.correctOptionId)}`,
+  ];
+
+  if (question.explanation.trim()) {
+    lines.push(`${t(user.language, "Объяснение", "Բացատրություն")}: ${question.explanation.trim()}`);
+  }
+
+  if (question.comment.trim()) {
+    lines.push(`${t(user.language, "Комментарий", "Մեկնաբանություն")}: ${question.comment.trim()}`);
+  }
+
+  return lines.join("\n\n");
+}
+
+function buildProgressText(user: UserRecord): string {
+  const states = getQuestionStates()
+    .filter((state) => state.telegramId === user.telegramId && state.language === user.language);
+  const answers = getAnswers().filter((answer) => answer.telegramId === user.telegramId && answer.language === user.language);
+  const counts: Record<QuestionStatus, number> = {
+    new: 0,
+    learning: 0,
+    mistake: 0,
+    repeat: 0,
+    mastered: 0,
+  };
+
+  for (const state of states) {
+    counts[state.status] += 1;
+  }
+
+  const topicMistakes = new Map<TopicSlug, number>();
+  for (const state of states) {
+    if (state.mistakeCount > 0) {
+      topicMistakes.set(state.topicSlug, (topicMistakes.get(state.topicSlug) ?? 0) + state.mistakeCount);
+    }
+  }
+
+  const weakest = [...topicMistakes.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3)
+    .map(([slug, count]) => `${getTopicMeta(slug).order}. ${getTopicTitle(slug, user.language)} (${count})`);
+
+  return [
+    `${t(user.language, "Язык", "Լեզու")}: ${user.language === "am" ? "Հայերեն" : "Русский"}`,
+    `${t(user.language, "Всего ответов", "Պատասխանների ընդհանուր քանակ")}: ${answers.length}`,
+    `${t(user.language, "Изучается", "Սովորում է")}: ${counts.learning}`,
+    `${t(user.language, "На повторе", "Կրկնության մեջ")}: ${counts.repeat}`,
+    `${t(user.language, "Ошибки", "Սխալներ")}: ${counts.mistake}`,
+    `${t(user.language, "Освоено", "Յուրացված")}: ${counts.mastered}`,
+    weakest.length > 0
+      ? `${t(user.language, "Слабые темы", "Թույլ թեմաներ")}:\n${weakest.join("\n")}`
+      : t(user.language, "Слабые темы пока не выделились.", "Թույլ թեմաներ դեռ չեն առանձնացել։"),
+  ].join("\n\n");
+}
+
+function buildTopicOverview(topicSlug: TopicSlug, language: LanguageCode): string {
+  const meta = getTopicMeta(topicSlug);
+  const count = getQuestions(language).filter((question) => question.topicSlug === topicSlug).length;
+  return [
+    `${t(language, "Группа", "Խումբ")} ${meta.order}: ${meta.title[language]}`,
+    `${t(language, "Вопросов", "Հարցերի քանակ")}: ${count}`,
+  ].join("\n");
+}
+
+function getLocalizedSignTitle(sign: SignRecord | MarkingRecord, language: LanguageCode): string {
+  return language === "am" ? sign.title_hy : sign.title_ru;
+}
+
+function getLocalizedSignMeaning(sign: SignRecord | MarkingRecord, language: LanguageCode): string {
+  return language === "am" ? sign.meaning_hy ?? "" : sign.meaning_ru ?? "";
+}
+
+function isSignRecord(record: SignRecord | MarkingRecord): record is SignRecord {
+  return record.type !== "marking";
+}
+
+function buildRelatedEntityKeyboard(
+  record: SignRecord | MarkingRecord,
+  language: LanguageCode,
+) {
+  const buttons = [];
+
+  if (isSignRecord(record)) {
+    for (const relatedId of record.relative_signs ?? []) {
+      buttons.push([
+        Markup.button.callback(
+          t(language, `Связанный знак ${relatedId}`, `Կապված նշան ${relatedId}`),
+          `ref|sign|${relatedId}`,
+        ),
+      ]);
+    }
+
+    for (const relatedId of record.relative_marks ?? []) {
+      buttons.push([
+        Markup.button.callback(
+          t(language, `Связанная разметка ${relatedId}`, `Կապված գծանշում ${relatedId}`),
+          `ref|sign|${relatedId}`,
+        ),
+      ]);
+    }
+  } else {
+    for (const relatedId of record.relative_signs ?? []) {
+      buttons.push([
+        Markup.button.callback(
+          t(language, `Связанный знак ${relatedId}`, `Կապված նշան ${relatedId}`),
+          `ref|sign|${relatedId}`,
+        ),
+      ]);
+    }
+  }
+
+  return buttons.length > 0 ? Markup.inlineKeyboard(buttons) : undefined;
+}
+
+function getLocalizedTermTitle(term: TermRecord, language: LanguageCode): string {
+  return language === "am" ? term.term_hy : term.term_ru;
+}
+
+function getLocalizedTermDefinition(term: TermRecord, language: LanguageCode): string {
+  return language === "am" ? term.definition_hy : term.definition_ru;
+}
+
+async function sendSignInfo(chatId: number, language: LanguageCode, query?: string): Promise<void> {
+  const signs = getSigns();
+  const markings = getMarkings();
+  const pool = [...signs, ...markings];
+  const normalized = query?.trim().toLowerCase();
+
+  const record =
+    (normalized &&
+      pool.find(
+        (item) =>
+          item.id.toLowerCase() === normalized ||
+          getLocalizedSignTitle(item, language).toLowerCase().includes(normalized),
+      )) ||
+    pickRandom(pool);
+
+  if (!record) {
+    await bot.telegram.sendMessage(
+      chatId,
+      t(language, "Знаки пока не загружены.", "Նշանները դեռ բեռնված չեն։"),
+    );
     return;
   }
 
-  const topic = getPrimaryTopic(sign);
-  const rule = getTopicRule(topic);
-  const section = getTopicSection(topic);
-  const fine = getTopicFine(topic);
-  const header = buildSignHeader(sign, topic);
-  const explanation = buildSignExplanation(sign, topic, rule, section, fine);
-  const imagePath = getPrimaryImagePath(sign);
+  const text = [
+    `${record.id} — ${getLocalizedSignTitle(record, language)}`,
+    getLocalizedSignMeaning(record, language),
+    record.extra_info ? `${t(language, "Дополнительно", "Լրացուցիչ")}: ${record.extra_info}` : "",
+  ]
+    .filter(Boolean)
+    .join("\n\n");
 
+  const imagePath = resolveAssetImagePath(record.images?.[0]);
+  const keyboard = buildRelatedEntityKeyboard(record, language);
   if (imagePath) {
-    await bot.telegram.sendPhoto(user.chatId, { source: imagePath }, { caption: header });
-    await bot.telegram.sendMessage(user.chatId, explanation, buildSignKeyboard(sign, topic));
-  } else {
-    await bot.telegram.sendMessage(user.chatId, `${header}\n\n${explanation}`, buildSignKeyboard(sign, topic));
+    await bot.telegram.sendPhoto(chatId, { source: imagePath }, { caption: text, ...keyboard });
+    return;
   }
 
-  incrementDeliveryCounter(user);
+  await bot.telegram.sendMessage(chatId, text, keyboard);
 }
 
-function getProgressText(user: UserRecord): string {
-  const topics = getTopics();
-  const signs = getSigns();
-  const lines = [
-    `Прогресс для ${getVisibleName(user)}:`,
-    `Отправлено карточек: ${user.lessonCursor}`,
-    `Знаков в базе: ${signs.length}`,
-    `Тем в базе: ${topics.length}`,
-  ];
+async function sendTermInfo(chatId: number, language: LanguageCode, query?: string): Promise<void> {
+  const terms = getTerms();
+  const normalized = query?.trim().toLowerCase();
 
-  const railwayTopic = topics.find((topic) => topic.id === "railway-crossings");
-  if (railwayTopic) {
-    lines.push(`Эталонная тема готова: ${railwayTopic.title}`);
+  const term =
+    (normalized &&
+      terms.find(
+        (item) =>
+          item.slug.toLowerCase() === normalized ||
+          getLocalizedTermTitle(item, language).toLowerCase().includes(normalized),
+      )) ||
+    pickRandom(terms);
+
+  if (!term) {
+    await bot.telegram.sendMessage(
+      chatId,
+      t(language, "Термины пока не загружены.", "Տերմինները դեռ բեռնված չեն։"),
+    );
+    return;
   }
 
-  return lines.join("\n");
+  const text = [
+    `${getLocalizedTermTitle(term, language)} (${term.slug})`,
+    getLocalizedTermDefinition(term, language),
+    term.comment ? `${t(language, "Комментарий", "Մեկնաբանություն")}: ${term.comment}` : "",
+  ]
+    .filter(Boolean)
+    .join("\n\n");
+
+  await bot.telegram.sendMessage(chatId, text);
+}
+
+async function sendDailySummary(user: UserRecord): Promise<void> {
+  await bot.telegram.sendMessage(user.chatId, buildDailySummaryText(user));
+}
+
+async function startErrorReportFlow(ctx: Context, questionKey: string): Promise<void> {
+  const from = ctx.from;
+  const chatId = ctx.chat?.id;
+  if (!from || !chatId) {
+    await ctx.answerCbQuery();
+    return;
+  }
+
+  const user = upsertUser(from.id, chatId, from.first_name, from.username);
+  user.pendingErrorReportQuestionKey = questionKey;
+  user.updatedAt = nowIso();
+  updateUser(user);
+
+  await ctx.answerCbQuery(
+    t(user.language, "Жду описание ошибки", "Սպասում եմ սխալի նկարագրությանը"),
+  );
+  await ctx.reply(
+    t(
+      user.language,
+      "Следующее сообщение я сохраню как репорт ошибки по этому вопросу.",
+      "Հաջորդ հաղորդագրությունը կպահեմ որպես այս հարցի սխալի ռեպորտ։",
+    ),
+  );
+}
+
+async function maybeCaptureErrorReport(ctx: Context): Promise<boolean> {
+  const from = ctx.from;
+  const chatId = ctx.chat?.id;
+  const text = getTextMessage(ctx);
+  if (!from || !chatId || !text) {
+    return false;
+  }
+
+  const user = upsertUser(from.id, chatId, from.first_name, from.username);
+  if (!user.pendingErrorReportQuestionKey) {
+    return false;
+  }
+
+  if (text.startsWith("/")) {
+    return false;
+  }
+
+  const question = getQuestionByKey(user.pendingErrorReportQuestionKey);
+  appendErrorReport({
+    telegramId: user.telegramId,
+    chatId: user.chatId,
+    language: user.language,
+    questionKey: user.pendingErrorReportQuestionKey,
+    questionId: question?.id,
+    topicSlug: question?.topicSlug,
+    text,
+    createdAt: nowIso(),
+  });
+
+  user.pendingErrorReportQuestionKey = undefined;
+  user.updatedAt = nowIso();
+  updateUser(user);
+
+  await ctx.reply(
+    t(
+      user.language,
+      "Репорт сохранен. Спасибо, это поможет исправить вопрос.",
+      "Ռեպորտը պահպանվեց։ Շնորհակալություն, սա կօգնի շտկել հարցը։",
+    ),
+  );
+
+  return true;
+}
+
+async function answerQuestion(ctx: Context, sessionId: string, optionId: string): Promise<void> {
+  const from = ctx.from;
+  const chatId = ctx.chat?.id;
+  if (!from || !chatId) {
+    await ctx.answerCbQuery();
+    return;
+  }
+
+  const user = upsertUser(from.id, chatId, from.first_name, from.username);
+  const session = getQuizSessionById(sessionId);
+  if (!session || session.telegramId !== user.telegramId) {
+    await ctx.answerCbQuery(t(user.language, "Сессия не найдена", "Սեսիան չի գտնվել"));
+    return;
+  }
+
+  if (session.status === "answered") {
+    await ctx.answerCbQuery(t(user.language, "Ответ уже принят", "Պատասխանը արդեն ընդունված է"));
+    return;
+  }
+
+  const question = getQuestionByKey(session.questionKey);
+  if (!question) {
+    await ctx.answerCbQuery(t(user.language, "Вопрос не найден", "Հարցը չի գտնվել"));
+    return;
+  }
+
+  session.status = "answered";
+  session.answeredAt = nowIso();
+  session.selectedOptionId = optionId;
+  session.isCorrect = optionId === question.correctOptionId;
+  updateQuizSession(session);
+
+  appendAnswer({
+    telegramId: user.telegramId,
+    questionKey: question.key,
+    questionId: question.id,
+    topicSlug: question.topicSlug,
+    language: question.language,
+    mode: session.mode,
+    selectedOptionId: optionId,
+    isCorrect: session.isCorrect,
+    answeredAt: session.answeredAt,
+  });
+
+  const states = getQuestionStatesForUser(user);
+  const nextState = buildQuestionState(user, question, states.get(question.key), session.isCorrect);
+  upsertQuestionState(nextState);
+
+  await ctx.answerCbQuery(
+    session.isCorrect
+      ? t(user.language, "Верно", "Ճիշտ է")
+      : t(user.language, "Неверно", "Սխալ է"),
+  );
+
+  try {
+    await ctx.editMessageReplyMarkup(undefined);
+  } catch {
+    // Ignore markup edit failures for old messages.
+  }
+
+  await bot.telegram.sendMessage(
+    chatId,
+    buildAnswerExplanation(user, question, optionId),
+    buildFollowupKeyboard(user.language, question),
+  );
 }
 
 function registerCommands(): void {
+  bot.on("text", async (ctx, next) => {
+    const captured = await maybeCaptureErrorReport(ctx);
+    if (captured) {
+      return;
+    }
+
+    return next();
+  });
+
   bot.start(async (ctx) => {
     const from = ctx.from;
     if (!from) {
       return;
     }
 
-    upsertUser(from.id, ctx.chat.id, from.first_name, from.username);
-
+    const user = upsertUser(from.id, ctx.chat.id, from.first_name, from.username);
     await ctx.reply(
       [
-        `Привет, ${from.first_name ?? "друг"}.`,
-        "Это MVP-бот по ПДД Армении.",
-        "Сейчас он присылает случайный знак с кратким объяснением, темой и правилом.",
-        "Команды: /signs, /progress, /stop.",
-      ].join("\n"),
+        t(user.language, "Это новый бот-репетитор по ПДД Армении.", "Սա նոր ՊԴԴ ուսուցիչ-բոտն է Հայաստանի համար։"),
+        t(
+          user.language,
+          "Он шлет 7 вопросов в день, принимает ответы кнопками, дает объяснение и потом возвращает ошибки на повтор.",
+          "Այն օրական ուղարկում է 7 հարց, ընդունում է պատասխանները կոճակներով, տալիս է բացատրություն և հետո կրկին վերադարձնում է սխալները։",
+        ),
+        buildMainMenuText(user.language),
+      ].join("\n\n"),
+      buildStartKeyboard(user.language),
     );
+    await ctx.reply(
+      t(user.language, "Можно сразу выбрать язык.", "Կարող ես անմիջապես ընտրել լեզուն։"),
+      buildLanguageKeyboard(),
+    );
+  });
+
+  bot.command("settings", async (ctx) => {
+    const from = ctx.from;
+    if (!from) {
+      return;
+    }
+
+    const user = upsertUser(from.id, ctx.chat.id, from.first_name, from.username);
+    await ctx.reply(
+      t(user.language, "Выбери язык интерфейса и вопросов.", "Ընտրիր ինտերֆեյսի և հարցերի լեզուն։"),
+      buildLanguageKeyboard(),
+    );
+  });
+
+  bot.command("language", async (ctx) => {
+    const from = ctx.from;
+    if (!from) {
+      return;
+    }
+
+    const user = upsertUser(from.id, ctx.chat.id, from.first_name, from.username);
+    await ctx.reply(
+      t(user.language, "Выбери язык.", "Ընտրիր լեզուն։"),
+      buildLanguageKeyboard(),
+    );
+  });
+
+  bot.command("quiz", async (ctx) => {
+    const from = ctx.from;
+    if (!from) {
+      return;
+    }
+
+    const user = upsertUser(from.id, ctx.chat.id, from.first_name, from.username);
+    await sendQuestion(user, "manual");
+  });
+
+  bot.command("mistakes", async (ctx) => {
+    const from = ctx.from;
+    if (!from) {
+      return;
+    }
+
+    const user = upsertUser(from.id, ctx.chat.id, from.first_name, from.username);
+    await sendQuestion(user, "mistake");
+  });
+
+  bot.command("progress", async (ctx) => {
+    const from = ctx.from;
+    if (!from) {
+      return;
+    }
+
+    const user = upsertUser(from.id, ctx.chat.id, from.first_name, from.username);
+    await ctx.reply(buildProgressText(user));
+  });
+
+  bot.command("topics", async (ctx) => {
+    const from = ctx.from;
+    if (!from) {
+      return;
+    }
+
+    const user = upsertUser(from.id, ctx.chat.id, from.first_name, from.username);
+    const lines = TOPICS.map(
+      (topic) => `${topic.order}. ${topic.title[user.language]}`,
+    );
+    await ctx.reply(lines.join("\n"), buildTopicsKeyboard());
+  });
+
+  bot.command("sign", async (ctx) => {
+    const from = ctx.from;
+    if (!from) {
+      return;
+    }
+
+    const user = upsertUser(from.id, ctx.chat.id, from.first_name, from.username);
+    await sendSignInfo(user.chatId, user.language, getCommandArg(ctx));
+  });
+
+  bot.command("signs", async (ctx) => {
+    const from = ctx.from;
+    if (!from) {
+      return;
+    }
+
+    const user = upsertUser(from.id, ctx.chat.id, from.first_name, from.username);
+    await sendSignInfo(user.chatId, user.language, getCommandArg(ctx));
+  });
+
+  bot.command("term", async (ctx) => {
+    const from = ctx.from;
+    if (!from) {
+      return;
+    }
+
+    const user = upsertUser(from.id, ctx.chat.id, from.first_name, from.username);
+    await sendTermInfo(user.chatId, user.language, getCommandArg(ctx));
   });
 
   bot.command("stop", async (ctx) => {
@@ -363,43 +1012,20 @@ function registerCommands(): void {
 
     const user = setSubscription(from.id, false);
     if (!user) {
-      await ctx.reply("Сначала запусти бота через /start.");
+      await ctx.reply("Use /start first.");
       return;
     }
 
-    await ctx.reply("Рассылка остановлена. Вернуться можно через /start.");
+    await ctx.reply(
+      t(
+        user.language,
+        "Ежедневные вопросы остановлены. Вернуться можно через /start.",
+        "Ամենօրյա հարցերը դադարեցված են։ Վերադառնալ կարելի է /start-ով։",
+      ),
+    );
   });
 
-  bot.command("signs", async (ctx) => {
-    const from = ctx.from;
-    if (!from) {
-      return;
-    }
-
-    const user = upsertUser(from.id, ctx.chat.id, from.first_name, from.username);
-    await sendRandomSign(user);
-  });
-
-  bot.command("mistakes", async (ctx) => {
-    await ctx.reply("Повтор ошибок пока не включен в этом MVP. Сейчас бот просто выдает случайные знаки с объяснениями.");
-  });
-
-  bot.command("progress", async (ctx) => {
-    const from = ctx.from;
-    if (!from) {
-      return;
-    }
-
-    const user = upsertUser(from.id, ctx.chat.id, from.first_name, from.username);
-    await ctx.reply(getProgressText(user));
-  });
-
-  bot.action("nav|menu", async (ctx) => {
-    await ctx.answerCbQuery();
-    await ctx.reply(buildMenuText());
-  });
-
-  bot.action("nav|next-sign", async (ctx) => {
+  bot.action(/settings\|lang\|(am|ru)/, async (ctx) => {
     const from = ctx.from;
     const chatId = ctx.chat?.id;
     if (!from || !chatId) {
@@ -407,86 +1033,213 @@ function registerCommands(): void {
       return;
     }
 
-    await ctx.answerCbQuery("Следующий знак");
+    const [, language] = ctx.match;
+    upsertUser(from.id, chatId, from.first_name, from.username);
+    setUserLanguage(from.id, language as LanguageCode);
+    await ctx.answerCbQuery(language === "am" ? "Լեզուն փոխվեց" : "Язык изменен");
+    await ctx.reply(
+      buildMainMenuText(language as LanguageCode),
+      buildStartKeyboard(language as LanguageCode),
+    );
+  });
+
+  bot.action(/report\|(.+)/, async (ctx) => {
+    const [, questionKey] = ctx.match;
+    await startErrorReportFlow(ctx, questionKey);
+  });
+
+  bot.action("menu|quiz", async (ctx) => {
+    const from = ctx.from;
+    const chatId = ctx.chat?.id;
+    if (!from || !chatId) {
+      await ctx.answerCbQuery();
+      return;
+    }
+
     const user = upsertUser(from.id, chatId, from.first_name, from.username);
-    await sendRandomSign(user);
+    await ctx.answerCbQuery(t(user.language, "Открываю квиз", "Բացում եմ քուիզը"));
+    await sendQuestion(user, "manual");
   });
 
-  bot.action(/nav\|related\|(.+)/, async (ctx) => {
+  bot.action("menu|topics", async (ctx) => {
+    const from = ctx.from;
     const chatId = ctx.chat?.id;
-    if (!chatId) {
+    if (!from || !chatId) {
       await ctx.answerCbQuery();
       return;
     }
 
-    const [, signId] = ctx.match;
-    const sign = getSigns().find((entry) => entry.id === signId);
-    if (!sign) {
-      await ctx.answerCbQuery("Знак не найден");
-      return;
-    }
-
-    await ctx.answerCbQuery("Показываю связанные знаки");
-    await sendRelatedSignsPreview(chatId, sign);
+    const user = upsertUser(from.id, chatId, from.first_name, from.username);
+    await ctx.answerCbQuery(t(user.language, "Показываю темы", "Ցույց եմ տալիս թեմաները"));
+    const lines = TOPICS.map((topic) => `${topic.order}. ${topic.title[user.language]}`);
+    await ctx.reply(lines.join("\n"), buildTopicsKeyboard());
   });
 
-  bot.action(/nav\|concepts\|(.+)/, async (ctx) => {
+  bot.action("menu|mistakes", async (ctx) => {
+    const from = ctx.from;
     const chatId = ctx.chat?.id;
-    if (!chatId) {
+    if (!from || !chatId) {
       await ctx.answerCbQuery();
       return;
     }
 
-    const [, signId] = ctx.match;
-    const sign = getSigns().find((entry) => entry.id === signId);
-    if (!sign) {
-      await ctx.answerCbQuery("Знак не найден");
-      return;
-    }
-
-    const topic = getPrimaryTopic(sign);
-    const concepts = getSignAndTopicConcepts(sign, topic);
-    if (concepts.length === 0) {
-      await ctx.answerCbQuery("Для этого знака понятия пока не заполнены");
-      return;
-    }
-
-    await ctx.answerCbQuery("Показываю понятия");
-    if (topic) {
-      await sendConceptMessages(chatId, concepts, `Понятия темы: ${topic.title}`);
-      return;
-    }
-
-    await sendConceptMessages(chatId, concepts, "Понятия для этого знака:");
+    const user = upsertUser(from.id, chatId, from.first_name, from.username);
+    await ctx.answerCbQuery(t(user.language, "Проверяю ошибки", "Ստուգում եմ սխալները"));
+    await sendQuestion(user, "mistake");
   });
 
-  bot.action(/nav\|concept-signs\|(.+)/, async (ctx) => {
+  bot.action("menu|settings", async (ctx) => {
+    const from = ctx.from;
     const chatId = ctx.chat?.id;
-    if (!chatId) {
+    if (!from || !chatId) {
+      await ctx.answerCbQuery();
+      return;
+    }
+
+    const user = upsertUser(from.id, chatId, from.first_name, from.username);
+    await ctx.answerCbQuery(t(user.language, "Настройки", "Կարգավորումներ"));
+    await ctx.reply(
+      t(user.language, "Выбери язык интерфейса и вопросов.", "Ընտրիր ինտերֆեյսի և հարցերի լեզուն։"),
+      buildLanguageKeyboard(),
+    );
+  });
+
+  bot.action("menu|sign", async (ctx) => {
+    const from = ctx.from;
+    const chatId = ctx.chat?.id;
+    if (!from || !chatId) {
+      await ctx.answerCbQuery();
+      return;
+    }
+
+    const user = upsertUser(from.id, chatId, from.first_name, from.username);
+    await ctx.answerCbQuery(t(user.language, "Показываю знак", "Ցույց եմ տալիս նշանը"));
+    await sendSignInfo(chatId, user.language);
+  });
+
+  bot.action("menu|term", async (ctx) => {
+    const from = ctx.from;
+    const chatId = ctx.chat?.id;
+    if (!from || !chatId) {
+      await ctx.answerCbQuery();
+      return;
+    }
+
+    const user = upsertUser(from.id, chatId, from.first_name, from.username);
+    await ctx.answerCbQuery(t(user.language, "Показываю термин", "Ցույց եմ տալիս տերմինը"));
+    await sendTermInfo(chatId, user.language);
+  });
+
+  bot.action(/answer\|([^|]+)\|([^|]+)/, async (ctx) => {
+    const [, sessionId, optionId] = ctx.match;
+    await answerQuestion(ctx, sessionId, optionId);
+  });
+
+  bot.action("nav|next-quiz", async (ctx) => {
+    const from = ctx.from;
+    const chatId = ctx.chat?.id;
+    if (!from || !chatId) {
+      await ctx.answerCbQuery();
+      return;
+    }
+
+    const user = upsertUser(from.id, chatId, from.first_name, from.username);
+    await ctx.answerCbQuery(
+      t(user.language, "Следующий вопрос", "Հաջորդ հարց"),
+    );
+    await sendQuestion(user, "manual");
+  });
+
+  bot.action(/topic\|(.+)/, async (ctx) => {
+    const from = ctx.from;
+    const chatId = ctx.chat?.id;
+    if (!from || !chatId) {
       await ctx.answerCbQuery();
       return;
     }
 
     const [, slug] = ctx.match;
-    const concept = getConcepts().find((entry) => entry.slug === slug);
-    if (!concept) {
-      await ctx.answerCbQuery("Понятие не найдено");
+    const topic = TOPICS.find((entry) => entry.slug === slug);
+    if (!topic) {
+      await ctx.answerCbQuery("Topic not found");
       return;
     }
 
-    await ctx.answerCbQuery("Показываю знаки понятия");
-    await sendConceptLinkedSigns(chatId, concept);
+    const user = upsertUser(from.id, chatId, from.first_name, from.username);
+    await ctx.answerCbQuery(topic.title[user.language]);
+    await ctx.reply(buildTopicOverview(topic.slug, user.language), Markup.inlineKeyboard([
+      [Markup.button.callback(t(user.language, "Вопрос по теме", "Հարց թեմայից"), `topicquiz|${topic.slug}`)],
+    ]));
+  });
+
+  bot.action(/topicquiz\|(.+)/, async (ctx) => {
+    const from = ctx.from;
+    const chatId = ctx.chat?.id;
+    if (!from || !chatId) {
+      await ctx.answerCbQuery();
+      return;
+    }
+
+    const [, slug] = ctx.match;
+    const topic = TOPICS.find((entry) => entry.slug === slug);
+    if (!topic) {
+      await ctx.answerCbQuery("Topic not found");
+      return;
+    }
+
+    const user = upsertUser(from.id, chatId, from.first_name, from.username);
+    await ctx.answerCbQuery(
+      t(user.language, "Отправляю вопрос", "Ուղարկում եմ հարց"),
+    );
+    await sendQuestion(user, "manual", topic.slug);
+  });
+
+  bot.action(/ref\|sign\|(.+)/, async (ctx) => {
+    const from = ctx.from;
+    const chatId = ctx.chat?.id;
+    if (!from || !chatId) {
+      await ctx.answerCbQuery();
+      return;
+    }
+
+    const [, signId] = ctx.match;
+    const user = upsertUser(from.id, chatId, from.first_name, from.username);
+    await ctx.answerCbQuery();
+    await sendSignInfo(chatId, user.language, signId);
+  });
+
+  bot.action(/ref\|term\|(.+)/, async (ctx) => {
+    const from = ctx.from;
+    const chatId = ctx.chat?.id;
+    if (!from || !chatId) {
+      await ctx.answerCbQuery();
+      return;
+    }
+
+    const [, termSlug] = ctx.match;
+    const user = upsertUser(from.id, chatId, from.first_name, from.username);
+    await ctx.answerCbQuery();
+    await sendTermInfo(chatId, user.language, termSlug);
   });
 }
 
 function registerSchedules(): void {
-  for (const cronExpression of config.touchCrons) {
+  const lastScheduleIndex = Math.max(config.touchCrons.length - 1, 0);
+
+  for (const [index, cronExpression] of config.touchCrons.entries()) {
     cron.schedule(
       cronExpression,
       async () => {
-      for (const user of getSubscribedUsers()) {
-        await sendRandomSign(user);
-      }
+        for (const user of getSubscribedUsers()) {
+          try {
+            await sendQuestion(user, "daily");
+            if (index === lastScheduleIndex) {
+              await sendDailySummary(user);
+            }
+          } catch (error) {
+            console.error(`Failed to send scheduled question to ${user.telegramId}:`, error);
+          }
+        }
       },
       { timezone: config.timezone },
     );

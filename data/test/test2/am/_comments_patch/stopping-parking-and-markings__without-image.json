@@ -1,0 +1,364 @@
+{
+  "7-20": {
+    "comment": "Если есть шлагбаум, отсчитывают 5 м от него. 10 м до рельса — только когда шлагбаума тоже нет.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "2.5"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": [
+          "1.12",
+          "2.5"
+        ]
+      },
+      {
+        "type": "term",
+        "ids": [
+          "railway_crossing",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "7-57": {
+    "comment": "Перед остановкой или стоянкой сначала проверь знаки и разметку, а не только удобство места.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "stop"
+        ]
+      }
+    ]
+  },
+  "7-59": {
+    "comment": "Сначала ориентир — стоп-линия, знак или светофор. Расстояния 5 и 10 м нужны только если этих ориентиров нет.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "2.5"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": [
+          "1.12",
+          "2.5"
+        ]
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "road",
+          "stop",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "7-60": {
+    "comment": "Не смешивай расстояния: 15 м — остановочные пункты, 50 м — стоянка у переезда, 100 м — обгон перед переездом.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "railway_crossing",
+          "parking",
+          "stop",
+          "overtaking_simple"
+        ]
+      }
+    ]
+  },
+  "7-69": {
+    "comment": "Перед остановкой или стоянкой сначала проверь знаки и разметку, а не только удобство места.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "public_transport_vehicle",
+          "vehicle",
+          "forced_stop",
+          "stop"
+        ]
+      }
+    ]
+  },
+  "7-90": {
+    "comment": "Оранжевая разметка временная и важнее белой, если они противоречат друг другу.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "driver"
+        ]
+      }
+    ]
+  },
+  "7-98": {
+    "comment": "В жилой зоне или дворе автобус можно оставить только на специально обозначенном месте.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "parking",
+          "bus"
+        ]
+      }
+    ]
+  },
+  "7-99": {
+    "comment": "Перед остановкой или стоянкой сначала проверь знаки и разметку, а не только удобство места.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "road_safety",
+          "vehicle",
+          "carriageway",
+          "built_up_area",
+          "parking",
+          "road",
+          "road_shoulder"
+        ]
+      }
+    ]
+  },
+  "7-101": {
+    "comment": "Перед остановкой или стоянкой сначала проверь знаки и разметку, а не только удобство места.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "railway_crossing",
+          "parking",
+          "road"
+        ]
+      }
+    ]
+  },
+  "7-104": {
+    "comment": "Стоянка запрещена везде, где запрещена остановка; мосты и места под ними входят в этот список.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "railway_crossing",
+          "parking",
+          "stop"
+        ]
+      }
+    ]
+  },
+  "7-120": {
+    "comment": "Стоянка дольше 5 минут строже обычной остановки: смотри знаки, разметку и расстояния до перекрёстка.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "railway_crossing",
+          "parking",
+          "stop"
+        ]
+      }
+    ]
+  },
+  "7-126": {
+    "comment": "Когда на переезде нет вообще никаких ориентиров, остаётся правило 10 м до ближайшего рельса.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "2.5"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": [
+          "1.12",
+          "2.5"
+        ]
+      },
+      {
+        "type": "term",
+        "ids": [
+          "railway_crossing",
+          "road",
+          "stop",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "7-127": {
+    "comment": "Перед остановкой или стоянкой сначала проверь знаки и разметку, а не только удобство места.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "railway_crossing",
+          "stop"
+        ]
+      }
+    ]
+  },
+  "7-129": {
+    "comment": "Стоянка дольше 5 минут строже обычной остановки: смотри знаки, разметку и расстояния до перекрёстка.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "carriageway",
+          "built_up_area",
+          "parking",
+          "road",
+          "stop"
+        ]
+      }
+    ]
+  },
+  "7-131": {
+    "comment": "Стоп-линия не требует остановки на зелёный сигнал. Она задаёт место остановки при запрещающем сигнале.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "traffic_controller",
+          "intersection",
+          "stop",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "7-136": {
+    "comment": "Ограничение для грузовиков свыше 3,5 т не переносится на автобусы.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "carriageway",
+          "built_up_area",
+          "parking",
+          "road",
+          "bus",
+          "stop",
+          "passenger"
+        ]
+      }
+    ]
+  }
+}

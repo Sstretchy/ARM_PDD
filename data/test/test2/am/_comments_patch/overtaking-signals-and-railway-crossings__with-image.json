@@ -1,0 +1,1337 @@
+{
+  "9-1": {
+    "comment": "Неважно, что автобус может ехать медленно: перед железнодорожным переездом обгон запрещён уже ближе чем за 100 м.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "railway_crossing",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-4": {
+    "comment": "Вытянутая влево рука — поворот налево.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "motorcycle",
+          "turn_simple",
+          "stop",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-5": {
+    "comment": "На нерегулируемом перекрёстке уступи тому, кто справа.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "equal_priority_roads",
+          "unregulated_intersection_simple",
+          "regulated_intersection_simple",
+          "automobile",
+          "intersection",
+          "road"
+        ]
+      }
+    ]
+  },
+  "9-7": {
+    "comment": "Обгон у моста, Ж/Д и перекрёстка — отдельные запреты.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "intersection",
+          "bus",
+          "overtaking_simple"
+        ]
+      }
+    ]
+  },
+  "9-18": {
+    "comment": "Автобус не «давит» мотоциклом — у лёгкого ТС другое преимущество при обгоне.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "motorcycle",
+          "bus",
+          "driver",
+          "overtaking_simple"
+        ]
+      }
+    ]
+  },
+  "9-20": {
+    "comment": "Поворотник — не вежливость, а обязательный сигнал заранее.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-21": {
+    "comment": "Обгон возможен только при достаточной видимости и без запретов.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "oncoming_traffic_simple",
+          "driver",
+          "overtaking_simple"
+        ]
+      }
+    ]
+  },
+  "9-22": {
+    "comment": "Синий или красный маячок со звуком — уступи дорогу.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "adjacent_area",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-23": {
+    "comment": "При сомнении выбирай более осторожный вариант.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "intersection",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-24": {
+    "comment": "Спецтранспорт со звуком и маячком — уступи и освободи путь.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "automobile",
+          "road",
+          "motorcycle",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-26": {
+    "comment": "Сигнал поворота подают заранее, не в последний момент.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "passenger_car",
+          "automobile",
+          "road",
+          "motorcycle",
+          "turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-27": {
+    "comment": "У моста и переезда обгон чаще запрещён — лучше подождать.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "intersection",
+          "road_train",
+          "overtaking_simple"
+        ]
+      }
+    ]
+  },
+  "9-28": {
+    "comment": "У моста и переезда обгон чаще запрещён — лучше подождать.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "automobile",
+          "intersection",
+          "driver",
+          "overtaking_simple"
+        ]
+      }
+    ]
+  },
+  "9-29": {
+    "comment": "Обгоняй только когда видишь дорогу впереди и нет встречки.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "oncoming_traffic_simple",
+          "turn_simple",
+          "driver",
+          "overtaking_simple"
+        ]
+      }
+    ]
+  },
+  "9-38": {
+    "comment": "При сомнении выбирай более безопасный ответ.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "passenger_car",
+          "vehicle",
+          "automobile",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-42": {
+    "comment": "При сомнении выбирай более безопасный ответ.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "passenger_car",
+          "vehicle",
+          "automobile",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-43": {
+    "comment": "На нерегулируемом перекрёстке сначала смотри направо.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "equal_priority_roads",
+          "automobile",
+          "intersection",
+          "road"
+        ]
+      }
+    ]
+  },
+  "9-45": {
+    "comment": "Обгоняй только при хорошей видимости и без встречки.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "oncoming_traffic_simple",
+          "passenger_car",
+          "automobile",
+          "motorcycle",
+          "driver",
+          "overtaking_simple"
+        ]
+      }
+    ]
+  },
+  "9-47": {
+    "comment": "У моста и переезда обгон чаще запрещён.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "automobile",
+          "intersection",
+          "driver",
+          "overtaking_simple"
+        ]
+      }
+    ]
+  },
+  "9-53": {
+    "comment": "При сомнении выбирай более безопасный ответ.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "built_up_area"
+        ]
+      }
+    ]
+  },
+  "9-61": {
+    "comment": "Поворотник подают заранее.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "turn_simple"
+        ]
+      }
+    ]
+  },
+  "9-66": {
+    "comment": "Поворотник — обязательный сигнал заранее.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "motorcycle",
+          "turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-67": {
+    "comment": "На мосту смотри знак ограничения массы для всего поезда с прицепом.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "3.11"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "road_train"
+        ]
+      }
+    ]
+  },
+  "9-69": {
+    "comment": "При сомнении выбирай более безопасный ответ.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": []
+      }
+    ]
+  },
+  "9-70": {
+    "comment": "Поворотник подают заранее.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-71": {
+    "comment": "При сомнении выбирай более безопасный ответ.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "road"
+        ]
+      }
+    ]
+  },
+  "9-72": {
+    "comment": "Поворотник подают заранее.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-74": {
+    "comment": "Левый поворотник при обгоне нужен для перестроения влево. Когда уже перестроились на левую полосу, этот сигнал надо выключить.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "1.6"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": [
+          "1.6"
+        ]
+      },
+      {
+        "type": "term",
+        "ids": [
+          "intersection",
+          "road",
+          "overtaking_simple"
+        ]
+      }
+    ]
+  },
+  "9-75": {
+    "comment": "Обгоняй только при хорошей видимости.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "oncoming_traffic_simple",
+          "overtaking_simple"
+        ]
+      }
+    ]
+  },
+  "9-76": {
+    "comment": "Поворотник подают заранее.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "turn_simple"
+        ]
+      }
+    ]
+  },
+  "9-77": {
+    "comment": "Поворотник подают заранее.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-78": {
+    "comment": "Поворотник подают заранее.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "intersection",
+          "turn_simple",
+          "u_turn_simple"
+        ]
+      }
+    ]
+  },
+  "9-79": {
+    "comment": "Поворотник подают заранее.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-80": {
+    "comment": "Поворотник подают заранее.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "intersection",
+          "turn_simple",
+          "stop"
+        ]
+      }
+    ]
+  },
+  "9-81": {
+    "comment": "Спецтранспорт со звуком — уступи дорогу.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "automobile",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-82": {
+    "comment": "Спецтранспорт со звуком — уступи дорогу.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "road",
+          "bus",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-83": {
+    "comment": "Спецтранспорт со звуком — уступи дорогу.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "intersection",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-85": {
+    "comment": "Поворотник подают заранее.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "turn_simple",
+          "u_turn_simple"
+        ]
+      }
+    ]
+  },
+  "9-87": {
+    "comment": "Рука — запасной вариант только при поломке поворотника. В светлое время или всегда — лучше световой. Новичку: рука — это «аварийный режим», не основной.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "railway_crossing",
+          "automobile",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-88": {
+    "comment": "Вытянутая влево рука из окна означает поворот налево.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "motorcycle",
+          "turn_simple",
+          "u_turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-90": {
+    "comment": "Неважно, что автобус может ехать медленно: перед железнодорожным переездом обгон запрещён уже ближе чем за 100 м.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "railway_crossing",
+          "automobile",
+          "bus",
+          "overtaking_simple"
+        ]
+      }
+    ]
+  },
+  "9-91": {
+    "comment": "У Ж/Д переезда нельзя обходить шлагбаум и спорить со светофором — жди разрешения.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "railway_crossing",
+          "automobile",
+          "road",
+          "turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-92": {
+    "comment": "Сам по себе грузовик и скорость автобуса 60 км/ч не запрещают обгон. Нужен конкретный запрет: знак, сплошная, перекрёсток, переезд и т. п.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "railway_crossing",
+          "truck",
+          "automobile",
+          "built_up_area",
+          "intersection",
+          "road",
+          "bus",
+          "driver",
+          "overtaking_simple"
+        ]
+      }
+    ]
+  },
+  "9-94": {
+    "comment": "На нерегулируемом перекрёстке сначала смотри направо.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "equal_priority_roads",
+          "automobile",
+          "intersection",
+          "road"
+        ]
+      }
+    ]
+  },
+  "9-95": {
+    "comment": "Обгон на перекрёстке, у моста и Ж/Д переезда — отдельные запреты, даже если дорога кажется свободной.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "railway_crossing",
+          "intersection",
+          "pedestrian",
+          "overtaking_simple"
+        ]
+      }
+    ]
+  },
+  "9-96": {
+    "comment": "На Ж/Д переезде слушай дежурного — он может видеть поезд, которого ты не видишь.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "railway_crossing"
+        ]
+      }
+    ]
+  },
+  "9-97": {
+    "comment": "Спецтранспорт со звуком — уступи дорогу.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "automobile",
+          "road",
+          "bus",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-98": {
+    "comment": "Закрытый шлагбаум нельзя объезжать даже при пустых рельсах: нужно ждать открытия.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-100": {
+    "comment": "При сомнении выбирай более безопасный ответ.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "automobile",
+          "intersection",
+          "turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-103": {
+    "comment": "Скорость грузовика меньше 30 км/ч не равна статусу “тихоходное ТС”. Для исключения из знака 3.20 нужен именно тип или статус обгоняемого.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "3.20"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "motorcycle",
+          "bicycle",
+          "overtaking_simple",
+          "moped"
+        ]
+      }
+    ]
+  },
+  "9-104": {
+    "comment": "Поворотник подают заранее.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-107": {
+    "comment": "Поворотник подают заранее.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "passenger_car",
+          "truck",
+          "automobile",
+          "road",
+          "turn_simple",
+          "u_turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-109": {
+    "comment": "Перед обгоном оцени видимость, встречку и запреты — при сомнении лучше не обгонять.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "railway_crossing",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-110": {
+    "comment": "Если ты просто едешь прямо по своей полосе — сигнал не нужен. Сигнал только при манёвре. Новичку: не включай поворотник «на всякий случай» — это тоже может ввести в заблуждение.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "railway_crossing",
+          "overtaking_simple"
+        ]
+      }
+    ]
+  },
+  "9-111": {
+    "comment": "При сомнении выбирай более безопасный ответ.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "motorcycle",
+          "turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-117": {
+    "comment": "Поворотник подают заранее.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "passenger_car",
+          "automobile",
+          "turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-119": {
+    "comment": "Перед обгоном оцени видимость, встречку и запреты — при сомнении лучше не обгонять.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "passenger_car",
+          "vehicle",
+          "automobile",
+          "road",
+          "turn_simple",
+          "driver",
+          "overtaking_simple"
+        ]
+      }
+    ]
+  },
+  "9-120": {
+    "comment": "На сложном перекрёстке с несколькими участниками синий — в конце очереди. Новичку: всегда анализируй, кто имеет преимущество, а кто должен ждать.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "1.13",
+          "1.14"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": [
+          "1.13"
+        ]
+      },
+      {
+        "type": "term",
+        "ids": [
+          "oncoming_traffic_simple",
+          "vehicle",
+          "automobile",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "9-122": {
+    "comment": "3 т меньше 3,5 т, поэтому этот грузовик попадает в исключение знака 3.22.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "3.22"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "maximum_authorized_mass",
+          "passenger_car",
+          "truck",
+          "automobile",
+          "motorcycle",
+          "bus",
+          "driver",
+          "overtaking_simple"
+        ]
+      }
+    ]
+  },
+  "9-125": {
+    "comment": "У моста и переезда обгон чаще запрещён.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "intersection",
+          "overtaking_simple"
+        ]
+      }
+    ]
+  },
+  "9-126": {
+    "comment": "У моста и переезда обгон чаще запрещён.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "intersection",
+          "motorcycle",
+          "overtaking_simple"
+        ]
+      }
+    ]
+  }
+}

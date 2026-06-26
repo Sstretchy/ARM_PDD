@@ -1,78 +1,86 @@
+export type LanguageCode = "am" | "ru";
+
+export type TopicSlug =
+  | "maneuvers-and-lane-position"
+  | "terms-and-general-rules"
+  | "vehicle-technical-condition"
+  | "road-signs"
+  | "intersection-priority"
+  | "traffic-lights-and-intersections"
+  | "stopping-parking-and-markings"
+  | "speed-towing-and-passengers"
+  | "overtaking-signals-and-railway-crossings"
+  | "first-aid";
+
+export type TopicMeta = {
+  slug: TopicSlug;
+  order: number;
+  title: Record<LanguageCode, string>;
+};
+
+export type QuestionOption = {
+  id: string;
+  text: string;
+};
+
+export type EntityRef = {
+  type: "sign" | "marking" | "term";
+  ids: string[];
+};
+
+export type QuizQuestion = {
+  key: string;
+  id: string;
+  topicSlug: TopicSlug;
+  language: LanguageCode;
+  group: string;
+  question: string;
+  options: QuestionOption[];
+  correctOptionId: string;
+  image: string;
+  entityRefs: EntityRef[];
+  explanation: string;
+  comment: string;
+};
+
 export type SignRecord = {
   id: string;
-  title: string;
+  type?: string;
+  group?: string;
+  title_ru: string;
+  title_hy: string;
+  meaning_ru?: string;
+  meaning_hy?: string;
+  comment_ru?: string;
+  extra_info?: string;
   images: string[];
-  comment: string;
-  conceptSlugs?: string[];
-  internalRefs: string[];
-  relatedIds: string[];
-  relatedCards: Array<{ id: string; images: string[] }>;
-  atomicIds: string[];
-  topicIds?: string[];
+  atomicIds?: string[];
+  relative_marks?: string[];
+  relative_signs?: string[];
 };
 
-export type TopicRecord = {
+export type MarkingRecord = {
   id: string;
-  title: string;
-  mainSignIds: string[];
-  relatedSignIds: string[];
-  conceptSlugs: string[];
-  questionTags: string[];
-  ruleIds?: string[];
-  fineIds?: string[];
-  notes: string[];
+  type?: string;
+  group?: string;
+  title_ru: string;
+  title_hy: string;
+  meaning_ru?: string;
+  meaning_hy?: string;
+  comment_ru?: string;
+  extra_info?: string;
+  images: string[];
+  atomicIds?: string[];
+  relative_signs?: string[];
 };
 
-export type TopicSection = {
-  id: string;
-  title: string;
-  text: string;
-};
-
-export type TopicSectionsRecord = {
-  topicId: string;
-  sections: TopicSection[];
-};
-
-export type TopicRuleRecord = {
-  id: string;
-  topicId: string;
-  title: string;
-  text: string;
-  sourceRefs?: Array<{
-    source: string;
-    point?: string;
-    article?: string;
-    url?: string;
-  }>;
-};
-
-export type FineRecord = {
-  id: string;
-  topicId: string;
-  title: string;
-  penalty: string;
-  summary: string;
-  sourceRefs?: Array<{
-    source: string;
-    point?: string;
-    article?: string;
-    url?: string;
-  }>;
-};
-
-export type ConceptRecord = {
+export type TermRecord = {
   slug: string;
-  term: string;
-  signRefs: string[];
-  definition: string;
+  term_ru: string;
+  term_hy: string;
+  definition_ru: string;
+  definition_hy: string;
   comment?: string;
-  linkedSigns?: Array<{
-    id: string;
-    title: string;
-    images: string[];
-    groupTitle?: string;
-  }>;
 };
 
 export type UserRecord = {
@@ -80,21 +88,70 @@ export type UserRecord = {
   chatId: number;
   firstName?: string;
   username?: string;
+  language: LanguageCode;
   isSubscribed: boolean;
-  lessonCursor: number;
+  pendingErrorReportQuestionKey?: string;
   createdAt: string;
   updatedAt: string;
 };
 
-export type AnswerMode = "daily" | "mistake-review" | "manual" | "lesson-check";
+export type QuizMode = "daily" | "manual" | "mistake";
+
+export type QuestionStatus = "new" | "learning" | "mistake" | "repeat" | "mastered";
+
+export type UserQuestionState = {
+  telegramId: number;
+  questionKey: string;
+  language: LanguageCode;
+  topicSlug: TopicSlug;
+  status: QuestionStatus;
+  correctStreak: number;
+  mistakeCount: number;
+  lastSeenAt?: string;
+  nextReviewAt?: string;
+  lastAnswerCorrect?: boolean;
+  updatedAt: string;
+};
+
+export type QuizSessionStatus = "pending" | "answered";
+
+export type QuizSessionRecord = {
+  id: string;
+  telegramId: number;
+  chatId: number;
+  questionKey: string;
+  questionId: string;
+  topicSlug: TopicSlug;
+  language: LanguageCode;
+  mode: QuizMode;
+  status: QuizSessionStatus;
+  sentAt: string;
+  answeredAt?: string;
+  selectedOptionId?: string;
+  isCorrect?: boolean;
+};
 
 export type AnswerRecord = {
   telegramId: number;
-  cardId: string;
+  questionKey: string;
+  questionId: string;
+  topicSlug: TopicSlug;
+  language: LanguageCode;
+  mode: QuizMode;
+  selectedOptionId: string;
   isCorrect: boolean;
-  selectedOption: number;
-  mode: AnswerMode;
   answeredAt: string;
+};
+
+export type ErrorReportRecord = {
+  telegramId: number;
+  chatId: number;
+  language: LanguageCode;
+  questionKey: string;
+  questionId?: string;
+  topicSlug?: TopicSlug;
+  text: string;
+  createdAt: string;
 };
 
 export type AppConfig = {

@@ -1,0 +1,1311 @@
+{
+  "8-2": {
+    "comment": "Междугородний автобус вне города может ехать до 90 км/ч — не путай с обычным автобусом (70).",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "built_up_area",
+          "road",
+          "bus",
+          "passenger"
+        ]
+      }
+    ]
+  },
+  "8-3": {
+    "comment": "В населённом пункте для всех, включая междугородние автобусы, лимит 60 км/ч.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "built_up_area",
+          "bus"
+        ]
+      }
+    ]
+  },
+  "8-7": {
+    "comment": "На автомагистрали автобус ограничен 90 км/ч, а не 110 как легковой.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "bus"
+        ]
+      }
+    ]
+  },
+  "8-8": {
+    "comment": "Нельзя ускоряться, когда тебя обгоняют — это мешает безопасному манёвру.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "intersection",
+          "road",
+          "driver",
+          "overtaking_simple"
+        ]
+      }
+    ]
+  },
+  "8-9": {
+    "comment": "Открытый бортовой кузов для детей опасен — в закрытом фургоне правила другие.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "truck",
+          "automobile"
+        ]
+      }
+    ]
+  },
+  "8-11": {
+    "comment": "60 км/ч в населённом пункте — базовый лимит для всех.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "built_up_area"
+        ]
+      }
+    ]
+  },
+  "8-12": {
+    "comment": "С детьми в автобусе в городе — не выше 60 км/ч.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle"
+        ]
+      }
+    ]
+  },
+  "8-13": {
+    "comment": "110 км/ч — не «везде снаружи города», а только на автомагистрали для легковых.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "passenger_car",
+          "automobile",
+          "built_up_area",
+          "road"
+        ]
+      }
+    ]
+  },
+  "8-14": {
+    "comment": "Междугородний автобус вне города — 90, а не 70.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "built_up_area",
+          "road",
+          "bus",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "8-15": {
+    "comment": "В городе автобус не получает «особой» скорости — 60 для всех.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "built_up_area",
+          "road",
+          "bus",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "8-18": {
+    "comment": "Лёгкий грузовик до 3,5 т часто едет как легковой — 90 вне города.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "3.5"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "maximum_authorized_mass",
+          "truck",
+          "automobile",
+          "built_up_area"
+        ]
+      }
+    ]
+  },
+  "8-19": {
+    "comment": "Междугородний автобус = 90 км/ч вне населённого пункта.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "built_up_area",
+          "bus"
+        ]
+      }
+    ]
+  },
+  "8-20": {
+    "comment": "При буксировке на гибкой сцепке максимум 50 км/ч.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "motor_vehicle",
+          "vehicle"
+        ]
+      }
+    ]
+  },
+  "8-21": {
+    "comment": "В буксируемой легковой может быть водитель, но не в автобусе или открытом кузове.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "passenger_car",
+          "truck",
+          "automobile",
+          "bus"
+        ]
+      }
+    ]
+  },
+  "8-22": {
+    "comment": "На льду запрещена именно гибкая тросовая сцепка — жёсткая или частичная погрузка могут быть иначе.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": []
+      }
+    ]
+  },
+  "8-23": {
+    "comment": "Знак «ТС с прицепом» вешают сзади буксируемого, а не спереди.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "stop",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "8-24": {
+    "comment": "С гибкой сцепкой лимит 50 км/ч — не 30 и не 40.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle"
+        ]
+      }
+    ]
+  },
+  "8-26": {
+    "comment": "С прицепом на автомагистрали лимит ниже — обычно 90, не 110.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "passenger_car",
+          "automobile"
+        ]
+      }
+    ]
+  },
+  "8-27": {
+    "comment": "На льду гибкая сцепка запрещена, жёсткая или частичная погрузка — по правилам.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": []
+      }
+    ]
+  },
+  "8-28": {
+    "comment": "На голом льду с гибкой сцепкой ехать нельзя.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "motorcycle"
+        ]
+      }
+    ]
+  },
+  "8-29": {
+    "comment": "Расстояние между машинами на гибкой сцепке — 4–6 м, не «чем ближе, тем лучше».",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle"
+        ]
+      }
+    ]
+  },
+  "8-30": {
+    "comment": "Груз не должен быть опасен для других — не только «не выступать».",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "8-31": {
+    "comment": "До 12 лет на переднем сиденье — только в детском кресле.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "passenger_car",
+          "automobile"
+        ]
+      }
+    ]
+  },
+  "8-32": {
+    "comment": "Перевозка в кузове грузовика — исключение, не общее правило.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "truck",
+          "automobile",
+          "road"
+        ]
+      }
+    ]
+  },
+  "8-33": {
+    "comment": "Мотоцикл без бокового прицепа не буксирует и не буксируется таким способом.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "motorcycle"
+        ]
+      }
+    ]
+  },
+  "8-34": {
+    "comment": "При буксировке люди — только в кабине легковой или грузовика, не в автобусе и не в кузове.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "motor_vehicle",
+          "passenger_car",
+          "vehicle",
+          "truck",
+          "automobile",
+          "bus"
+        ]
+      }
+    ]
+  },
+  "8-35": {
+    "comment": "Мотоциклы с боковым прицепом — отдельные правила буксировки.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "motorcycle"
+        ]
+      }
+    ]
+  },
+  "8-36": {
+    "comment": "В грузовом прицепе людей возить нельзя.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": []
+      }
+    ]
+  },
+  "8-37": {
+    "comment": "Для жёсткой сцепки расстояние короче — до 4 м.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle"
+        ]
+      }
+    ]
+  },
+  "8-38": {
+    "comment": "При частичной погрузке люди только в кабине тягача.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "motor_vehicle",
+          "vehicle",
+          "automobile",
+          "passenger"
+        ]
+      }
+    ]
+  },
+  "8-39": {
+    "comment": "С гибкой сцепкой — 50 км/ч.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": []
+      }
+    ]
+  },
+  "8-40": {
+    "comment": "В грузовом прицепе пассажиров не бывает — это жёсткий запрет.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": []
+      }
+    ]
+  },
+  "8-41": {
+    "comment": "До 12 лет на заднем сиденье мотоцикла — нельзя.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "motorcycle"
+        ]
+      }
+    ]
+  },
+  "8-42": {
+    "comment": "В буксируемом автобусе пассажиров быть не должно.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "bus",
+          "passenger"
+        ]
+      }
+    ]
+  },
+  "8-43": {
+    "comment": "Обычный автобус вне города — до 70 км/ч, междугородний — 90.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "built_up_area",
+          "bus"
+        ]
+      }
+    ]
+  },
+  "8-44": {
+    "comment": "На льду автобус с гибкой сцепкой не буксирует.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "bus"
+        ]
+      }
+    ]
+  },
+  "8-45": {
+    "comment": "Нужен минимум один взрослый сопровождающий, не «чем больше, тем лучше».",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "bus"
+        ]
+      }
+    ]
+  },
+  "8-46": {
+    "comment": "Нельзя перевозить больше людей, чем сидячих мест.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "bus"
+        ]
+      }
+    ]
+  },
+  "8-47": {
+    "comment": "В тягаче-автобусе люди могут быть, в буксируемом автобусе — нет.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "bus",
+          "passenger"
+        ]
+      }
+    ]
+  },
+  "8-48": {
+    "comment": "Пассажирский грузовик — до 60 км/ч.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "truck",
+          "automobile",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "8-49": {
+    "comment": "В буксируемом автобусе пассажиров быть не должно.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "bus"
+        ]
+      }
+    ]
+  },
+  "8-50": {
+    "comment": "Междугородний автобус на автомагистрали — 90, не 110.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "bus"
+        ]
+      }
+    ]
+  },
+  "8-51": {
+    "comment": "На буксируемой машине должна быть аварийка, а не просто ближний свет.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle"
+        ]
+      }
+    ]
+  },
+  "8-53": {
+    "comment": "В буксируемом автобусе пассажиров не возят.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "bus",
+          "passenger"
+        ]
+      }
+    ]
+  },
+  "8-54": {
+    "comment": "В жилой зоне — до 20 км/ч.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "road"
+        ]
+      }
+    ]
+  },
+  "8-57": {
+    "comment": "Скорость нужно снижать во всех перечисленных опасных ситуациях.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "8-58": {
+    "comment": "Нельзя выбирать только один запрет — здесь ограничены все перечисленные действия.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "traffic_accident",
+          "vehicle",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "8-59": {
+    "comment": "Скорость должна позволять остановиться и уступить дорогу.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "intersection",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "8-60": {
+    "comment": "Слишком медленно на перекрёстке тоже опасно — меньше 8 км/ч без основания нельзя.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "railway_crossing",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "8-62": {
+    "comment": "Нужна скорость, при которой машину можно полностью контролировать.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "8-63": {
+    "comment": "До 8 пассажиров — B+C, больше — нужна категория D.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "driver",
+          "passenger"
+        ]
+      }
+    ]
+  },
+  "8-64": {
+    "comment": "Если груз выступает боком больше 0,4 м — нужна маркировка.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "night_time"
+        ]
+      }
+    ]
+  },
+  "8-65": {
+    "comment": "При опасном грузе нельзя просто «доехать до ближайшего места» — остановись или исправь.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "driver"
+        ]
+      }
+    ]
+  },
+  "8-66": {
+    "comment": "Груз не должен быть опасен ни для водителя, ни для других.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "8-68": {
+    "comment": "Для жёсткой сцепки расстояние до 4 м.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "night_time"
+        ]
+      }
+    ]
+  },
+  "8-69": {
+    "comment": "Для жёсткой сцепки — до 4 м, не путай с 4–6 м для троса.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle"
+        ]
+      }
+    ]
+  },
+  "8-70": {
+    "comment": "В жилой зоне — 20 км/ч для всех, включая автобусы.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "bus"
+        ]
+      }
+    ]
+  },
+  "8-71": {
+    "comment": "При буксировке вне города — 50 км/ч.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "motor_vehicle",
+          "vehicle",
+          "built_up_area"
+        ]
+      }
+    ]
+  },
+  "8-72": {
+    "comment": "При жёсткой или гибкой сцепке запрет касается буксируемого автобуса, троллейбуса и кузова буксируемого грузовика. Кузов буксирующего грузовика сюда не попадает.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "truck",
+          "automobile",
+          "bus"
+        ]
+      }
+    ]
+  },
+  "8-73": {
+    "comment": "Люди при буксировке — только в кабине легковой или грузовика.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "motor_vehicle",
+          "passenger_car",
+          "vehicle",
+          "truck",
+          "automobile",
+          "bus"
+        ]
+      }
+    ]
+  },
+  "8-74": {
+    "comment": "Пассажирский грузовик — 60 км/ч.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "truck",
+          "automobile"
+        ]
+      }
+    ]
+  },
+  "8-77": {
+    "comment": "Учитывай и состояние дороги, и видимость — оба фактора важны.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "8-78": {
+    "comment": "0,3 м выступа недостаточно для обязательной маркировки — порог 0,4 м.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "night_time"
+        ]
+      }
+    ]
+  },
+  "8-79": {
+    "comment": "Междугородний автобус вне города — 90 км/ч.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "built_up_area",
+          "bus"
+        ]
+      }
+    ]
+  },
+  "8-80": {
+    "comment": "Скорость зависит от типа ТС, дороги и условий — не переноси один лимит на все ситуации.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "1.2"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": [
+          "1.2"
+        ]
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "night_time"
+        ]
+      }
+    ]
+  }
+}

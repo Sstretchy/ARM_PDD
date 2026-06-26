@@ -1,0 +1,216 @@
+{
+  "2-6": {
+    "comment": "Термины в ПДД формулируются юридически точно: ориентируйся на определение из закона, а не на бытовой смысл слова.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "intersection",
+          "road"
+        ]
+      }
+    ]
+  },
+  "2-13": {
+    "comment": "Термины в ПДД формулируются юридически точно: ориентируйся на определение из закона, а не на бытовой смысл слова.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "traffic_lane",
+          "median_strip",
+          "carriageway",
+          "road"
+        ]
+      }
+    ]
+  },
+  "2-21": {
+    "comment": "Выезд между зданиями — это прилегающая территория, а не перекрёсток.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "median_strip",
+          "carriageway",
+          "road"
+        ]
+      }
+    ]
+  },
+  "2-23": {
+    "comment": "Термины в ПДД формулируются юридически точно: ориентируйся на определение из закона, а не на бытовой смысл слова.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "adjacent_area",
+          "intersection",
+          "road"
+        ]
+      }
+    ]
+  },
+  "2-43": {
+    "comment": "Термины в ПДД формулируются юридически точно: ориентируйся на определение из закона, а не на бытовой смысл слова.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "median_strip",
+          "carriageway",
+          "intersection",
+          "road"
+        ]
+      }
+    ]
+  },
+  "2-44": {
+    "comment": "Твёрдое покрытие делает дорогу главной относительно грунтовой даже без знака.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "traffic_lane",
+          "carriageway",
+          "road",
+          "moped"
+        ]
+      }
+    ]
+  },
+  "2-53": {
+    "comment": "Без разметки встречная сторона — левая половина проезжей части, поэтому движение по центру уже риск выезда на встречку.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "oncoming_traffic_simple",
+          "carriageway",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "2-54": {
+    "comment": "Считай полосы по разметке на обеих проезжих частях: 2 + 2 = 4.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "median_strip",
+          "carriageway",
+          "intersection",
+          "road"
+        ]
+      }
+    ]
+  },
+  "2-68": {
+    "comment": "Одна линия по центру делит встречные потоки: по одной полосе в каждую сторону.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "median_strip",
+          "carriageway",
+          "road"
+        ]
+      }
+    ]
+  },
+  "2-71": {
+    "comment": "Термины в ПДД формулируются юридически точно: ориентируйся на определение из закона, а не на бытовой смысл слова.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "main_road_simple",
+          "intersection",
+          "road"
+        ]
+      }
+    ]
+  }
+}

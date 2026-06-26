@@ -1,0 +1,1361 @@
+{
+  "2-1": {
+    "comment": "Тротуар — это элемент дороги для пешеходов: он может примыкать к проезжей части или быть отделён от неё.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "carriageway",
+          "road",
+          "pedestrian",
+          "sidewalk"
+        ]
+      }
+    ]
+  },
+  "2-2": {
+    "comment": "Лимит относится к разрешённой максимальной массе прицепа, а не к фактическому грузу в нём.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "maximum_authorized_mass",
+          "vehicle",
+          "road"
+        ]
+      }
+    ]
+  },
+  "2-3": {
+    "comment": "Термины в ПДД формулируются юридически точно: ориентируйся на определение из закона, а не на бытовой смысл слова.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "median_strip",
+          "carriageway",
+          "road",
+          "pedestrian",
+          "stop"
+        ]
+      }
+    ]
+  },
+  "2-4": {
+    "comment": "Порог мопеда — до 50 см³ и до 50 км/ч. Выше — уже другая категория.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "road",
+          "moped"
+        ]
+      }
+    ]
+  },
+  "2-5": {
+    "comment": "Недостаточная видимость — про погоду и дальность, а не просто про ночь.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "visibility_distance",
+          "bad_visibility",
+          "night_time",
+          "carriageway",
+          "built_up_area",
+          "road"
+        ]
+      }
+    ]
+  },
+  "2-7": {
+    "comment": "Для призванных на службу есть исключение: D/D1 можно с 19 лет, а не с 21.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "2-8": {
+    "comment": "Термины в ПДД формулируются юридически точно: ориентируйся на определение из закона, а не на бытовой смысл слова.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "road",
+          "u_turn_simple"
+        ]
+      }
+    ]
+  },
+  "2-9": {
+    "comment": "Термины в ПДД формулируются юридически точно: ориентируйся на определение из закона, а не на бытовой смысл слова.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "traffic_accident",
+          "emergency_situation",
+          "traffic_controller",
+          "road"
+        ]
+      }
+    ]
+  },
+  "2-10": {
+    "comment": "До 750 кг — обычная категория B/C/D; тяжелее — нужна категория с E.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "maximum_authorized_mass",
+          "vehicle",
+          "road"
+        ]
+      }
+    ]
+  },
+  "2-11": {
+    "comment": "Не более 8 сидячих мест — это легковой автомобиль; больше 8 — уже автобус.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "passenger_car",
+          "automobile",
+          "road",
+          "passenger"
+        ]
+      }
+    ]
+  },
+  "2-12": {
+    "comment": "Термины в ПДД формулируются юридически точно: ориентируйся на определение из закона, а не на бытовой смысл слова.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "starting_movement_simple",
+          "traffic_lane",
+          "road",
+          "stop"
+        ]
+      }
+    ]
+  },
+  "2-14": {
+    "comment": "Термины в ПДД формулируются юридически точно: ориентируйся на определение из закона, а не на бытовой смысл слова.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "road"
+        ]
+      }
+    ]
+  },
+  "2-15": {
+    "comment": "Термины в ПДД формулируются юридически точно: ориентируйся на определение из закона, а не на бытовой смысл слова.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "forced_stop",
+          "road",
+          "stop",
+          "driver",
+          "passenger"
+        ]
+      }
+    ]
+  },
+  "2-16": {
+    "comment": "Для D/D1 нужен не только возраст, но и уже имеющаяся категория B, C или C1.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "2-17": {
+    "comment": "Общее правило для D/D1 — 21 год; 19 лет только для специального военного исключения.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "2-18": {
+    "comment": "Термины в ПДД формулируются юридически точно: ориентируйся на определение из закона, а не на бытовой смысл слова.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "road",
+          "driver",
+          "passenger"
+        ]
+      }
+    ]
+  },
+  "2-19": {
+    "comment": "Термины в ПДД формулируются юридически точно: ориентируйся на определение из закона, а не на бытовой смысл слова.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "adjacent_area",
+          "intersection",
+          "road"
+        ]
+      }
+    ]
+  },
+  "2-20": {
+    "comment": "Тротуар — это элемент дороги для пешеходов: он может примыкать к проезжей части или быть отделён от неё.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "median_strip",
+          "carriageway",
+          "road",
+          "road_shoulder",
+          "sidewalk"
+        ]
+      }
+    ]
+  },
+  "2-22": {
+    "comment": "Термины в ПДД формулируются юридически точно: ориентируйся на определение из закона, а не на бытовой смысл слова.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "2-24": {
+    "comment": "Термины в ПДД формулируются юридически точно: ориентируйся на определение из закона, а не на бытовой смысл слова.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "carriageway",
+          "road"
+        ]
+      }
+    ]
+  },
+  "2-25": {
+    "comment": "При ДТП первое: остановиться, включить аварийку и ничего не двигать.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "traffic_accident",
+          "vehicle",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "2-26": {
+    "comment": "Термины в ПДД формулируются юридически точно: ориентируйся на определение из закона, а не на бытовой смысл слова.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "maximum_authorized_mass",
+          "vehicle",
+          "road",
+          "driver",
+          "passenger"
+        ]
+      }
+    ]
+  },
+  "2-27": {
+    "comment": "Международное удостоверение не может действовать дольше национального.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "2-28": {
+    "comment": "Термины в ПДД формулируются юридически точно: ориентируйся на определение из закона, а не на бытовой смысл слова.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "public_transport_vehicle",
+          "vehicle",
+          "automobile",
+          "road",
+          "bus",
+          "stop",
+          "passenger"
+        ]
+      }
+    ]
+  },
+  "2-29": {
+    "comment": "Термины в ПДД формулируются юридически точно: ориентируйся на определение из закона, а не на бытовой смысл слова.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "2-30": {
+    "comment": "Термины в ПДД формулируются юридически точно: ориентируйся на определение из закона, а не на бытовой смысл слова.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "2-31": {
+    "comment": "Стоянка — это больше 5 минут, если причина не посадка, грузовые работы или вынужденная ситуация.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "parking",
+          "road",
+          "passenger"
+        ]
+      }
+    ]
+  },
+  "2-32": {
+    "comment": "Термины в ПДД формулируются юридически точно: ориентируйся на определение из закона, а не на бытовой смысл слова.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "road",
+          "motorcycle",
+          "bicycle",
+          "pedestrian",
+          "moped"
+        ]
+      }
+    ]
+  },
+  "2-33": {
+    "comment": "Термины в ПДД формулируются юридически точно: ориентируйся на определение из закона, а не на бытовой смысл слова.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "road",
+          "pedestrian"
+        ]
+      }
+    ]
+  },
+  "2-34": {
+    "comment": "BE — это категория для состава с прицепом, поэтому возраст выше, чем просто для B.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "road"
+        ]
+      }
+    ]
+  },
+  "2-35": {
+    "comment": "Исключение касается инструктора, а не ученика за рулём.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "automobile",
+          "road"
+        ]
+      }
+    ]
+  },
+  "2-36": {
+    "comment": "Термины в ПДД формулируются юридически точно: ориентируйся на определение из закона, а не на бытовой смысл слова.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "road",
+          "pedestrian"
+        ]
+      }
+    ]
+  },
+  "2-37": {
+    "comment": "Термины в ПДД формулируются юридически точно: ориентируйся на определение из закона, а не на бытовой смысл слова.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "motor_vehicle",
+          "vehicle",
+          "trailer_semitrailer",
+          "road"
+        ]
+      }
+    ]
+  },
+  "2-38": {
+    "comment": "Термины в ПДД формулируются юридически точно: ориентируйся на определение из закона, а не на бытовой смысл слова.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "maximum_authorized_mass",
+          "vehicle",
+          "road",
+          "driver",
+          "passenger"
+        ]
+      }
+    ]
+  },
+  "2-39": {
+    "comment": "Термины в ПДД формулируются юридически точно: ориентируйся на определение из закона, а не на бытовой смысл слова.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "traffic_lane",
+          "carriageway",
+          "road"
+        ]
+      }
+    ]
+  },
+  "2-40": {
+    "comment": "Термины в ПДД формулируются юридически точно: ориентируйся на определение из закона, а не на бытовой смысл слова.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "road"
+        ]
+      }
+    ]
+  },
+  "2-41": {
+    "comment": "Термины в ПДД формулируются юридически точно: ориентируйся на определение из закона, а не на бытовой смысл слова.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "2-42": {
+    "comment": "Термины в ПДД формулируются юридически точно: ориентируйся на определение из закона, а не на бытовой смысл слова.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "public_transport_vehicle",
+          "vehicle",
+          "automobile",
+          "road",
+          "bus",
+          "stop",
+          "passenger"
+        ]
+      }
+    ]
+  },
+  "2-45": {
+    "comment": "Термины в ПДД формулируются юридически точно: ориентируйся на определение из закона, а не на бытовой смысл слова.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "public_transport_stop",
+          "public_transport_vehicle",
+          "vehicle",
+          "road",
+          "stop",
+          "passenger"
+        ]
+      }
+    ]
+  },
+  "2-46": {
+    "comment": "Главное отличие от стоянки — до 5 минут либо время на посадку, высадку или грузовые работы.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "parking",
+          "road",
+          "stop",
+          "passenger"
+        ]
+      }
+    ]
+  },
+  "2-47": {
+    "comment": "Термины в ПДД формулируются юридически точно: ориентируйся на определение из закона, а не на бытовой смысл слова.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "carriageway",
+          "road",
+          "motorcycle",
+          "bicycle",
+          "moped"
+        ]
+      }
+    ]
+  },
+  "2-48": {
+    "comment": "Экзамены сами по себе ещё не дают права ехать: нужен полученный документ или цифровой вариант.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "2-49": {
+    "comment": "Международная категория C — с 21 года, даже если национальную C можно получить раньше.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "2-50": {
+    "comment": "Термины в ПДД формулируются юридически точно: ориентируйся на определение из закона, а не на бытовой смысл слова.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "2-51": {
+    "comment": "Термины в ПДД формулируются юридически точно: ориентируйся на определение из закона, а не на бытовой смысл слова.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "2-52": {
+    "comment": "Главная ловушка — «более 8» означает 9 и больше, а не 8.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "automobile",
+          "road",
+          "bus",
+          "passenger"
+        ]
+      }
+    ]
+  },
+  "2-55": {
+    "comment": "Термины в ПДД формулируются юридически точно: ориентируйся на определение из закона, а не на бытовой смысл слова.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "adjacent_area",
+          "road",
+          "turn_simple"
+        ]
+      }
+    ]
+  },
+  "2-56": {
+    "comment": "Термины в ПДД формулируются юридически точно: ориентируйся на определение из закона, а не на бытовой смысл слова.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "starting_movement_simple",
+          "traffic_lane",
+          "lane_change_simple",
+          "road",
+          "maneuver_simple",
+          "turn_simple",
+          "u_turn_simple",
+          "stop"
+        ]
+      }
+    ]
+  },
+  "2-57": {
+    "comment": "Перестроение — это уход из своего ряда или полосы без смены общего направления.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "lane_change_simple",
+          "road"
+        ]
+      }
+    ]
+  },
+  "2-58": {
+    "comment": "Термины в ПДД формулируются юридически точно: ориентируйся на определение из закона, а не на бытовой смысл слова.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "night_time",
+          "road"
+        ]
+      }
+    ]
+  },
+  "2-59": {
+    "comment": "Термины в ПДД формулируются юридически точно: ориентируйся на определение из закона, а не на бытовой смысл слова.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "road_traffic",
+          "traffic_controller",
+          "road",
+          "pedestrian",
+          "driver",
+          "passenger"
+        ]
+      }
+    ]
+  },
+  "2-60": {
+    "comment": "Термины в ПДД формулируются юридически точно: ориентируйся на определение из закона, а не на бытовой смысл слова.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "road"
+        ]
+      }
+    ]
+  },
+  "2-61": {
+    "comment": "Дольше 5 минут всё ещё может быть остановкой, если идёт посадка, высадка, погрузка или разгрузка.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "parking",
+          "road",
+          "stop",
+          "passenger"
+        ]
+      }
+    ]
+  },
+  "2-62": {
+    "comment": "Термины в ПДД формулируются юридически точно: ориентируйся на определение из закона, а не на бытовой смысл слова.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "2-63": {
+    "comment": "Термины в ПДД формулируются юридически точно: ориентируйся на определение из закона, а не на бытовой смысл слова.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "road"
+        ]
+      }
+    ]
+  },
+  "2-64": {
+    "comment": "Термины в ПДД формулируются юридически точно: ориентируйся на определение из закона, а не на бытовой смысл слова.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "motor_vehicle",
+          "vehicle",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "2-65": {
+    "comment": "Термины в ПДД формулируются юридически точно: ориентируйся на определение из закона, а не на бытовой смысл слова.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "road"
+        ]
+      }
+    ]
+  },
+  "2-66": {
+    "comment": "Пробка — не препятствие: это обычная очередь машин, а не предмет или сломанная машина, которую нужно объезжать.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "4.2.1",
+          "4.2.3"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": [
+          "2.3"
+        ]
+      },
+      {
+        "type": "term",
+        "ids": [
+          "forced_stop",
+          "detour_obstacle",
+          "carriageway",
+          "road",
+          "stop"
+        ]
+      }
+    ]
+  },
+  "2-67": {
+    "comment": "Термины в ПДД формулируются юридически точно: ориентируйся на определение из закона, а не на бытовой смысл слова.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "yield_to_other_vehicles",
+          "vehicle",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "2-69": {
+    "comment": "Начальное обучение проходит вне обычного потока машин — на закрытой площадке или автодроме.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "road_traffic",
+          "vehicle",
+          "training_ground",
+          "built_up_area",
+          "autodrome",
+          "road"
+        ]
+      }
+    ]
+  },
+  "2-70": {
+    "comment": "Термины в ПДД формулируются юридически точно: ориентируйся на определение из закона, а не на бытовой смысл слова.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "road",
+          "overtaking_simple"
+        ]
+      }
+    ]
+  },
+  "2-72": {
+    "comment": "Для международных D/DE/D1/D1E действует общий порог 21 год.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  }
+}

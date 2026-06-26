@@ -7,6 +7,7 @@
     "build": "tsc -p tsconfig.json",
     "concepts:fetch": "node scripts/fetch-concepts.mjs",
     "dev": "tsx watch src/index.ts",
+    "export:test-empty-explanations": "python scripts/export_empty_explanations_to_test.py",
     "imports:rebuild-html": "node scripts/rebuild-drv-imports-from-html.mjs",
     "import:drv-topics": "python scripts/build_drv_topic_questions.py",
     "preview:signs": "node scripts/build-signs-preview.mjs",

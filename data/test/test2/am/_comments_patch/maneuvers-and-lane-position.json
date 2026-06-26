@@ -1,0 +1,3485 @@
+{
+  "1-1": {
+    "comment": "Полоса торможения — не «удобное место для поворота». Сначала перестройся на неё, и только там снижай скорость и разворачивайся.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "carriageway",
+          "road",
+          "turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-2": {
+    "comment": "Прерывистую линию можно пересечь для манёвра. Но перед въездом во двор уступи маршрутному транспорту в выделенной полосе.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "road",
+          "bus",
+          "turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-3": {
+    "comment": "Ловушка: на кольце не обязательно занимать крайнюю полосу. Въезжать можно с любой, если знак 4.3 разрешает круговое движение.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "4.3"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "intersection",
+          "road",
+          "turn_simple",
+          "u_turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-4": {
+    "comment": "Выезжая с кольца, занимай полосу под свой поворот. Внутренняя полоса не даёт права пересечь траекторию грузовика справа.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "4.3"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "intersection",
+          "turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-5": {
+    "comment": "Знак 5.5 = односторонка. Разворот там запрещён всегда, даже если видимость хорошая и никому не мешаешь.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "5.5"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "visibility_distance",
+          "road",
+          "u_turn_simple"
+        ]
+      }
+    ]
+  },
+  "1-6": {
+    "comment": "При въезде на прилегающую территорию уступи и велосипедистам, и не загораживай пешеходов. «Только пешеходам» — ловушка.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "adjacent_area",
+          "road",
+          "pedestrian",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-7": {
+    "comment": "Знак 2.6 запрещает въезд на мост, если мешаешь встречке. Но если мотоциклисту проехать можно — въезжать разрешено.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "2.6"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": [
+          "2.6"
+        ]
+      },
+      {
+        "type": "term",
+        "ids": [
+          "traffic_priority",
+          "oncoming_traffic_simple",
+          "road",
+          "motorcycle",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-8": {
+    "comment": "Объезжая аварийную машину, ты сам выезжаешь на встречку. Значит, уступаешь всем, кто едет навстречу.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "traffic_lane",
+          "automobile",
+          "road",
+          "stop",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-9": {
+    "comment": "Знак 2.7 даёт приоритет на узком участке. Кто под ним — тот и проезжает первым, даже если встречный кажется «главнее».",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "2.7",
+          "2.6"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": [
+          "2.7",
+          "2.6"
+        ]
+      },
+      {
+        "type": "term",
+        "ids": [
+          "traffic_priority",
+          "oncoming_traffic_simple",
+          "vehicle",
+          "truck",
+          "automobile",
+          "road",
+          "bus",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-10": {
+    "comment": "На главной при левом повороте уступи встречному «прямо». Плюс пропусти спецтранспорт с мигалкой — он вне очереди.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "2.1"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "main_road_simple",
+          "automobile",
+          "road",
+          "motorcycle",
+          "turn_simple"
+        ]
+      }
+    ]
+  },
+  "1-11": {
+    "comment": "Знак «Уступи дорогу» = ты на второстепенной. При развороте на перекрёстке уступи всем на главной, включая попутных.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "unequal_priority_roads",
+          "passenger_car",
+          "equal_priority_roads",
+          "secondary_road_simple",
+          "vehicle",
+          "truck",
+          "main_road_simple",
+          "automobile",
+          "intersection",
+          "road",
+          "u_turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-12": {
+    "comment": "Ты на подъёме — у тебя приоритет. Даже если помеха с твоей стороны, встречный на спуске должен подождать.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "1.14",
+          "1.13"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": [
+          "1.13"
+        ]
+      },
+      {
+        "type": "term",
+        "ids": [
+          "oncoming_traffic_simple",
+          "road",
+          "stop",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-13": {
+    "comment": "Едешь вниз по крутому спуску — уступи тому, кто поднимается. Знак 1.13 как раз предупреждает: впереди тяжёлый спуск.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "1.13",
+          "1.14"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": [
+          "1.13"
+        ]
+      },
+      {
+        "type": "term",
+        "ids": [
+          "oncoming_traffic_simple",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-14": {
+    "comment": "При одновременном перестроении попутных уступает левый. Запомни: «правый сильнее» — как помеха справа, только в соседних полосах.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-15": {
+    "comment": "Задний ход на пешеходном переходе запрещён всегда. Не путай с обычной дорогой — «зебра» в списке запретных мест.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "pedestrian_crossing",
+          "pedestrian"
+        ]
+      }
+    ]
+  },
+  "1-16": {
+    "comment": "Знак 3.2 с табличкой 7.3.3 действует в обе стороны. Запрет и направо, и налево — не ищи «разрешённый» проезд.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "3.2"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "intersection",
+          "road"
+        ]
+      }
+    ]
+  },
+  "1-17": {
+    "comment": "Если разворот нигде не запрещён знаками — можно по любой траектории. Но только с крайней левой и без помех другим.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "road",
+          "u_turn_simple",
+          "pedestrian"
+        ]
+      }
+    ]
+  },
+  "1-18": {
+    "comment": "На перекрёстке нет «единственно правильной» дуги для левого поворота. Главное — не выехать на встречную полосу.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "carriageway",
+          "intersection",
+          "road",
+          "turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-19": {
+    "comment": "На трёхполосной с встречкой в средней полосе можно только для обгона, объезда, левого поворота или разворота. Все три варианта в ответе — не один.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "road",
+          "turn_simple",
+          "u_turn_simple",
+          "overtaking_simple"
+        ]
+      }
+    ]
+  },
+  "1-20": {
+    "comment": "Главная на перекрёстке поворачивает — машины на ней между собой как на равнозначных. Уступи грузовику, если он «справа».",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "2.1",
+          "8.13"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "passenger_car",
+          "equal_priority_roads",
+          "secondary_road_simple",
+          "vehicle",
+          "truck",
+          "main_road_simple",
+          "automobile",
+          "intersection",
+          "road",
+          "u_turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-21": {
+    "comment": "Знак 4.2.2 — круглый синий со стрелкой: объезд препятствия строго с указанной стороны. Здесь — только слева.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "4.2.2"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": [
+          "2.2"
+        ]
+      },
+      {
+        "type": "term",
+        "ids": [
+          "detour_obstacle",
+          "turn_simple"
+        ]
+      }
+    ]
+  },
+  "1-22": {
+    "comment": "Ловушка: «можно для обгона» — неверно. Автобусу в городе крайняя левая только для разворота или левого поворота.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "public_transport_vehicle",
+          "maximum_authorized_mass",
+          "vehicle",
+          "built_up_area",
+          "road",
+          "turn_simple",
+          "u_turn_simple",
+          "passenger",
+          "overtaking_simple"
+        ]
+      }
+    ]
+  },
+  "1-23": {
+    "comment": "Задний ход разрешён там, где нет прямого запрета. Перекрёсток и пешеходный переход — в списке «нельзя».",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "pedestrian_crossing",
+          "intersection",
+          "pedestrian"
+        ]
+      }
+    ]
+  },
+  "1-24": {
+    "comment": "В тоннеле запрещён и разворот, и задний ход. Подъехать к пассажиру задом — тоже нарушение.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "u_turn_simple",
+          "driver",
+          "passenger"
+        ]
+      }
+    ]
+  },
+  "1-25": {
+    "comment": "Левый поворот на перекрёстке можно по любой траектории — в отличие от правого, где нужно держаться правого края.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "carriageway",
+          "intersection",
+          "turn_simple"
+        ]
+      }
+    ]
+  },
+  "1-26": {
+    "comment": "Разворот запрещён на самом ж/д переезде, а не «за 300 м до него». Стрелка на разметке до переезда — ещё можно.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "railway_crossing",
+          "pedestrian_crossing",
+          "road",
+          "u_turn_simple",
+          "pedestrian"
+        ]
+      }
+    ]
+  },
+  "1-27": {
+    "comment": "Знак 4.1.1 «Только прямо» — жёсткий: ни налево, ни направо. Даже если полоса визуально широкая.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "4.1.1"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": [
+          "1.1"
+        ]
+      },
+      {
+        "type": "term",
+        "ids": [
+          "u_turn_simple"
+        ]
+      }
+    ]
+  },
+  "1-28": {
+    "comment": "Под знаком 2.7 ты обязан уступить встречным на узком месте. Автобус без 2.7 — ждёт тебя.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "2.7",
+          "2.6"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": [
+          "2.7",
+          "2.6"
+        ]
+      },
+      {
+        "type": "term",
+        "ids": [
+          "traffic_priority",
+          "oncoming_traffic_simple",
+          "vehicle",
+          "road",
+          "bus",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-29": {
+    "comment": "Ты на второстепенной (2.4). Уступи всем на главной: и автобусу, и легковому — не выбирай «меньший» транспорт.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "2.4"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": [
+          "2.4"
+        ]
+      },
+      {
+        "type": "term",
+        "ids": [
+          "unequal_priority_roads",
+          "passenger_car",
+          "equal_priority_roads",
+          "secondary_road_simple",
+          "vehicle",
+          "main_road_simple",
+          "automobile",
+          "intersection",
+          "road",
+          "motorcycle",
+          "bus",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-30": {
+    "comment": "На нерегулируемом перекрёстке маршрутный автобус имеет приоритет. Встречных нет — но автобус всё равно «главнее».",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "unregulated_intersection_simple",
+          "regulated_intersection_simple",
+          "vehicle",
+          "truck",
+          "automobile",
+          "intersection",
+          "road",
+          "bus",
+          "turn_simple"
+        ]
+      }
+    ]
+  },
+  "1-31": {
+    "comment": "Кто перестраивается — тот уступает тем, кто едет прямо в соседней полосе. Здесь уступает прицеп, не легковой.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "traffic_priority",
+          "vehicle",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-32": {
+    "comment": "Нет разметки и разделителя — объезжай островки и опоры моста справа. Это базовое правило «по правой стороне».",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "carriageway",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-33": {
+    "comment": "Левый поворот на перекрёстке: уступи всем встречным, едущим прямо или направо. «Никому» — только если встречных реально нет.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "equal_priority_roads",
+          "regulated_intersection_simple",
+          "vehicle",
+          "truck",
+          "automobile",
+          "intersection",
+          "road",
+          "turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-34": {
+    "comment": "Знак 5.25 «Жилая зона» отменяет приоритет автобуса у остановки. Здесь действуют обычные правила, не п. 125.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "5.25",
+          "5.23.1",
+          "5.23.2",
+          "5.16"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "passenger_car",
+          "vehicle",
+          "main_road_simple",
+          "automobile",
+          "built_up_area",
+          "road",
+          "bus",
+          "turn_simple",
+          "stop",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-35": {
+    "comment": "Разворот запрещён везде из списка — не ищи «менее опасное» место. Ответ «во всех перечисленных».",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "railway_crossing",
+          "pedestrian_crossing",
+          "road",
+          "u_turn_simple",
+          "pedestrian",
+          "stop"
+        ]
+      }
+    ]
+  },
+  "1-36": {
+    "comment": "Нельзя въезжать на перекрёсток, если за ним пробка. Даже при зелёном свете — иначе заблокируешь перекрёсток.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "intersection",
+          "bus",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-37": {
+    "comment": "Маршрутный транспорт не может занять крайнюю левую для обгона. Только левый поворот или разворот.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "public_transport_vehicle",
+          "vehicle",
+          "road",
+          "turn_simple",
+          "u_turn_simple",
+          "passenger",
+          "overtaking_simple"
+        ]
+      }
+    ]
+  },
+  "1-38": {
+    "comment": "Обгон на перекрёстке запрещён — даже если впереди грузовик с поворотником. Подожди, пока он повернёт.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "intersection",
+          "turn_simple",
+          "overtaking_simple"
+        ]
+      }
+    ]
+  },
+  "1-39": {
+    "comment": "Зелёный свет сильнее знака «Уступи». При повороте направо не обязан уступать встречному, если он стоит на красном.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "passenger_car",
+          "vehicle",
+          "automobile",
+          "road",
+          "turn_simple",
+          "u_turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-40": {
+    "comment": "Правый поворот — только с крайней правой полосы по разрешённой траектории. Траектория Б через сплошную — ловушка.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "turn_simple"
+        ]
+      }
+    ]
+  },
+  "1-41": {
+    "comment": "Зелёный + поворот направо с правого края: встречные стоят на красном, пути не пересекаешь — никому не уступаешь.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "passenger_car",
+          "vehicle",
+          "carriageway",
+          "automobile",
+          "road",
+          "motorcycle",
+          "turn_simple",
+          "pedestrian"
+        ]
+      }
+    ]
+  },
+  "1-42": {
+    "comment": "Стрелки на полосе могут разрешить поворот не с крайней правой. Смотри разметку — она важнее общего правила.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "4.1.2"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": [
+          "1.2"
+        ]
+      },
+      {
+        "type": "term",
+        "ids": [
+          "carriageway",
+          "road",
+          "turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-43": {
+    "comment": "Выезд из двора = въезд с прилегающей. Уступи всем на дороге и пешеходам. «Только машинам» — неполный ответ.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "adjacent_area",
+          "road",
+          "pedestrian",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-44": {
+    "comment": "Знак 1.12 «Опасный разворот» не запрещает его, а предупреждает. Если 300 м видимости есть — разворот можно.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": [
+          "1.12"
+        ]
+      },
+      {
+        "type": "term",
+        "ids": [
+          "railway_crossing",
+          "pedestrian_crossing",
+          "road",
+          "turn_simple",
+          "u_turn_simple",
+          "pedestrian"
+        ]
+      }
+    ]
+  },
+  "1-45": {
+    "comment": "На крутом повороте видимость часто меньше 100 м. Разворот только если видишь дорогу в обе стороны не менее 100 м.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "road",
+          "u_turn_simple"
+        ]
+      }
+    ]
+  },
+  "1-46": {
+    "comment": "С полосы разгона на автомагистраль (5.1) вливаешься ты — уступи тем, кто уже едет по основной полосе.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "5.1"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "road",
+          "motorcycle",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-47": {
+    "comment": "Запомни число: 100 метров. Меньше — разворот запрещён, даже если «вроде видно».",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "road",
+          "u_turn_simple"
+        ]
+      }
+    ]
+  },
+  "1-48": {
+    "comment": "2.4 + 8.13: ты на второстепенной, главная идёт поперёк. Уступи обоим на главной — и легковому, и грузовику.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "2.4",
+          "8.13"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": [
+          "2.4"
+        ]
+      },
+      {
+        "type": "term",
+        "ids": [
+          "unequal_priority_roads",
+          "passenger_car",
+          "equal_priority_roads",
+          "secondary_road_simple",
+          "vehicle",
+          "main_road_simple",
+          "automobile",
+          "intersection",
+          "road",
+          "bus",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-49": {
+    "comment": "На уклоне вниз уступает вверх — неважно, у кого помеха. Знак 1.13/1.14 только подтверждает это правило.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "1.13",
+          "1.14"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": [
+          "1.13"
+        ]
+      },
+      {
+        "type": "term",
+        "ids": [
+          "public_transport_vehicle",
+          "oncoming_traffic_simple",
+          "vehicle",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-50": {
+    "comment": "Тот, кто едет вверх, трогаться с места тяжелее. Поэтому на спуске уступаешь поднимающемуся — даже если он дальше.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "1.13",
+          "1.14"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": [
+          "1.13"
+        ]
+      },
+      {
+        "type": "term",
+        "ids": [
+          "public_transport_vehicle",
+          "oncoming_traffic_simple",
+          "vehicle",
+          "road",
+          "stop",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-51": {
+    "comment": "В населённом пункте после обгона не обязан возвращаться вправо, если удобнее ехать в занятой полосе. Это особенность города.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "traffic_lane",
+          "built_up_area",
+          "road",
+          "driver",
+          "overtaking_simple"
+        ]
+      }
+    ]
+  },
+  "1-52": {
+    "comment": "Объезд справа (по обочине) запрещён. Жди, пока грузовик проедет, или обгоняй слева, если встречки нет.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "turn_simple",
+          "road_shoulder",
+          "driver",
+          "overtaking_simple"
+        ]
+      }
+    ]
+  },
+  "1-53": {
+    "comment": "На 3-полосной с встречкой в средней: левый край — только встречные. Левый поворот — из средней полосы.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "carriageway",
+          "road",
+          "turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-54": {
+    "comment": "Повторяется схема 2.4 + 8.13: на второстепенной уступи всем, кто едет по главной через перекрёсток.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "2.4",
+          "8.13"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": [
+          "2.4"
+        ]
+      },
+      {
+        "type": "term",
+        "ids": [
+          "unequal_priority_roads",
+          "passenger_car",
+          "equal_priority_roads",
+          "secondary_road_simple",
+          "vehicle",
+          "truck",
+          "main_road_simple",
+          "automobile",
+          "intersection",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-55": {
+    "comment": "Разворот на открытом участке можно, если видимость ≥100 м. Пешеходный переход рядом не отменяет это, если сам не на нём.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "railway_crossing",
+          "road",
+          "u_turn_simple",
+          "pedestrian",
+          "stop"
+        ]
+      }
+    ]
+  },
+  "1-56": {
+    "comment": "Нет знаков и светофора — работает «помеха справа». Уступи тому, кто подъезжает справа, даже если едешь «по главной» визуально.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "unregulated_intersection_simple",
+          "regulated_intersection_simple",
+          "vehicle",
+          "intersection",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-57": {
+    "comment": "Начинаешь движение с остановки — уступи всем, кто уже едет, включая разворачивающегося впереди. Поворотник ему не даёт приоритета.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "road",
+          "u_turn_simple",
+          "stop",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-58": {
+    "comment": "Поворот налево во двор: уступи встречным и пешеходам/велосипедистам, чей путь пересекаешь. Два правила сразу.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "adjacent_area",
+          "road",
+          "turn_simple",
+          "pedestrian",
+          "driver",
+          "sidewalk"
+        ]
+      }
+    ]
+  },
+  "1-59": {
+    "comment": "Кто выезжает с АЗС — тот уступает. Ты на дороге — грузовик с заправки должен ждать тебя.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "adjacent_area",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-60": {
+    "comment": "Вне города после обгона возвращайся вправо. Левая полоса при свободной правой — нарушение.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "carriageway",
+          "built_up_area",
+          "road",
+          "driver",
+          "overtaking_simple"
+        ]
+      }
+    ]
+  },
+  "1-61": {
+    "comment": "Задний ход к пассажиру у обочины можно, если безопасно и не на запретной зоне. Здесь — не перекрёсток и не остановка маршрутки.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "adjacent_area",
+          "intersection",
+          "road",
+          "pedestrian",
+          "stop",
+          "passenger"
+        ]
+      }
+    ]
+  },
+  "1-62": {
+    "comment": "На подъёме разворот возможен только при 100 м видимости в обе стороны. Крутой поворок — частая ловушка на экзамене.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "road",
+          "turn_simple",
+          "u_turn_simple"
+        ]
+      }
+    ]
+  },
+  "1-63": {
+    "comment": "Тронулся с парковки — уступи тому, кто уже едет впереди по полосе. Даже если он едет медленно.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-64": {
+    "comment": "Перестраивается тот, кто меняет полосу. Ты едешь прямо — не уступаешь соседу с включённым поворотником.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "traffic_lane",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-65": {
+    "comment": "Задним ходом во двор для разворота можно, если не мешаешь. Это не перекрёсток — запрет из п. 49 не действует.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "intersection",
+          "u_turn_simple"
+        ]
+      }
+    ]
+  },
+  "1-66": {
+    "comment": "Внутри перекрёстка траектория левого поворота свободнее правого. Главное — не выскочить на встречку при выезде.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "carriageway",
+          "intersection",
+          "turn_simple"
+        ]
+      }
+    ]
+  },
+  "1-67": {
+    "comment": "По трамвайным путям можно, если все попутные полосы заняты. Здесь правая занята грузовиком — красному разрешено.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "automobile",
+          "turn_simple",
+          "u_turn_simple",
+          "driver",
+          "overtaking_simple"
+        ]
+      }
+    ]
+  },
+  "1-68": {
+    "comment": "Поворотник не даёт приоритета при старте. Можно трогаться, если не мешаешь грузовику сзади — он не «обгоняет», он в той же полосе.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "carriageway",
+          "road",
+          "turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-69": {
+    "comment": "В городе у остановки с табличкой пропусти автобус/троллейбус, который выезжает. Это отдельное правило, не «помеха справа».",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "public_transport_vehicle",
+          "vehicle",
+          "built_up_area",
+          "road",
+          "bus",
+          "stop",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-70": {
+    "comment": "4.1.1 «Только прямо» действует до перекрёстка. Налево и разворот с этой полосы — нельзя.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "4.1.1",
+          "4.1.6"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": [
+          "1.1",
+          "1.6"
+        ]
+      },
+      {
+        "type": "term",
+        "ids": [
+          "intersection",
+          "road",
+          "turn_simple",
+          "u_turn_simple"
+        ]
+      }
+    ]
+  },
+  "1-71": {
+    "comment": "Зелёный не помогает, если въезд заблокирован. Троллейбус в центре перекрёстка = пробка, въезжать нельзя.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "intersection",
+          "bus",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-72": {
+    "comment": "Поворотник — это «предупреждаю», а не «я главный». Уступи тем, у кого приоритет по правилам, даже если мигал.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-73": {
+    "comment": "Разворот на перекрёстке разрешён, если нет прямого запрета. Не путай с задним ходом — он на перекрёстке запрещён.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "railway_crossing",
+          "pedestrian_crossing",
+          "main_road_simple",
+          "intersection",
+          "road",
+          "u_turn_simple",
+          "pedestrian",
+          "stop"
+        ]
+      }
+    ]
+  },
+  "1-74": {
+    "comment": "Исключение от п. 40: на кольцо можно въехать с любой полосы. Не обязан занимать правую перед «разворотом» на круг.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "roundabout_priority",
+          "carriageway",
+          "intersection",
+          "turn_simple",
+          "u_turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-75": {
+    "comment": "Знак 3.4 запрещает грузовикам только в направлении знака (прямо). Направо, налево и разворот — можно.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "3.4"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "truck",
+          "automobile",
+          "intersection",
+          "turn_simple"
+        ]
+      }
+    ]
+  },
+  "1-76": {
+    "comment": "Полоса торможения: сначала перестройся, потом тормози. Жёлтый тормозит в основной полосе — нарушение.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "automobile",
+          "road",
+          "turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-77": {
+    "comment": "Траектория Б через сплошную — всегда нет. Разрешены только варианты без пересечения запретной разметки.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": []
+      }
+    ]
+  },
+  "1-78": {
+    "comment": "Главная дорога на перекрёстке поворачивает — участники на ней разъезжаются как на равнозначных. Уступи легковому «справа».",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "main_road_changes_direction",
+          "passenger_car",
+          "equal_priority_roads",
+          "secondary_road_simple",
+          "vehicle",
+          "main_road_simple",
+          "automobile",
+          "intersection",
+          "road",
+          "motorcycle",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-79": {
+    "comment": "Поворот направо — с полосы «А» (крайняя правая), даже если рядом выделенная полоса для автобусов.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "5.14"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "carriageway",
+          "turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-80": {
+    "comment": "Если впереди поворачивает налево — обгон слева запрещён, но справа можно. Ждать не обязан, если объезд безопасен.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "carriageway",
+          "turn_simple",
+          "driver",
+          "overtaking_simple"
+        ]
+      }
+    ]
+  },
+  "1-81": {
+    "comment": "С обочины начинаешь движение — уступи тому, кто уже маневрирует на проезжей части, в том числе разворачивающемуся.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "passenger_car",
+          "vehicle",
+          "carriageway",
+          "automobile",
+          "road",
+          "u_turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-82": {
+    "comment": "Покидаешь кольцо поворотом направо — включи правый поворотник. На кольце это обязательно, как при любом манёвре.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "4.3",
+          "2.4"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": [
+          "2.4"
+        ]
+      },
+      {
+        "type": "term",
+        "ids": [
+          "roundabout_priority",
+          "intersection",
+          "road",
+          "turn_simple",
+          "u_turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-83": {
+    "comment": "4.1.1 запрещает повороты на дороге, но не во двор. На рис. 1 — во двор можно, на 2 — поворот на проезжую запрещён.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "4.1.1",
+          "5.5"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": [
+          "1.1"
+        ]
+      },
+      {
+        "type": "term",
+        "ids": [
+          "intersection",
+          "road",
+          "turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-84": {
+    "comment": "Смотри стрелки на полосе: отсюда можно налево и разворот, направо — нет. Не путай с соседней полосой.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "u_turn_simple"
+        ]
+      }
+    ]
+  },
+  "1-85": {
+    "comment": "Равнозначный перекрёсток: уступи тому, кто справа. Легковой справа — автобус ждёт.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "passenger_car",
+          "equal_priority_roads",
+          "vehicle",
+          "automobile",
+          "intersection",
+          "road",
+          "bus",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-86": {
+    "comment": "Табличка 8.3.2 показывает, куда действует знак 3.2. Здесь запрет только направо — прямо и налево можно.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "3.2",
+          "8.3.2",
+          "8.3.1",
+          "8.3.3"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "intersection",
+          "road"
+        ]
+      }
+    ]
+  },
+  "1-87": {
+    "comment": "Список запретов разворота длинный — на экзамене безопаснее «во всех перечисленных», чем исключение.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "railway_crossing",
+          "pedestrian_crossing",
+          "road",
+          "u_turn_simple",
+          "pedestrian"
+        ]
+      }
+    ]
+  },
+  "1-88": {
+    "comment": "Поворот во двор — тоже манёвр. Обязательно включи правый поворотник, даже если кажется «мелочью».",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "adjacent_area",
+          "turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-89": {
+    "comment": "Нет запрещающих знаков — разворот на перекрёстке допустим. Но только безопасно и с крайней левой.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "pedestrian_crossing",
+          "intersection",
+          "u_turn_simple",
+          "pedestrian"
+        ]
+      }
+    ]
+  },
+  "1-90": {
+    "comment": "Левый поворот только по траектории Б: траектория А пересекает сплошную линию — это автоматический «нет».",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "turn_simple"
+        ]
+      }
+    ]
+  },
+  "1-91": {
+    "comment": "Знак 5.16 у остановки автобуса = разворот рядом запрещён. Не путай с обычной обочиной.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "5.16"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "public_transport_vehicle",
+          "vehicle",
+          "road",
+          "bus",
+          "u_turn_simple",
+          "stop",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-92": {
+    "comment": "Сплошная линия — не рекомендация. Траектория А через неё всегда неправильная, даже если «так ближе».",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "turn_simple"
+        ]
+      }
+    ]
+  },
+  "1-93": {
+    "comment": "Обе траектории по разметке допустимы — разворот можно по любой. Выбирай ту, где не пересечёшь сплошную.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "u_turn_simple"
+        ]
+      }
+    ]
+  },
+  "1-94": {
+    "comment": "После перекрёстка при левом повороте/развороте уступи встречным и трамваю попутного направления — путь пересекаешь.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "traffic_lane",
+          "intersection",
+          "road",
+          "turn_simple",
+          "u_turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-95": {
+    "comment": "Повторяющаяся ловушка экзамена: левый поворот только по разрешённой траектории, без пересечения сплошной.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "turn_simple"
+        ]
+      }
+    ]
+  },
+  "1-96": {
+    "comment": "Стрелка на полосе разрешает только налево. Прямо и разворот с этой полосы — нарушение.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "u_turn_simple"
+        ]
+      }
+    ]
+  },
+  "1-97": {
+    "comment": "Выезд с прилегающей: уступи всем на дороге и не загораживай пешеходов. Полный ответ всегда про машины + пешеходов.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "adjacent_area",
+          "road",
+          "pedestrian",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-98": {
+    "comment": "Перед разворотом занимай крайнюю левую. Красный на ней — правильно; синий в средней — нарушение.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "carriageway",
+          "automobile",
+          "turn_simple",
+          "u_turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-99": {
+    "comment": "Задний ход у остановки маршрутного транспорта запрещён — это в списке п. 50. Подобрать пассажира задом нельзя.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "public_transport_vehicle",
+          "vehicle",
+          "road",
+          "bus",
+          "stop",
+          "passenger"
+        ]
+      }
+    ]
+  },
+  "1-100": {
+    "comment": "Разворот только по траектории А. Б через сплошную — типичная ошибка: «разворот ближе» не оправдывает линию.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "u_turn_simple"
+        ]
+      }
+    ]
+  },
+  "1-101": {
+    "comment": "Автобус с остановки в городе имеет приоритет — но только при выезде с обозначенной остановки, не «всегда и везде».",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "passenger_car",
+          "vehicle",
+          "automobile",
+          "intersection",
+          "bus",
+          "stop",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-102": {
+    "comment": "На равнозначном перекрёстке грузовик справа — автобус уступает. Маршрутный статус не отменяет «помеху справа».",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "equal_priority_roads",
+          "truck",
+          "automobile",
+          "intersection",
+          "road",
+          "bus",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-103": {
+    "comment": "Порядок: сначала те, у кого нет помехи справа. Грузовик справа от автобуса — едет первым; остальные ждут.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "equal_priority_roads",
+          "unregulated_intersection_simple",
+          "regulated_intersection_simple",
+          "vehicle",
+          "truck",
+          "automobile",
+          "intersection",
+          "road",
+          "bus",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-104": {
+    "comment": "Крайняя левая на 3-полосной с встречкой в середине — только для встречных. С твоей стороны туда нельзя вообще.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "road",
+          "turn_simple",
+          "u_turn_simple",
+          "overtaking_simple"
+        ]
+      }
+    ]
+  },
+  "1-105": {
+    "comment": "Разворот по Б, не по А: сплошная и разметка полос решают. Запомни — «ближний разворот» часто неправильный.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "u_turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-106": {
+    "comment": "Автобус не всесилен: на перекрёстке без спецправил уступи тому, у кого приоритет (например, «справа»).",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "road",
+          "bus",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-107": {
+    "comment": "Открытый прямой участок: разворот можно при 100+ м видимости. Не путай с крутым поворком или мостом.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "road",
+          "u_turn_simple"
+        ]
+      }
+    ]
+  },
+  "1-108": {
+    "comment": "Если стрелка на разметке разрешает траекторию — правый поворот по ней законен. Без запрещающего знака — «да».",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "turn_simple"
+        ]
+      }
+    ]
+  },
+  "1-109": {
+    "comment": "Левый поворот: уступи встречным «прямо» и «направо». Если встречных нет — «никому» корректно.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "passenger_car",
+          "vehicle",
+          "automobile",
+          "road",
+          "bus",
+          "turn_simple"
+        ]
+      }
+    ]
+  },
+  "1-110": {
+    "comment": "Автобус выезжает с остановки — остальные уступают. Сам автобус трогается только убедившись, что ему уступили.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "passenger_car",
+          "automobile",
+          "built_up_area",
+          "road",
+          "bus",
+          "turn_simple",
+          "stop",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-111": {
+    "comment": "Правый поворот — с крайней правой по траектории А. Б с выездом на встречную или через сплошную — нет.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "turn_simple"
+        ]
+      }
+    ]
+  },
+  "1-112": {
+    "comment": "По трамвайным путям нельзя «просто так». Нужна причина: заняты все полосы или разрешённый манёвр — здесь нет.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "turn_simple",
+          "u_turn_simple"
+        ]
+      }
+    ]
+  },
+  "1-113": {
+    "comment": "Два перестраиваются одновременно — уступает левый. Красный справа едет первым.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "traffic_priority",
+          "vehicle",
+          "automobile",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-114": {
+    "comment": "Трамвай на перекрёстке главнее, кроме выезда из депо. Здесь он в депо — уступает автомобилю.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "carriageway",
+          "automobile",
+          "intersection",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-115": {
+    "comment": "В городе пропусти автобус, выезжающий с остановки 5.16. Белый легковой обязан уступить, даже если едет прямо.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "5.16"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "passenger_car",
+          "automobile",
+          "built_up_area",
+          "road",
+          "bus",
+          "turn_simple",
+          "stop",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-116": {
+    "comment": "Знак 1.20.2: сужение справа — уступает тот, у кого помеха (грузовик в узком месте). Легковой подождёт.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "1.20.2"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "oncoming_traffic_simple",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-117": {
+    "comment": "Подъехать к пешеходу на «зебре» можно только по разрешённой траектории. А через сплошную — нельзя.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "pedestrian",
+          "sidewalk"
+        ]
+      }
+    ]
+  },
+  "1-118": {
+    "comment": "Нет знаков приоритета — уступи тому, кто справа. Ты на равнозначном, не на главной.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "equal_priority_roads",
+          "vehicle",
+          "intersection",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-119": {
+    "comment": "Кто начинает движение или перестраивается — уступает тем, кто уже едет по полосе. Серебристый ждёт.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "traffic_lane",
+          "road",
+          "turn_simple",
+          "stop",
+          "driver",
+          "sidewalk"
+        ]
+      }
+    ]
+  },
+  "1-120": {
+    "comment": "На мосту/эстакаде разворот запрещён всегда — даже ночью и без машин. Не путай с «плохой видимостью».",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "u_turn_simple"
+        ]
+      }
+    ]
+  },
+  "1-121": {
+    "comment": "Исправить ошибку маршрута задним ходом на перекрёстке нельзя — задний ход там запрещён. Нужно объехать по правилам.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "intersection",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-122": {
+    "comment": "Разворот задним ходом на перекрёстке — двойной запрет: и перекрёсток, и манёвр с задним ходом для разворота.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "adjacent_area",
+          "intersection",
+          "road",
+          "u_turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-123": {
+    "comment": "Поворот во двор: уступи пешеходам и велосипедистам на твоём пути. «Только пешеходам» — неполный ответ.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "adjacent_area",
+          "road",
+          "pedestrian",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-124": {
+    "comment": "Не видишь зеркалами — попроси подстраховать снаружи. Сигнал и аварийка не заменяют помощника.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-125": {
+    "comment": "Красный свет + разметка: поворот направо запрещён, даже если «уже притормозил». Светофор главнее желания.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-126": {
+    "comment": "Перестраиваешься — уступи тому, кто едет в соседней полосе без смены направления. Поворотник не даёт приоритета.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "traffic_priority",
+          "vehicle",
+          "traffic_lane",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-127": {
+    "comment": "Сужение полос справа (1.20.2): кто в исчезающей полосе — перестраивается и уступает. Легковой в узкой — ждёт.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "1.20.2"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-128": {
+    "comment": "Разворот на прямой дороге: проверь 100 м видимости сзади и впереди. Лес не отменяет правило — только расстояние.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "pedestrian_crossing",
+          "road",
+          "u_turn_simple",
+          "pedestrian"
+        ]
+      }
+    ]
+  },
+  "1-129": {
+    "comment": "Разворот по А, не по Б — Б пересекает сплошную. На экзамене всегда смотри на линии разметки.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "u_turn_simple"
+        ]
+      }
+    ]
+  },
+  "1-130": {
+    "comment": "Остановка маршрутного транспорта (знак/разметка) — разворот рядом запрещён. Объезжай дальше.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "public_transport_vehicle",
+          "vehicle",
+          "carriageway",
+          "road",
+          "bus",
+          "u_turn_simple",
+          "stop"
+        ]
+      }
+    ]
+  },
+  "1-131": {
+    "comment": "Знак 5.13.2: с полосы можно прямо, налево и разворот. Выделенная полоса автобусов — не твой обязательный маршрут.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "5.13.2",
+          "5.13.1"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "public_transport_vehicle",
+          "vehicle",
+          "railway_crossing",
+          "pedestrian_crossing",
+          "road",
+          "bus",
+          "turn_simple",
+          "u_turn_simple",
+          "pedestrian",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-132": {
+    "comment": "Выезжаешь с АЗС — уступи дороге. Кто уже на проезжей части — главнее, даже если ты «уже выехал носом».",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "adjacent_area",
+          "road",
+          "pedestrian",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-133": {
+    "comment": "На равнозначном уступаешь только «справа». Легковой слева — ты не обязан ему уступать при движении прямо.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "passenger_car",
+          "equal_priority_roads",
+          "vehicle",
+          "automobile",
+          "intersection",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-134": {
+    "comment": "Стрелки на полосе: прямо, налево и разворот — да; направо с этой полосы — нет.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "u_turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-135": {
+    "comment": "На односторонке остановка с левой стороны — включай левый поворотник. Правый здесь введёт в заблуждение.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "5.5"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "lane_change_simple",
+          "road",
+          "stop",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-136": {
+    "comment": "Знак 3.3 запрещает всем механическим ТС — и легковой, и мото, и с прицепом. «Только легковые» — ловушка.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "3.3"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "motor_vehicle",
+          "vehicle",
+          "automobile",
+          "road",
+          "motorcycle",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-137": {
+    "comment": "Снова уклон: едешь вниз — пропусти встречного вверх. Процент на табличке 1.13 напоминает о крутизне.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "1.13",
+          "1.14"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": [
+          "1.13"
+        ]
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "automobile",
+          "road",
+          "bus",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-138": {
+    "comment": "Поворотник обязателен всегда — даже если встречных нет. «Не мешаю — можно без сигнала» — неверно.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-139": {
+    "comment": "На кольце приоритет у того, кто уже на круге. Автобус на кольце не уступает въезжающему грузовику.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "roundabout_priority",
+          "truck",
+          "automobile",
+          "intersection",
+          "road",
+          "bus",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-140": {
+    "comment": "Задний ход на мосту запрещён — как и разворот. Подобрать пассажира на эстакаде задом нельзя.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "road",
+          "driver",
+          "passenger"
+        ]
+      }
+    ]
+  },
+  "1-141": {
+    "comment": "Кто перестраивается в твою полосу — уступает тебе, если ты едешь прямо. Синий имеет приоритет в обоих случаях.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "traffic_lane",
+          "lane_change_simple",
+          "automobile",
+          "road",
+          "turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-142": {
+    "comment": "Одновременное перестроение: правый (легковой) главнее. Грузовик слева уступает.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-143": {
+    "comment": "Задний ход у остановки маршрутного транспорта и при выезде с прилегающей — в зоне запрета. Во двор задом — нет.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "public_transport_vehicle",
+          "vehicle",
+          "adjacent_area",
+          "road",
+          "stop"
+        ]
+      }
+    ]
+  },
+  "1-144": {
+    "comment": "Пешеходы на «зебре» — главные. Плюс нельзя въезжать на переход, если впереди стоит машина и ты заблокируешь проезд.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "5.19.1",
+          "5.19.2"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": [
+          "1.14.1",
+          "1.14.2"
+        ]
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "pedestrian_crossing",
+          "carriageway",
+          "automobile",
+          "road",
+          "pedestrian",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-145": {
+    "comment": "Меняешь полосу — уступи тем, кто в соседней едет прямо. Легковой слева проедет первым.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "traffic_lane",
+          "road",
+          "motorcycle",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-146": {
+    "comment": "Равнозначный перекрёсток: грузовик справа — легковой уступает. Не путай с приоритетом автобуса у остановки.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "passenger_car",
+          "equal_priority_roads",
+          "vehicle",
+          "truck",
+          "automobile",
+          "intersection",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "1-147": {
+    "comment": "Разворот через пешеходный переход (траектория Б) запрещён. Объезжай переход по А или Г.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "pedestrian_crossing",
+          "u_turn_simple",
+          "pedestrian"
+        ]
+      }
+    ]
+  }
+}

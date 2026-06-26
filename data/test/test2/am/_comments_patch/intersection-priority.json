@@ -1,0 +1,2855 @@
+{
+  "5-1": {
+    "comment": "Сначала отдели главную от второстепенной: трамвай на второстепенной ждёт всех на главной. Между мотоциклом и машиной на одной главной — кто справа.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "2.1",
+          "8.13"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "equal_priority_roads",
+          "secondary_road_simple",
+          "vehicle",
+          "main_road_simple",
+          "automobile",
+          "intersection",
+          "road",
+          "motorcycle",
+          "driver",
+          "yield_to_other_vehicles",
+          "right_hand_priority",
+          "main_road_changes_direction",
+          "public_transport_vehicle"
+        ]
+      }
+    ]
+  },
+  "5-2": {
+    "comment": "Знак «Уступите» с табличкой главной заставляет уступать тем, кто едет по главной — даже если подъезжают слева. Предупреждение о второстепенной и знак маршрута так не работают.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "2.4",
+          "7.13"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "secondary_road_simple",
+          "vehicle",
+          "main_road_simple",
+          "intersection",
+          "road",
+          "driver",
+          "yield_to_other_vehicles",
+          "main_road_changes_direction",
+          "traffic_priority",
+          "traffic_lane",
+          "equal_priority_roads",
+          "unregulated_intersection_simple",
+          "right_hand_priority"
+        ]
+      }
+    ]
+  },
+  "5-3": {
+    "comment": "Здесь нет знаков приоритета — это равнозначный перекрёсток. Ищи у каждого, кто справа: у кого справа пусто, тот проезжает раньше.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "equal_priority_roads",
+          "unregulated_intersection_simple",
+          "regulated_intersection_simple",
+          "vehicle",
+          "automobile",
+          "intersection",
+          "road",
+          "driver",
+          "yield_to_other_vehicles",
+          "right_hand_priority",
+          "traffic_priority",
+          "unequal_priority_roads",
+          "main_road_simple",
+          "secondary_road_simple"
+        ]
+      }
+    ]
+  },
+  "5-4": {
+    "comment": "Зелёный разрешает ехать, но не отменяет уступить встречным при левом повороте. Прямой на зелёном сильнее того, кто поворачивает налево.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "automobile",
+          "intersection",
+          "road",
+          "turn_simple",
+          "u_turn_simple",
+          "driver",
+          "yield_to_other_vehicles",
+          "regulated_intersection_simple",
+          "left_turn_yield_oncoming",
+          "green_does_not_cancel_yield",
+          "oncoming_traffic_simple",
+          "traffic_priority",
+          "equal_priority_roads",
+          "unregulated_intersection_simple",
+          "right_hand_priority",
+          "bus"
+        ]
+      }
+    ]
+  },
+  "5-5": {
+    "comment": "Главная дорога важнее второстепенной: синяя машина на главной проезжает первой. На одной второстепенной трамвай обычно сильнее остальных нерельсовых.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "2.1"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "secondary_road_simple",
+          "vehicle",
+          "main_road_simple",
+          "automobile",
+          "intersection",
+          "road",
+          "turn_simple",
+          "driver",
+          "yield_to_other_vehicles",
+          "equal_priority_roads",
+          "left_turn_yield_oncoming",
+          "public_transport_vehicle",
+          "traffic_priority",
+          "unregulated_intersection_simple",
+          "roundabout_priority"
+        ]
+      }
+    ]
+  },
+  "5-6": {
+    "comment": "Если оба поворачивают налево навстречу друг другу, правило про встречных прямо/направо не срабатывает — можно завершать поворот одновременно.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "intersection",
+          "turn_simple",
+          "driver",
+          "yield_to_other_vehicles",
+          "left_turn_yield_oncoming",
+          "oncoming_traffic_simple",
+          "passenger_car",
+          "truck",
+          "unregulated_intersection_simple",
+          "unequal_priority_roads",
+          "main_road_simple",
+          "secondary_road_simple"
+        ]
+      }
+    ]
+  },
+  "5-8": {
+    "comment": "Без знаков это равнозначный перекрёсток: уступаешь только тому, кто подъезжает справа. Легковушка справа от автобуса — значит, уступает автобус.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "passenger_car",
+          "equal_priority_roads",
+          "unregulated_intersection_simple",
+          "regulated_intersection_simple",
+          "vehicle",
+          "automobile",
+          "intersection",
+          "road",
+          "bus",
+          "driver",
+          "yield_to_other_vehicles",
+          "right_hand_priority",
+          "traffic_priority",
+          "unequal_priority_roads",
+          "main_road_simple",
+          "secondary_road_simple",
+          "main_road_changes_direction"
+        ]
+      }
+    ]
+  },
+  "5-15": {
+    "comment": "На равнозначном перекрёстке смотри «помеху справа». У кого никого справа — тот первый; у кого справа есть машина — ждёт её.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "equal_priority_roads",
+          "unregulated_intersection_simple",
+          "regulated_intersection_simple",
+          "automobile",
+          "intersection",
+          "road",
+          "driver",
+          "yield_to_other_vehicles",
+          "right_hand_priority",
+          "truck",
+          "main_road_changes_direction",
+          "main_road_simple",
+          "secondary_road_simple",
+          "turn_simple"
+        ]
+      }
+    ]
+  },
+  "5-16": {
+    "comment": "Главная/второстепенная решается раньше «помехи справа». STOP добавляет обязательную остановку, но не меняет общую логику очереди.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "2.1",
+          "8.13",
+          "2.5"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "equal_priority_roads",
+          "secondary_road_simple",
+          "vehicle",
+          "main_road_simple",
+          "automobile",
+          "intersection",
+          "road",
+          "stop",
+          "driver",
+          "yield_to_other_vehicles",
+          "right_hand_priority",
+          "main_road_changes_direction",
+          "unregulated_intersection_simple"
+        ]
+      }
+    ]
+  },
+  "5-18": {
+    "comment": "Помеха справа — не помеха слева. Если другая машина слева, на равнозначном перекрёстке уступать ей не нужно.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "equal_priority_roads",
+          "unregulated_intersection_simple",
+          "regulated_intersection_simple",
+          "vehicle",
+          "automobile",
+          "intersection",
+          "road",
+          "turn_simple",
+          "driver",
+          "yield_to_other_vehicles",
+          "right_hand_priority",
+          "left_side_vehicle",
+          "left_turn_yield_oncoming",
+          "oncoming_traffic_simple",
+          "main_road_simple",
+          "traffic_priority"
+        ]
+      }
+    ]
+  },
+  "5-19": {
+    "comment": "На равнозначном перекрёстке с трамвайными путями трамвай обычно сильнее обычных машин — даже если едет не «как главный».",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "equal_priority_roads",
+          "unregulated_intersection_simple",
+          "regulated_intersection_simple",
+          "intersection",
+          "road",
+          "yield_to_other_vehicles",
+          "public_transport_vehicle",
+          "traffic_priority",
+          "main_road_simple"
+        ]
+      }
+    ]
+  },
+  "5-21": {
+    "comment": "При повороте направо с перекрёстка не забудь про пешеходов и велосипедистов на переходимой части дороги — им нужно уступить.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "carriageway",
+          "intersection",
+          "road",
+          "turn_simple",
+          "pedestrian",
+          "driver",
+          "yield_to_other_vehicles",
+          "main_road_simple",
+          "secondary_road_simple",
+          "automobile"
+        ]
+      }
+    ]
+  },
+  "5-22": {
+    "comment": "Трамвай на равнозначном перекрёстке имеет преимущество перед нерельсовым транспортом. При левом повороте через его путь — пропусти.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "unregulated_intersection_simple",
+          "regulated_intersection_simple",
+          "vehicle",
+          "intersection",
+          "road",
+          "turn_simple",
+          "yield_to_other_vehicles",
+          "left_side_vehicle",
+          "equal_priority_roads",
+          "left_turn_yield_oncoming",
+          "oncoming_traffic_simple",
+          "same_direction_traffic_simple",
+          "public_transport_vehicle",
+          "traffic_priority",
+          "main_road_simple",
+          "secondary_road_simple",
+          "automobile"
+        ]
+      }
+    ]
+  },
+  "5-23": {
+    "comment": "Сначала главная/второстепенная, потом конфликт на главной: прямой на главной сильнее левого поворота. Второстепенные ждут всех на главной.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "2.1",
+          "2.4"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "secondary_road_simple",
+          "main_road_simple",
+          "automobile",
+          "intersection",
+          "road",
+          "yield_to_other_vehicles",
+          "left_turn_yield_oncoming",
+          "oncoming_traffic_simple",
+          "truck",
+          "equal_priority_roads",
+          "unregulated_intersection_simple",
+          "right_hand_priority",
+          "traffic_priority",
+          "public_transport_vehicle"
+        ]
+      }
+    ]
+  },
+  "5-24": {
+    "comment": "Трамвай не всегда «абсолютно главный», но на равнозначных направлениях у него преимущество перед обычными машинами.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "equal_priority_roads",
+          "unregulated_intersection_simple",
+          "regulated_intersection_simple",
+          "vehicle",
+          "intersection",
+          "road",
+          "yield_to_other_vehicles",
+          "public_transport_vehicle",
+          "traffic_priority",
+          "right_hand_priority",
+          "green_does_not_cancel_yield",
+          "oncoming_traffic_simple",
+          "passenger_car",
+          "automobile"
+        ]
+      }
+    ]
+  },
+  "5-31": {
+    "comment": "Мигающий жёлтый — не ожидание зелёного: перекрёсток нерегулируемый. Дальше работает «помеха справа» — здесь уступи лошади/повозке справа.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "equal_priority_roads",
+          "automobile",
+          "intersection",
+          "road",
+          "driver",
+          "yield_to_other_vehicles",
+          "right_hand_priority",
+          "unregulated_intersection_simple",
+          "regulated_intersection_simple",
+          "green_does_not_cancel_yield",
+          "oncoming_traffic_simple",
+          "same_direction_traffic_simple",
+          "passenger_car",
+          "main_road_simple",
+          "secondary_road_simple",
+          "traffic_priority"
+        ]
+      }
+    ]
+  },
+  "5-32": {
+    "comment": "На главной дороге ты проезжаешь раньше второстепенных — даже если там трамвай или грузовик. Трамвай «сильнее» только на равнозначных.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "2.1",
+          "7.13"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "equal_priority_roads",
+          "secondary_road_simple",
+          "main_road_simple",
+          "intersection",
+          "road",
+          "driver",
+          "yield_to_other_vehicles",
+          "main_road_changes_direction",
+          "public_transport_vehicle",
+          "traffic_priority",
+          "truck",
+          "left_turn_yield_oncoming",
+          "turn_simple",
+          "u_turn_simple",
+          "oncoming_traffic_simple",
+          "passenger_car",
+          "automobile"
+        ]
+      }
+    ]
+  },
+  "5-33": {
+    "comment": "Уступить — не всегда значит ждать полного проезда. Если можешь повернуть направо, не заставляя главного резко тормозить, это допустимо.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "2.4"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "main_road_simple",
+          "road",
+          "turn_simple",
+          "driver",
+          "yield_to_other_vehicles",
+          "do_not_obstruct",
+          "traffic_priority",
+          "truck",
+          "equal_priority_roads",
+          "unregulated_intersection_simple",
+          "left_side_vehicle",
+          "intersection",
+          "public_transport_vehicle",
+          "automobile"
+        ]
+      }
+    ]
+  },
+  "5-34": {
+    "comment": "Классическая схема равнозначного перекрёстка: у кого справа никого нет — едет первым, остальные уступают по цепочке справа.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "equal_priority_roads",
+          "unregulated_intersection_simple",
+          "regulated_intersection_simple",
+          "truck",
+          "automobile",
+          "intersection",
+          "road",
+          "motorcycle",
+          "bus",
+          "driver",
+          "yield_to_other_vehicles",
+          "right_hand_priority",
+          "traffic_priority"
+        ]
+      }
+    ]
+  },
+  "5-36": {
+    "comment": "Главная и второстепенная уже разобраны — внутри главной снова «помеха справа». Красный на второстепенной уступает обоим на главной.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "2.1",
+          "2.4"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "equal_priority_roads",
+          "secondary_road_simple",
+          "vehicle",
+          "main_road_simple",
+          "automobile",
+          "intersection",
+          "road",
+          "driver",
+          "yield_to_other_vehicles",
+          "right_hand_priority",
+          "traffic_priority"
+        ]
+      }
+    ]
+  },
+  "5-37": {
+    "comment": "На равнозначном перекрёстке иди по кругу «помехи справа»: у зелёного справа пусто — он первый, синий второй, красный последний.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "equal_priority_roads",
+          "regulated_intersection_simple",
+          "vehicle",
+          "automobile",
+          "intersection",
+          "road",
+          "driver",
+          "yield_to_other_vehicles",
+          "right_hand_priority",
+          "do_not_obstruct",
+          "main_road_simple",
+          "secondary_road_simple",
+          "traffic_priority",
+          "truck",
+          "public_transport_vehicle"
+        ]
+      }
+    ]
+  },
+  "5-38": {
+    "comment": "Выезд с дороги на прилегающую территорию — не спор приоритета на перекрёстке. Ты должен пропустить тех, чей путь пересекаешь, включая велосипедиста.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "adjacent_area",
+          "yield_to_other_vehicles",
+          "turn_simple",
+          "bicycle",
+          "pedestrian",
+          "automobile",
+          "vehicle",
+          "driver",
+          "road"
+        ]
+      }
+    ]
+  },
+  "5-39": {
+    "comment": "Снова равнозначный перекрёсток без знаков: не ищи главную, считай, кто у кого справа. Синий проедет вторым после зелёного.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "equal_priority_roads",
+          "unregulated_intersection_simple",
+          "regulated_intersection_simple",
+          "vehicle",
+          "automobile",
+          "intersection",
+          "road",
+          "driver",
+          "yield_to_other_vehicles",
+          "right_hand_priority",
+          "main_road_simple",
+          "main_road_changes_direction",
+          "bicycle"
+        ]
+      }
+    ]
+  },
+  "5-40": {
+    "comment": "Красный на второстепенной обязан уступить всем на главной — даже если они поворачивают. Поэтому красный обычно последний.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "2.1"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "secondary_road_simple",
+          "vehicle",
+          "main_road_simple",
+          "automobile",
+          "intersection",
+          "road",
+          "turn_simple",
+          "driver",
+          "yield_to_other_vehicles",
+          "left_turn_yield_oncoming",
+          "equal_priority_roads",
+          "unregulated_intersection_simple",
+          "right_hand_priority",
+          "motorcycle",
+          "bus",
+          "truck"
+        ]
+      }
+    ]
+  },
+  "5-42": {
+    "comment": "Грузовик справа — значит, на равнозначном перекрёстке уступаешь ему. «Справа» важнее того, что ты едешь прямо.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "equal_priority_roads",
+          "unregulated_intersection_simple",
+          "regulated_intersection_simple",
+          "vehicle",
+          "intersection",
+          "road",
+          "driver",
+          "yield_to_other_vehicles",
+          "right_hand_priority",
+          "traffic_priority",
+          "truck",
+          "motorcycle",
+          "automobile"
+        ]
+      }
+    ]
+  },
+  "5-43": {
+    "comment": "Затор на перекрёстке — отдельное правило: в пробку на перекрёсток заезжать нельзя, если потом встанешь и перекроешь движение. Разворот/разворот-разворот — исключение.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "intersection",
+          "do_not_obstruct",
+          "turn_simple",
+          "u_turn_simple",
+          "vehicle",
+          "driver",
+          "road"
+        ]
+      }
+    ]
+  },
+  "5-45": {
+    "comment": "Правый поворот не заставляет уступать машине слева и не конфликтует с встречным прямым так, как левый поворот. Часто можно проехать первым.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "equal_priority_roads",
+          "unregulated_intersection_simple",
+          "regulated_intersection_simple",
+          "automobile",
+          "intersection",
+          "road",
+          "motorcycle",
+          "turn_simple",
+          "u_turn_simple",
+          "driver",
+          "yield_to_other_vehicles",
+          "right_hand_priority",
+          "left_side_vehicle",
+          "left_turn_yield_oncoming",
+          "oncoming_traffic_simple",
+          "passenger_car",
+          "roundabout_priority",
+          "traffic_priority"
+        ]
+      }
+    ]
+  },
+  "5-46": {
+    "comment": "На главной прямой сильнее левого поворота. На второстепенной жди всех с главной — зелёный там обычно последний.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "2.1",
+          "2.4"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "secondary_road_simple",
+          "main_road_simple",
+          "automobile",
+          "intersection",
+          "road",
+          "yield_to_other_vehicles",
+          "left_turn_yield_oncoming",
+          "oncoming_traffic_simple",
+          "equal_priority_roads",
+          "unregulated_intersection_simple",
+          "traffic_priority",
+          "public_transport_vehicle"
+        ]
+      }
+    ]
+  },
+  "5-48": {
+    "comment": "Запрет поворота направо действует только там, где стоит знак 3.18.1. Если у первого съезда его нет — направо туда можно.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "3.18.1"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "turn_simple",
+          "right_hand_priority",
+          "equal_priority_roads",
+          "unregulated_intersection_simple",
+          "yield_to_other_vehicles",
+          "left_turn_yield_oncoming",
+          "intersection",
+          "truck",
+          "automobile"
+        ]
+      }
+    ]
+  },
+  "5-49": {
+    "comment": "У красного никого справа — он стартует первым. Остальные выстраиваются по цепочке «помеха справа».",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "equal_priority_roads",
+          "unregulated_intersection_simple",
+          "regulated_intersection_simple",
+          "vehicle",
+          "automobile",
+          "intersection",
+          "road",
+          "driver",
+          "yield_to_other_vehicles",
+          "right_hand_priority",
+          "roundabout_priority"
+        ]
+      }
+    ]
+  },
+  "5-50": {
+    "comment": "На равнозначном перекрёстке с трамваем уступаешь обоим трамваям. Обычная машина не спорит с ними по приоритету.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "equal_priority_roads",
+          "unregulated_intersection_simple",
+          "regulated_intersection_simple",
+          "vehicle",
+          "automobile",
+          "intersection",
+          "road",
+          "driver",
+          "yield_to_other_vehicles",
+          "public_transport_vehicle",
+          "traffic_priority",
+          "unequal_priority_roads",
+          "main_road_simple",
+          "secondary_road_simple",
+          "main_road_changes_direction"
+        ]
+      }
+    ]
+  },
+  "5-51": {
+    "comment": "Если пересекаешь путь трамвая на равнозначном перекрёстке — уступи ему. Остальные участники здесь вторичны.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "equal_priority_roads",
+          "unregulated_intersection_simple",
+          "regulated_intersection_simple",
+          "automobile",
+          "intersection",
+          "road",
+          "driver",
+          "yield_to_other_vehicles",
+          "right_hand_priority",
+          "do_not_obstruct",
+          "public_transport_vehicle",
+          "traffic_priority"
+        ]
+      }
+    ]
+  },
+  "5-54": {
+    "comment": "Мотоцикл справа от автобуса — автобус уступает. На равнозначном перекрёстке направление «прямо» само по себе не даёт приоритета.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "equal_priority_roads",
+          "unregulated_intersection_simple",
+          "regulated_intersection_simple",
+          "vehicle",
+          "intersection",
+          "road",
+          "motorcycle",
+          "bus",
+          "driver",
+          "yield_to_other_vehicles",
+          "right_hand_priority",
+          "traffic_priority",
+          "left_turn_yield_oncoming",
+          "turn_simple",
+          "u_turn_simple",
+          "passenger_car",
+          "automobile"
+        ]
+      }
+    ]
+  },
+  "5-55": {
+    "comment": "Трамвай сильнее обычных машин, но если пути не пересекаются, два участника могут проехать одновременно. Жёлтый ждёт и трамвай, и зелёного справа.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "equal_priority_roads",
+          "unregulated_intersection_simple",
+          "regulated_intersection_simple",
+          "vehicle",
+          "automobile",
+          "intersection",
+          "road",
+          "driver",
+          "yield_to_other_vehicles",
+          "right_hand_priority",
+          "oncoming_traffic_simple",
+          "public_transport_vehicle",
+          "traffic_priority",
+          "main_road_simple",
+          "secondary_road_simple"
+        ]
+      }
+    ]
+  },
+  "5-64": {
+    "comment": "Снова равнозначный перекрёсток с трамваем: нерельсовый уступает трамваю. Не путай это с приоритетом главной дороги.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "equal_priority_roads",
+          "unregulated_intersection_simple",
+          "regulated_intersection_simple",
+          "vehicle",
+          "intersection",
+          "road",
+          "driver",
+          "yield_to_other_vehicles",
+          "public_transport_vehicle",
+          "traffic_priority",
+          "roundabout_priority",
+          "turn_simple",
+          "bus",
+          "passenger_car",
+          "automobile"
+        ]
+      }
+    ]
+  },
+  "5-69": {
+    "comment": "Мотоцикл слева не получает приоритет автоматически. На равнозначном перекрёстке решает, кто подъехал справа — здесь это автомобиль.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "equal_priority_roads",
+          "unregulated_intersection_simple",
+          "regulated_intersection_simple",
+          "vehicle",
+          "automobile",
+          "intersection",
+          "road",
+          "motorcycle",
+          "driver",
+          "yield_to_other_vehicles",
+          "right_hand_priority",
+          "traffic_priority",
+          "pedestrian",
+          "adjacent_area",
+          "turn_simple"
+        ]
+      }
+    ]
+  },
+  "5-72": {
+    "comment": "Табличка 8.13 показывает, что главная поворачивает. На главной между собой — как на равнозначных; автобус на второстепенной ждёт всех на главной.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "2.1",
+          "8.13"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "passenger_car",
+          "equal_priority_roads",
+          "secondary_road_simple",
+          "vehicle",
+          "main_road_simple",
+          "automobile",
+          "intersection",
+          "road",
+          "bus",
+          "driver",
+          "yield_to_other_vehicles",
+          "right_hand_priority",
+          "main_road_changes_direction",
+          "public_transport_vehicle",
+          "unregulated_intersection_simple",
+          "unequal_priority_roads",
+          "bicycle"
+        ]
+      }
+    ]
+  },
+  "5-73": {
+    "comment": "Когда все подъезды на одной главной с табличкой направления, между ними действует «помеха справа». Легковушка ждёт автобус справа.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "2.1",
+          "8.13"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "passenger_car",
+          "equal_priority_roads",
+          "vehicle",
+          "truck",
+          "main_road_simple",
+          "automobile",
+          "intersection",
+          "road",
+          "bus",
+          "driver",
+          "yield_to_other_vehicles",
+          "right_hand_priority",
+          "main_road_changes_direction",
+          "left_turn_yield_oncoming",
+          "maneuver_simple",
+          "turn_simple",
+          "oncoming_traffic_simple",
+          "motorcycle"
+        ]
+      }
+    ]
+  },
+  "5-74": {
+    "comment": "При любом повороте с перекрёстка пропускай пешеходов на проезжей части. Это отдельно от спора «кто главный» между машинами.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "carriageway",
+          "intersection",
+          "road",
+          "turn_simple",
+          "pedestrian",
+          "driver",
+          "yield_to_other_vehicles",
+          "left_turn_yield_oncoming",
+          "do_not_obstruct",
+          "main_road_simple",
+          "secondary_road_simple",
+          "unequal_priority_roads",
+          "equal_priority_roads",
+          "traffic_priority",
+          "u_turn_simple",
+          "oncoming_traffic_simple",
+          "automobile"
+        ]
+      }
+    ]
+  },
+  "5-75": {
+    "comment": "Здесь сразу два основания уступить: трамвай на равнозначном и грузовик справа. Поэтому уступаешь обоим.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "equal_priority_roads",
+          "unregulated_intersection_simple",
+          "regulated_intersection_simple",
+          "intersection",
+          "road",
+          "driver",
+          "yield_to_other_vehicles",
+          "right_hand_priority",
+          "public_transport_vehicle",
+          "traffic_priority",
+          "truck",
+          "unequal_priority_roads",
+          "main_road_simple",
+          "secondary_road_simple"
+        ]
+      }
+    ]
+  },
+  "5-76": {
+    "comment": "При зелёном светофоре на регулируемом перекрёстке знаки приоритета не главные. Прямой на зелёном сильнее встречного, поворачивающего налево.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "automobile",
+          "intersection",
+          "turn_simple",
+          "u_turn_simple",
+          "driver",
+          "yield_to_other_vehicles",
+          "regulated_intersection_simple",
+          "left_turn_yield_oncoming",
+          "green_does_not_cancel_yield",
+          "oncoming_traffic_simple",
+          "traffic_priority",
+          "unregulated_intersection_simple",
+          "unequal_priority_roads",
+          "main_road_simple",
+          "secondary_road_simple",
+          "main_road_changes_direction"
+        ]
+      }
+    ]
+  },
+  "5-77": {
+    "comment": "На кольцо въезжаешь — уступаешь тем, кто уже внутри. «Кто справа» не отменяет правило кругового движения.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "4.3"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "traffic_priority",
+          "roundabout_priority",
+          "vehicle",
+          "automobile",
+          "intersection",
+          "road",
+          "driver",
+          "yield_to_other_vehicles",
+          "right_hand_priority",
+          "unregulated_intersection_simple",
+          "equal_priority_roads",
+          "turn_simple"
+        ]
+      }
+    ]
+  },
+  "5-78": {
+    "comment": "Грузовик справа на равнозначном перекрёстке — уступи ему. Без знаков не придумывай главную дорогу.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "equal_priority_roads",
+          "unregulated_intersection_simple",
+          "regulated_intersection_simple",
+          "vehicle",
+          "intersection",
+          "road",
+          "driver",
+          "yield_to_other_vehicles",
+          "right_hand_priority",
+          "traffic_priority",
+          "truck",
+          "unequal_priority_roads",
+          "main_road_simple",
+          "secondary_road_simple",
+          "main_road_changes_direction"
+        ]
+      }
+    ]
+  },
+  "5-79": {
+    "comment": "Если траектории не пересекаются, две машины могут проехать одновременно. Красный и синий здесь как раз второй «пакет», жёлтый — последний.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "equal_priority_roads",
+          "vehicle",
+          "automobile",
+          "intersection",
+          "road",
+          "driver",
+          "yield_to_other_vehicles",
+          "right_hand_priority",
+          "regulated_intersection_simple",
+          "oncoming_traffic_simple",
+          "unregulated_intersection_simple",
+          "unequal_priority_roads",
+          "main_road_simple",
+          "secondary_road_simple",
+          "main_road_changes_direction"
+        ]
+      }
+    ]
+  },
+  "5-80": {
+    "comment": "Главная с поворотом + второстепенная: грузовик ждёт всех на главной. Если пути не мешают друг другу, несколько машин могут выехать сразу.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "2.4",
+          "8.13"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "passenger_car",
+          "equal_priority_roads",
+          "secondary_road_simple",
+          "vehicle",
+          "truck",
+          "main_road_simple",
+          "automobile",
+          "intersection",
+          "road",
+          "bus",
+          "turn_simple",
+          "driver",
+          "yield_to_other_vehicles",
+          "main_road_changes_direction",
+          "left_turn_yield_oncoming",
+          "oncoming_traffic_simple",
+          "do_not_obstruct",
+          "unregulated_intersection_simple",
+          "unequal_priority_roads"
+        ]
+      }
+    ]
+  },
+  "5-81": {
+    "comment": "На равнозначном перекрёстке ищи, у кого справа пусто. Зелёный без помехи справа стартует первым.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "equal_priority_roads",
+          "unregulated_intersection_simple",
+          "regulated_intersection_simple",
+          "vehicle",
+          "automobile",
+          "intersection",
+          "road",
+          "turn_simple",
+          "u_turn_simple",
+          "driver",
+          "yield_to_other_vehicles",
+          "right_hand_priority",
+          "left_turn_yield_oncoming",
+          "oncoming_traffic_simple",
+          "traffic_priority",
+          "bus",
+          "passenger_car",
+          "public_transport_vehicle"
+        ]
+      }
+    ]
+  },
+  "5-82": {
+    "comment": "Тот же приём: у зелёного никого справа — он первый. Дальше очередь идёт по «помехе справа».",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "equal_priority_roads",
+          "unregulated_intersection_simple",
+          "regulated_intersection_simple",
+          "vehicle",
+          "automobile",
+          "intersection",
+          "road",
+          "driver",
+          "yield_to_other_vehicles",
+          "right_hand_priority"
+        ]
+      }
+    ]
+  },
+  "5-83": {
+    "comment": "Синий и зелёный могут проехать вместе, если не мешают друг другу. Жёлтый ждёт синего справа.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "equal_priority_roads",
+          "regulated_intersection_simple",
+          "vehicle",
+          "automobile",
+          "intersection",
+          "road",
+          "driver",
+          "yield_to_other_vehicles",
+          "right_hand_priority",
+          "main_road_simple",
+          "secondary_road_simple",
+          "traffic_priority"
+        ]
+      }
+    ]
+  },
+  "5-84": {
+    "comment": "Велосипедист без помехи справа — первый. Автобус уступает ему; легковушка при левом повороте ждёт встречных/прямых.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "passenger_car",
+          "equal_priority_roads",
+          "unregulated_intersection_simple",
+          "regulated_intersection_simple",
+          "automobile",
+          "intersection",
+          "road",
+          "bus",
+          "bicycle",
+          "driver",
+          "yield_to_other_vehicles",
+          "right_hand_priority",
+          "left_turn_yield_oncoming",
+          "oncoming_traffic_simple",
+          "unequal_priority_roads",
+          "main_road_simple",
+          "secondary_road_simple",
+          "main_road_changes_direction",
+          "turn_simple"
+        ]
+      }
+    ]
+  },
+  "5-86": {
+    "comment": "Синий проедет вторым: зелёный первый, красный последний. Это чистая схема «помеха справа».",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "equal_priority_roads",
+          "unregulated_intersection_simple",
+          "regulated_intersection_simple",
+          "vehicle",
+          "automobile",
+          "intersection",
+          "road",
+          "driver",
+          "yield_to_other_vehicles",
+          "right_hand_priority",
+          "traffic_priority"
+        ]
+      }
+    ]
+  },
+  "5-87": {
+    "comment": "Красный уступает и синему, и зелёному — у него справа есть участники. Поэтому красный финиширует последним.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "equal_priority_roads",
+          "unregulated_intersection_simple",
+          "regulated_intersection_simple",
+          "vehicle",
+          "automobile",
+          "intersection",
+          "road",
+          "driver",
+          "yield_to_other_vehicles",
+          "right_hand_priority",
+          "traffic_priority",
+          "unequal_priority_roads",
+          "main_road_simple",
+          "secondary_road_simple",
+          "main_road_changes_direction"
+        ]
+      }
+    ]
+  },
+  "5-88": {
+    "comment": "STOP на одном подъезде сильно опускает машину в очереди. Сначала главная/второстепенная и «помеха справа» на главной, потом STOP.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "2.1",
+          "2.5"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "equal_priority_roads",
+          "secondary_road_simple",
+          "main_road_simple",
+          "automobile",
+          "intersection",
+          "road",
+          "stop",
+          "yield_to_other_vehicles",
+          "right_hand_priority",
+          "unregulated_intersection_simple",
+          "traffic_priority",
+          "motorcycle",
+          "bus"
+        ]
+      }
+    ]
+  },
+  "5-90": {
+    "comment": "Трамвай на главной сильнее второстепенных. Две машины на второстепенной без конфликта путей могут выехать одновременно после трамвая.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "2.1",
+          "2.4"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "secondary_road_simple",
+          "vehicle",
+          "main_road_simple",
+          "automobile",
+          "intersection",
+          "road",
+          "bus",
+          "yield_to_other_vehicles",
+          "public_transport_vehicle",
+          "traffic_priority",
+          "main_road_changes_direction",
+          "unequal_priority_roads",
+          "equal_priority_roads",
+          "right_hand_priority",
+          "motorcycle",
+          "truck"
+        ]
+      }
+    ]
+  },
+  "5-91": {
+    "comment": "На равнозначном перекрёстке грузовик уступает легковушке справа. Направление «прямо» не спасает от «помехи справа».",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "equal_priority_roads",
+          "unregulated_intersection_simple",
+          "regulated_intersection_simple",
+          "vehicle",
+          "automobile",
+          "intersection",
+          "road",
+          "driver",
+          "yield_to_other_vehicles",
+          "right_hand_priority",
+          "traffic_priority",
+          "truck",
+          "unequal_priority_roads",
+          "main_road_simple",
+          "secondary_road_simple",
+          "main_road_changes_direction",
+          "turn_simple"
+        ]
+      }
+    ]
+  },
+  "5-92": {
+    "comment": "На равнозначном с трамваем уступают все нерельсовые — и легковая, и фургон. Трамвай не уступает им.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "equal_priority_roads",
+          "unregulated_intersection_simple",
+          "regulated_intersection_simple",
+          "vehicle",
+          "truck",
+          "automobile",
+          "intersection",
+          "road",
+          "driver",
+          "yield_to_other_vehicles",
+          "public_transport_vehicle",
+          "traffic_priority",
+          "main_road_changes_direction",
+          "main_road_simple",
+          "secondary_road_simple",
+          "unequal_priority_roads"
+        ]
+      }
+    ]
+  },
+  "5-93": {
+    "comment": "Знак «Уступите» делает зелёную машину второстепенной. Она ждёт всех на главной, даже если те поворачивают.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "2.4",
+          "2.1"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "secondary_road_simple",
+          "vehicle",
+          "main_road_simple",
+          "automobile",
+          "intersection",
+          "road",
+          "driver",
+          "yield_to_other_vehicles",
+          "traffic_priority"
+        ]
+      }
+    ]
+  },
+  "5-94": {
+    "comment": "Табличка 8.13 задаёт главную с поворотом. На главной между собой — «помеха справа»; второстепенный автобус в конце.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "2.4",
+          "8.13"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "equal_priority_roads",
+          "secondary_road_simple",
+          "vehicle",
+          "truck",
+          "main_road_simple",
+          "automobile",
+          "intersection",
+          "road",
+          "bus",
+          "driver",
+          "yield_to_other_vehicles",
+          "right_hand_priority",
+          "main_road_changes_direction",
+          "traffic_priority",
+          "unregulated_intersection_simple"
+        ]
+      }
+    ]
+  },
+  "5-95": {
+    "comment": "STOP отодвигает синюю машину в самый конец. Красный и зелёный без конфликта путей могут выехать раньше.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "2.5",
+          "2.1"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "main_road_simple",
+          "automobile",
+          "intersection",
+          "road",
+          "stop",
+          "yield_to_other_vehicles",
+          "traffic_priority",
+          "pedestrian",
+          "bicycle",
+          "adjacent_area_exit_simple",
+          "adjacent_area"
+        ]
+      }
+    ]
+  },
+  "5-96": {
+    "comment": "Помеха слева на равнозначном перекрёстке не обязывает уступать. При левом повороте без машины справа можно ехать первым.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "equal_priority_roads",
+          "unregulated_intersection_simple",
+          "regulated_intersection_simple",
+          "vehicle",
+          "intersection",
+          "road",
+          "turn_simple",
+          "driver",
+          "yield_to_other_vehicles",
+          "right_hand_priority",
+          "left_side_vehicle",
+          "left_turn_yield_oncoming",
+          "truck",
+          "automobile"
+        ]
+      }
+    ]
+  },
+  "5-98": {
+    "comment": "Слева — не «помеха справа». Если сосед подъехал слева, уступать ему на равнозначном перекрёстке не нужно.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "equal_priority_roads",
+          "unregulated_intersection_simple",
+          "regulated_intersection_simple",
+          "vehicle",
+          "automobile",
+          "intersection",
+          "road",
+          "driver",
+          "yield_to_other_vehicles",
+          "right_hand_priority",
+          "left_side_vehicle",
+          "traffic_priority"
+        ]
+      }
+    ]
+  },
+  "5-101": {
+    "comment": "Выезд из двора/прилегающей территории — ты второстепенный для дороги. Сначала пропускаешь тех, кто уже едет по проезжей части.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "adjacent_area",
+          "intersection",
+          "road",
+          "turn_simple",
+          "pedestrian",
+          "driver",
+          "yield_to_other_vehicles",
+          "left_turn_yield_oncoming",
+          "adjacent_area_exit_simple",
+          "traffic_priority",
+          "unregulated_intersection_simple",
+          "unequal_priority_roads",
+          "main_road_simple",
+          "secondary_road_simple",
+          "main_road_changes_direction"
+        ]
+      }
+    ]
+  },
+  "5-102": {
+    "comment": "Табличка 8.1.1 показывает расстояние до места, где начнёт действовать знак. Это не зона уступления на 200 метров.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "2.4",
+          "8.1.1"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": [
+          "1.1"
+        ]
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "intersection",
+          "road",
+          "yield_to_other_vehicles",
+          "traffic_lane",
+          "unregulated_intersection_simple",
+          "unequal_priority_roads",
+          "main_road_simple",
+          "secondary_road_simple",
+          "main_road_changes_direction",
+          "turn_simple"
+        ]
+      }
+    ]
+  },
+  "5-106": {
+    "comment": "Задний ход на перекрёстке — манёвр без приоритета. Сначала убедись, что не мешаешь другим, иначе ехать первым нельзя.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "intersection",
+          "road",
+          "u_turn_simple",
+          "driver",
+          "yield_to_other_vehicles",
+          "do_not_obstruct",
+          "traffic_priority",
+          "unregulated_intersection_simple",
+          "unequal_priority_roads",
+          "main_road_simple",
+          "secondary_road_simple",
+          "main_road_changes_direction",
+          "equal_priority_roads",
+          "left_turn_yield_oncoming",
+          "turn_simple"
+        ]
+      }
+    ]
+  },
+  "5-107": {
+    "comment": "Трамвай первый, потом легковушка без помехи справа, автобус последний. Трамвай на равнозначном сильнее нерельсовых.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "passenger_car",
+          "equal_priority_roads",
+          "unregulated_intersection_simple",
+          "regulated_intersection_simple",
+          "vehicle",
+          "automobile",
+          "intersection",
+          "road",
+          "bus",
+          "driver",
+          "yield_to_other_vehicles",
+          "right_hand_priority",
+          "public_transport_vehicle",
+          "traffic_priority",
+          "left_side_vehicle",
+          "turn_simple"
+        ]
+      }
+    ]
+  },
+  "5-110": {
+    "comment": "При левом повороте на равнозначном уступаешь и тому, кто справа, и встречному прямому. Поэтому уступаешь всем.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "equal_priority_roads",
+          "unregulated_intersection_simple",
+          "regulated_intersection_simple",
+          "automobile",
+          "intersection",
+          "road",
+          "turn_simple",
+          "driver",
+          "yield_to_other_vehicles",
+          "right_hand_priority",
+          "left_turn_yield_oncoming",
+          "oncoming_traffic_simple",
+          "traffic_priority",
+          "passenger_car",
+          "truck",
+          "unequal_priority_roads",
+          "main_road_simple",
+          "secondary_road_simple",
+          "main_road_changes_direction"
+        ]
+      }
+    ]
+  },
+  "5-112": {
+    "comment": "Сначала уступи грузовику справа, и отдельно — трамваю. С трамваем «одновременно» на равнозначном обычно нельзя.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "equal_priority_roads",
+          "unregulated_intersection_simple",
+          "regulated_intersection_simple",
+          "vehicle",
+          "intersection",
+          "road",
+          "driver",
+          "yield_to_other_vehicles",
+          "right_hand_priority",
+          "public_transport_vehicle",
+          "traffic_priority",
+          "truck",
+          "unequal_priority_roads",
+          "main_road_simple",
+          "secondary_road_simple",
+          "main_road_changes_direction",
+          "left_turn_yield_oncoming",
+          "turn_simple"
+        ]
+      }
+    ]
+  },
+  "5-117": {
+    "comment": "Твёрдое покрытие против грунта — это главная/второстепенная, а не «помеха справа». На асфальте ты главнее грунтовки, даже если грузовик справа.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "equal_priority_roads",
+          "main_road_simple",
+          "intersection",
+          "road",
+          "yield_to_other_vehicles",
+          "right_hand_priority",
+          "truck"
+        ]
+      }
+    ]
+  },
+  "5-118": {
+    "comment": "Правый поворот не требует уступать машине слева. На равнозначном перекрёстке смотри только на правую сторону.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "equal_priority_roads",
+          "unregulated_intersection_simple",
+          "regulated_intersection_simple",
+          "automobile",
+          "intersection",
+          "road",
+          "turn_simple",
+          "yield_to_other_vehicles",
+          "right_hand_priority",
+          "left_side_vehicle",
+          "unequal_priority_roads",
+          "main_road_simple",
+          "secondary_road_simple",
+          "main_road_changes_direction"
+        ]
+      }
+    ]
+  },
+  "5-119": {
+    "comment": "Красный и синий могут выехать вместе, если не пересекаются. Вопрос «кто второй» — про эту пару, а не про зелёного первого.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "equal_priority_roads",
+          "vehicle",
+          "automobile",
+          "intersection",
+          "road",
+          "driver",
+          "yield_to_other_vehicles",
+          "right_hand_priority",
+          "regulated_intersection_simple",
+          "unregulated_intersection_simple",
+          "traffic_priority",
+          "truck"
+        ]
+      }
+    ]
+  },
+  "5-120": {
+    "comment": "На равнозначном с двумя трамваями уступаешь обоим. Одного «А» или «Б» недостаточно — важны оба пути.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "equal_priority_roads",
+          "unregulated_intersection_simple",
+          "regulated_intersection_simple",
+          "automobile",
+          "intersection",
+          "road",
+          "driver",
+          "yield_to_other_vehicles",
+          "public_transport_vehicle",
+          "traffic_priority",
+          "right_hand_priority",
+          "motorcycle",
+          "passenger_car"
+        ]
+      }
+    ]
+  },
+  "5-121": {
+    "comment": "Главная с поворотом: второстепенный красный ждёт всех на главной. Между синим и зелёным на главной решает «помеха справа».",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "2.1",
+          "8.13"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "equal_priority_roads",
+          "secondary_road_simple",
+          "vehicle",
+          "main_road_simple",
+          "automobile",
+          "intersection",
+          "road",
+          "turn_simple",
+          "driver",
+          "yield_to_other_vehicles",
+          "right_hand_priority",
+          "main_road_changes_direction",
+          "left_turn_yield_oncoming",
+          "traffic_priority",
+          "traffic_lane",
+          "public_transport_vehicle"
+        ]
+      }
+    ]
+  },
+  "5-122": {
+    "comment": "Прямой на главной сильнее левого поворота. Второстепенный зелёный ждёт и красного, и синего.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "2.1",
+          "2.4"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "equal_priority_roads",
+          "secondary_road_simple",
+          "vehicle",
+          "main_road_simple",
+          "automobile",
+          "intersection",
+          "road",
+          "turn_simple",
+          "u_turn_simple",
+          "driver",
+          "yield_to_other_vehicles",
+          "right_hand_priority",
+          "left_side_vehicle",
+          "left_turn_yield_oncoming",
+          "oncoming_traffic_simple",
+          "traffic_priority",
+          "bus"
+        ]
+      }
+    ]
+  },
+  "5-123": {
+    "comment": "На кольце преимущество у того, кто уже едет по кругу. «Справа» для въезжающего не перевешивает этот порядок.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "4.3"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "equal_priority_roads",
+          "roundabout_priority",
+          "secondary_road_simple",
+          "vehicle",
+          "automobile",
+          "intersection",
+          "road",
+          "driver",
+          "yield_to_other_vehicles",
+          "right_hand_priority",
+          "traffic_priority",
+          "unregulated_intersection_simple",
+          "left_turn_yield_oncoming",
+          "bicycle",
+          "turn_simple",
+          "bus",
+          "passenger_car"
+        ]
+      }
+    ]
+  },
+  "5-124": {
+    "comment": "Сложная схема: сначала главная с поворотом, потом второстепенные. Если пути не конфликтуют, несколько машин могут ехать пакетом.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "2.4",
+          "8.13"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "main_road_changes_direction",
+          "passenger_car",
+          "equal_priority_roads",
+          "secondary_road_simple",
+          "vehicle",
+          "truck",
+          "main_road_simple",
+          "automobile",
+          "intersection",
+          "road",
+          "motorcycle",
+          "bus",
+          "driver",
+          "yield_to_other_vehicles",
+          "right_hand_priority",
+          "public_transport_vehicle",
+          "unregulated_intersection_simple",
+          "unequal_priority_roads"
+        ]
+      }
+    ]
+  },
+  "5-125": {
+    "comment": "На главной грузовик и мотоцикл могут выехать вместе; на второстепенной между собой — «помеха справа». Троллейбус без спецприоритета.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "2.4",
+          "8.13"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "equal_priority_roads",
+          "secondary_road_simple",
+          "vehicle",
+          "truck",
+          "main_road_simple",
+          "automobile",
+          "intersection",
+          "road",
+          "motorcycle",
+          "bus",
+          "driver",
+          "yield_to_other_vehicles",
+          "right_hand_priority",
+          "main_road_changes_direction",
+          "public_transport_vehicle",
+          "traffic_priority",
+          "unregulated_intersection_simple"
+        ]
+      }
+    ]
+  },
+  "5-126": {
+    "comment": "Знак «Уступите» ставит мотоциклиста на второстепенную. Главная дорога важнее направления поворота.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "2.1",
+          "7.13",
+          "2.4"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "secondary_road_simple",
+          "vehicle",
+          "main_road_simple",
+          "automobile",
+          "road",
+          "motorcycle",
+          "driver",
+          "yield_to_other_vehicles",
+          "main_road_changes_direction",
+          "traffic_priority"
+        ]
+      }
+    ]
+  },
+  "5-127": {
+    "comment": "Оба, кто поворачивает с перекрёстка, обязаны не мешать пешеходам на проезжей части. Это правило для каждого поворота отдельно.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "passenger_car",
+          "carriageway",
+          "automobile",
+          "intersection",
+          "road",
+          "turn_simple",
+          "pedestrian",
+          "driver",
+          "yield_to_other_vehicles",
+          "left_turn_yield_oncoming",
+          "do_not_obstruct",
+          "truck",
+          "traffic_priority",
+          "maneuver_simple"
+        ]
+      }
+    ]
+  },
+  "5-128": {
+    "comment": "STOP + главная/второстепенная + «помеха справа» на главной. Чёрный с STOP почти всегда замыкает очередь.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "2.1",
+          "2.5"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "equal_priority_roads",
+          "secondary_road_simple",
+          "vehicle",
+          "main_road_simple",
+          "automobile",
+          "intersection",
+          "road",
+          "stop",
+          "yield_to_other_vehicles",
+          "right_hand_priority",
+          "main_road_changes_direction",
+          "unequal_priority_roads",
+          "motorcycle",
+          "bus",
+          "truck",
+          "passenger_car",
+          "public_transport_vehicle"
+        ]
+      }
+    ]
+  },
+  "5-130": {
+    "comment": "Зелёная машина справа от автобуса — автобус уступает. На равнозначном перекрёстке «справа» решает быстрее размера автобуса.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "equal_priority_roads",
+          "unregulated_intersection_simple",
+          "regulated_intersection_simple",
+          "vehicle",
+          "automobile",
+          "intersection",
+          "road",
+          "bus",
+          "driver",
+          "yield_to_other_vehicles",
+          "right_hand_priority",
+          "traffic_priority",
+          "public_transport_vehicle"
+        ]
+      }
+    ]
+  },
+  "5-131": {
+    "comment": "Неработающий светофор делает перекрёсток нерегулируемым. Дальше обычная «помеха справа»: мотоцикл первый, троллейбус последний.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "passenger_car",
+          "equal_priority_roads",
+          "vehicle",
+          "automobile",
+          "intersection",
+          "road",
+          "motorcycle",
+          "bus",
+          "driver",
+          "yield_to_other_vehicles",
+          "right_hand_priority",
+          "unregulated_intersection_simple",
+          "regulated_intersection_simple",
+          "oncoming_traffic_simple",
+          "public_transport_vehicle",
+          "traffic_priority"
+        ]
+      }
+    ]
+  },
+  "5-133": {
+    "comment": "Скорая без маячков и сирены — обычная машина. Сначала главная/второстепенная, потом трамвай на равнозначной части схемы.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "2.4",
+          "8.13"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "traffic_priority",
+          "passenger_car",
+          "unregulated_intersection_simple",
+          "regulated_intersection_simple",
+          "secondary_road_simple",
+          "vehicle",
+          "main_road_simple",
+          "automobile",
+          "intersection",
+          "road",
+          "motorcycle",
+          "bus",
+          "driver",
+          "yield_to_other_vehicles",
+          "right_hand_priority",
+          "equal_priority_roads",
+          "main_road_changes_direction",
+          "oncoming_traffic_simple",
+          "same_direction_traffic_simple",
+          "public_transport_vehicle"
+        ]
+      }
+    ]
+  },
+  "5-134": {
+    "comment": "На кольцо можно въехать с любой полосы — исключение из правила «занять крайнюю полосу перед поворотом». Оба водителя могут въехать правильно.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "4.3"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "passenger_car",
+          "roundabout_priority",
+          "vehicle",
+          "automobile",
+          "intersection",
+          "bus",
+          "turn_simple",
+          "driver",
+          "traffic_lane",
+          "equal_priority_roads",
+          "unregulated_intersection_simple",
+          "right_hand_priority",
+          "left_side_vehicle",
+          "traffic_priority",
+          "yield_to_other_vehicles"
+        ]
+      }
+    ]
+  },
+  "5-135": {
+    "comment": "Правый поворот не заставляет уступать встречному прямому. Если пути не пересекаются, можно проехать первым.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "passenger_car",
+          "automobile",
+          "intersection",
+          "road",
+          "turn_simple",
+          "u_turn_simple",
+          "driver",
+          "yield_to_other_vehicles",
+          "left_turn_yield_oncoming",
+          "oncoming_traffic_simple",
+          "main_road_simple"
+        ]
+      }
+    ]
+  },
+  "5-20": {
+    "comment": "На кольце с знаком кругового движения въезжающий уступает тем, кто уже едет по кругу. Правило «кто справа» здесь не подменяет этот порядок.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "4.3"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "roundabout_priority",
+          "yield_to_other_vehicles",
+          "intersection",
+          "vehicle",
+          "driver",
+          "road"
+        ]
+      }
+    ]
+  },
+  "5-116": {
+    "comment": "Главность по покрытию — это твёрдая дорога против грунтовой. Число полос или разные виды асфальта сами по себе главную не создают.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "intersection",
+          "main_road_simple",
+          "secondary_road_simple",
+          "unequal_priority_roads",
+          "road"
+        ]
+      }
+    ]
+  },
+  "5-129": {
+    "comment": "Если покрытие не видно и знаков нет — безопаснее считать себя на второстепенной, а не спорить по «помехе справа».",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "secondary_road_simple",
+          "night_time",
+          "intersection",
+          "road",
+          "driver",
+          "equal_priority_roads",
+          "main_road_changes_direction",
+          "main_road_simple",
+          "unequal_priority_roads",
+          "yield_to_other_vehicles",
+          "left_turn_yield_oncoming",
+          "turn_simple",
+          "oncoming_traffic_simple",
+          "bus",
+          "truck",
+          "passenger_car",
+          "automobile"
+        ]
+      }
+    ]
+  }
+}

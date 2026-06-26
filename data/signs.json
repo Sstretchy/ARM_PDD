@@ -4184,6 +4184,10 @@
     "relative_marks": [],
     "atomicIds": [
       "8.1.2"
+    ],
+    "relative_signs": [
+      "2.4",
+      "2.5"
     ]
   },
   {
@@ -4256,6 +4260,12 @@
     "relative_marks": [],
     "atomicIds": [
       "8.2.2"
+    ],
+    "relative_signs": [
+      "3.27",
+      "3.30",
+      "8.2.4",
+      "8.13"
     ]
   },
   {
@@ -4274,6 +4284,13 @@
     "relative_marks": [],
     "atomicIds": [
       "8.2.3"
+    ],
+    "relative_signs": [
+      "3.27",
+      "3.30",
+      "8.2.2",
+      "8.2.4",
+      "8.13"
     ]
   },
   {
@@ -4292,6 +4309,12 @@
     "relative_marks": [],
     "atomicIds": [
       "8.2.4"
+    ],
+    "relative_signs": [
+      "3.27",
+      "3.30",
+      "8.2.2",
+      "8.13"
     ]
   },
   {
@@ -4310,6 +4333,10 @@
     "relative_marks": [],
     "atomicIds": [
       "8.2.5"
+    ],
+    "relative_signs": [
+      "3.27",
+      "3.30"
     ]
   },
   {
@@ -4328,6 +4355,10 @@
     "relative_marks": [],
     "atomicIds": [
       "8.2.6"
+    ],
+    "relative_signs": [
+      "3.27",
+      "3.30"
     ]
   },
   {
@@ -4400,6 +4431,9 @@
     "relative_marks": [],
     "atomicIds": [
       "8.4.1"
+    ],
+    "relative_signs": [
+      "8.4.8"
     ]
   },
   {
@@ -4418,6 +4452,10 @@
     "relative_marks": [],
     "atomicIds": [
       "8.4.2"
+    ],
+    "relative_signs": [
+      "8.4.1",
+      "8.4.8"
     ]
   },
   {
@@ -4436,6 +4474,10 @@
     "relative_marks": [],
     "atomicIds": [
       "8.4.3"
+    ],
+    "relative_signs": [
+      "8.4.1",
+      "8.4.8"
     ]
   },
   {
@@ -4454,6 +4496,10 @@
     "relative_marks": [],
     "atomicIds": [
       "8.4.3.1"
+    ],
+    "relative_signs": [
+      "8.4.1",
+      "8.4.8"
     ]
   },
   {
@@ -4472,6 +4518,10 @@
     "relative_marks": [],
     "atomicIds": [
       "8.4.4"
+    ],
+    "relative_signs": [
+      "8.4.1",
+      "8.4.8"
     ]
   },
   {
@@ -4490,6 +4540,10 @@
     "relative_marks": [],
     "atomicIds": [
       "8.4.5"
+    ],
+    "relative_signs": [
+      "8.4.1",
+      "8.4.8"
     ]
   },
   {
@@ -4508,6 +4562,10 @@
     "relative_marks": [],
     "atomicIds": [
       "8.4.6"
+    ],
+    "relative_signs": [
+      "8.4.1",
+      "8.4.8"
     ]
   },
   {
@@ -4526,6 +4584,10 @@
     "relative_marks": [],
     "atomicIds": [
       "8.4.7"
+    ],
+    "relative_signs": [
+      "8.4.1",
+      "8.4.8"
     ]
   },
   {
@@ -4544,6 +4606,9 @@
     "relative_marks": [],
     "atomicIds": [
       "8.4.8"
+    ],
+    "relative_signs": [
+      "8.4.1"
     ]
   },
   {
@@ -4562,6 +4627,11 @@
     "relative_marks": [],
     "atomicIds": [
       "8.5.1"
+    ],
+    "relative_signs": [
+      "8.5.3",
+      "8.5.4",
+      "8.5.7"
     ]
   },
   {
@@ -4580,6 +4650,12 @@
     "relative_marks": [],
     "atomicIds": [
       "8.5.2"
+    ],
+    "relative_signs": [
+      "8.5.1",
+      "8.5.3",
+      "8.5.4",
+      "8.5.7"
     ]
   },
   {
@@ -4598,6 +4674,11 @@
     "relative_marks": [],
     "atomicIds": [
       "8.5.3"
+    ],
+    "relative_signs": [
+      "8.5.1",
+      "8.5.4",
+      "8.5.7"
     ]
   },
   {
@@ -4616,6 +4697,11 @@
     "relative_marks": [],
     "atomicIds": [
       "8.5.4"
+    ],
+    "relative_signs": [
+      "8.5.1",
+      "8.5.3",
+      "8.5.7"
     ]
   },
   {
@@ -4634,6 +4720,12 @@
     "relative_marks": [],
     "atomicIds": [
       "8.5.5"
+    ],
+    "relative_signs": [
+      "8.5.1",
+      "8.5.3",
+      "8.5.4",
+      "8.5.7"
     ]
   },
   {
@@ -4652,6 +4744,12 @@
     "relative_marks": [],
     "atomicIds": [
       "8.5.6"
+    ],
+    "relative_signs": [
+      "8.5.1",
+      "8.5.3",
+      "8.5.4",
+      "8.5.7"
     ]
   },
   {
@@ -4670,6 +4768,11 @@
     "relative_marks": [],
     "atomicIds": [
       "8.5.7"
+    ],
+    "relative_signs": [
+      "8.5.1",
+      "8.5.3",
+      "8.5.4"
     ]
   },
   {
@@ -4829,6 +4932,9 @@
     "meaning_ru": "Показывает, что на стоянке, обозначенной знаком 6.4 «Место стоянки», стоянка транспортных средств разрешается только с неработающим двигателем.",
     "meaning_hy": "Ցույց է տալիս, որ 6.4 նշանով կահավորված կայանման վայրում տրանսպորտային միջոցների կայանումը թույլատրվում է միայն չգործարկված շարժիչով:",
     "comment_ru": "Стоять можно, но двигатель должен быть заглушен.",
+    "relative_signs": [
+      "6.4"
+    ],
     "relative_marks": [],
     "atomicIds": [
       "8.7"
@@ -4868,6 +4974,9 @@
     "relative_marks": [],
     "atomicIds": [
       "8.9"
+    ],
+    "relative_signs": [
+      "6.4"
     ]
   },
   {
@@ -4886,6 +4995,9 @@
     "relative_marks": [],
     "atomicIds": [
       "8.9.1"
+    ],
+    "relative_signs": [
+      "6.4"
     ]
   },
   {
@@ -4922,6 +5034,10 @@
     "relative_marks": [],
     "atomicIds": [
       "8.10"
+    ],
+    "relative_signs": [
+      "6.4",
+      "7.11"
     ]
   },
   {
@@ -4958,6 +5074,9 @@
     "relative_marks": [],
     "atomicIds": [
       "8.12"
+    ],
+    "relative_signs": [
+      "1.25"
     ]
   },
   {
@@ -4976,6 +5095,10 @@
     "relative_marks": [],
     "atomicIds": [
       "8.13"
+    ],
+    "relative_signs": [
+      "8.2.2",
+      "8.2.4"
     ]
   },
   {
@@ -5012,6 +5135,9 @@
     "relative_marks": [],
     "atomicIds": [
       "8.15"
+    ],
+    "relative_signs": [
+      "1.22"
     ]
   },
   {
@@ -5048,6 +5174,9 @@
     "relative_marks": [],
     "atomicIds": [
       "8.17"
+    ],
+    "relative_signs": [
+      "6.4"
     ]
   },
   {
@@ -5102,6 +5231,9 @@
     "relative_marks": [],
     "atomicIds": [
       "8.20.1"
+    ],
+    "relative_signs": [
+      "3.12"
     ]
   },
   {
@@ -5120,6 +5252,9 @@
     "relative_marks": [],
     "atomicIds": [
       "8.20.2"
+    ],
+    "relative_signs": [
+      "3.12"
     ]
   },
   {
@@ -5140,6 +5275,9 @@
       "8.21.1",
       "8.21.2",
       "8.21.3"
+    ],
+    "relative_signs": [
+      "6.4"
     ]
   },
   {
@@ -5158,6 +5296,10 @@
     "relative_marks": [],
     "atomicIds": [
       "8.22.1"
+    ],
+    "relative_signs": [
+      "4.2.1",
+      "4.2.3"
     ]
   },
   {
@@ -5176,6 +5318,10 @@
     "relative_marks": [],
     "atomicIds": [
       "8.22.2"
+    ],
+    "relative_signs": [
+      "4.2.1",
+      "4.2.3"
     ]
   },
   {
@@ -5194,6 +5340,10 @@
     "relative_marks": [],
     "atomicIds": [
       "8.22.3"
+    ],
+    "relative_signs": [
+      "4.2.1",
+      "4.2.3"
     ]
   },
   {
@@ -5212,6 +5362,10 @@
     "relative_marks": [],
     "atomicIds": [
       "8.23"
+    ],
+    "relative_signs": [
+      "3.27",
+      "3.30"
     ]
   },
   {
@@ -5320,6 +5474,13 @@
     "relative_marks": [],
     "atomicIds": [
       "8.29"
+    ],
+    "relative_signs": [
+      "7.4",
+      "7.5",
+      "7.7",
+      "7.9",
+      "7.11"
     ]
   }
 ]

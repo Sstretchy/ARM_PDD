@@ -1,0 +1,1937 @@
+{
+  "6-1": {
+    "comment": "Новички думают: «зелёный горит — едут все». Но у трамвая свой светофор: без разрешающего T-сигнала он ждёт, а легковые с зелёным могут ехать.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "automobile"
+        ]
+      }
+    ]
+  },
+  "6-3": {
+    "comment": "Жесты регулировщика важнее светофора: на левом рисунке разворот разрешён, на правом — нет.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "traffic_controller",
+          "turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "6-4": {
+    "comment": "Жест «правая рука вперёд»: со стороны груди — только направо, с боков — во все стороны.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "traffic_controller",
+          "automobile",
+          "motorcycle",
+          "turn_simple"
+        ]
+      }
+    ]
+  },
+  "6-5": {
+    "comment": "Если регулировщик запрещает движение со стороны груди и спины, автобус со стороны груди должен ждать.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "passenger_car",
+          "vehicle",
+          "traffic_controller",
+          "automobile",
+          "road",
+          "motorcycle",
+          "bus"
+        ]
+      }
+    ]
+  },
+  "6-6": {
+    "comment": "При жесте «правая рука вперёд» легковая со стороны груди не может ехать прямо.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "passenger_car",
+          "vehicle",
+          "traffic_controller",
+          "automobile",
+          "bus"
+        ]
+      }
+    ]
+  },
+  "6-7": {
+    "comment": "Руки в стороны: с боков можно прямо и направо, со стороны груди и спины — нельзя.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "passenger_car",
+          "truck",
+          "traffic_controller",
+          "automobile",
+          "bus",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "6-8": {
+    "comment": "Смотри, кого регулировщик реально пропускает — не все машины на рисунке имеют право ехать.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "truck",
+          "traffic_controller",
+          "automobile",
+          "intersection",
+          "motorcycle",
+          "bus"
+        ]
+      }
+    ]
+  },
+  "6-9": {
+    "comment": "Если у обоих трамваев разрешающий сигнал, нельзя проезжать первым — уступи им.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "6-10": {
+    "comment": "Если у тебя зелёный со стрелкой влево, а трамвай стоит без своего «зелёного», ты можешь проехать раньше.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "intersection",
+          "road",
+          "turn_simple"
+        ]
+      }
+    ]
+  },
+  "6-11": {
+    "comment": "С боков регулировщика движение разрешено, со стороны груди — нет.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "traffic_controller",
+          "automobile",
+          "bus",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "6-12": {
+    "comment": "Смотри, куда «смотрит» регулировщик и куда показывает рука. Автобус стоит в «разрешённой» зоне (сбоку), грузовик и легковушка — в «запрещённой» (перед грудью или спиной). Только автобус может ехать по нарисованной стрелке.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "carriageway",
+          "traffic_controller",
+          "automobile",
+          "road",
+          "turn_simple",
+          "pedestrian"
+        ]
+      }
+    ]
+  },
+  "6-13": {
+    "comment": "При руках в стороны проезжает только машина с бока регулировщика.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "passenger_car",
+          "vehicle",
+          "truck",
+          "traffic_controller",
+          "automobile",
+          "motorcycle",
+          "bus"
+        ]
+      }
+    ]
+  },
+  "6-14": {
+    "comment": "На левом рисунке разворот по жесту правильный, на правом — нет.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "traffic_controller",
+          "turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "6-15": {
+    "comment": "Дополнительная зелёная стрелка разрешает поворот направо только на первом проезде светофора.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "turn_simple"
+        ]
+      }
+    ]
+  },
+  "6-16": {
+    "comment": "При таком жесте с боков можно выполнять поворот направо.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "traffic_controller",
+          "automobile",
+          "turn_simple"
+        ]
+      }
+    ]
+  },
+  "6-17": {
+    "comment": "Жест регулировщика показывает, какие именно машины могут ехать — читай позицию каждой.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "traffic_controller",
+          "automobile"
+        ]
+      }
+    ]
+  },
+  "6-18": {
+    "comment": "Перед стартом на зелёный сначала проверь, не заканчивает ли кто-то проезд перекрёстка.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "traffic_priority",
+          "regulated_intersection_simple",
+          "vehicle",
+          "automobile",
+          "intersection",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "6-19": {
+    "comment": "Трамвай теряет обычное преимущество, если едет по дополнительной стрелке при красном или жёлтом основном сигнале.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "public_transport_vehicle",
+          "vehicle",
+          "carriageway"
+        ]
+      }
+    ]
+  },
+  "6-20": {
+    "comment": "Со стороны груди и спины регулировщика движение запрещено.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "traffic_controller",
+          "automobile"
+        ]
+      }
+    ]
+  },
+  "6-21": {
+    "comment": "Красная машина проезжает первой, остальные — после неё.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "automobile",
+          "intersection"
+        ]
+      }
+    ]
+  },
+  "6-22": {
+    "comment": "Автобус со стороны груди при таком жесте не может ехать прямо.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "traffic_controller",
+          "bus",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "6-23": {
+    "comment": "Сначала легковая, потом трамвай и автобус.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "passenger_car",
+          "vehicle",
+          "automobile",
+          "intersection",
+          "bus"
+        ]
+      }
+    ]
+  },
+  "6-24": {
+    "comment": "Левый поворот часто цепляет сразу две группы: встречных и пешеходов на выходе из поворота.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "carriageway",
+          "automobile",
+          "intersection",
+          "road",
+          "turn_simple",
+          "pedestrian",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "6-25": {
+    "comment": "Зелёный не разрешает забивать перекрёсток: если впереди затор и вы там застрянете, прямо лучше не въезжать.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "intersection",
+          "road",
+          "pedestrian",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "6-26": {
+    "comment": "Встречный автомобиль, который тоже едет прямо, вашему прямому движению не мешает. Уступать нужно тому, чей путь вы пересекаете.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "carriageway",
+          "intersection",
+          "turn_simple",
+          "pedestrian"
+        ]
+      }
+    ]
+  },
+  "6-27": {
+    "comment": "Направление по полосе важнее желания ехать прямо: знак 5.15.1 привязывает полосу к конкретному направлению.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "5.15.1"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "turn_simple"
+        ]
+      }
+    ]
+  },
+  "6-28": {
+    "comment": "На перекрёстке смотри не только свой свет, но и сигналы других участников, особенно трамвая и регулировщика.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "carriageway",
+          "road",
+          "pedestrian",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "6-29": {
+    "comment": "Дополнительная стрелка разрешает только направо, прямо — нет.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "turn_simple"
+        ]
+      }
+    ]
+  },
+  "6-30": {
+    "comment": "Регулировщик стоит с руками в стороны — «зелёный» для тех, кто сбоку от него. Красная и зелёная машины как раз сбоку, поэтому им можно повернуть направо. Те, кто перед грудью или спиной — стоят.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "railway_crossing"
+        ]
+      }
+    ]
+  },
+  "6-31": {
+    "comment": "При повороте направо не всегда нужно уступать встречным, если нет другого запрета.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "road",
+          "turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "6-32": {
+    "comment": "Реверсивный сигнал действует только на полосу под ним, а не на всю проезжую часть.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "traffic_controller"
+        ]
+      }
+    ]
+  },
+  "6-33": {
+    "comment": "Красная машина первой проскочила на свой зелёный. Трамвай и зелёная машина получили «зелёный» вместе — трамвай имеет приоритет, но они могут ехать «одновременно» в смысле очереди после красной.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "automobile",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "6-34": {
+    "comment": "Сравни два рисунка: на левом регулировщик стоит так, что поворот разрешён. На правом — нет (рука или положение тела запрещает). Только левый рисунок правильный.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle"
+        ]
+      }
+    ]
+  },
+  "6-35": {
+    "comment": "Легковушка имеет «зелёный» или разрешающий жест, автобус — нет (или стоит на «второстепенке»). Поэтому легковушка едет первой.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "automobile",
+          "intersection",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "6-36": {
+    "comment": "Регулировщик важнее маршрута автобуса. Если он стоит так, что автобусу нельзя прямо — автобус стоит, даже если у него «свой» светофор зелёный. Регулировщик в приоритете.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "automobile",
+          "intersection",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "6-37": {
+    "comment": "Автобус, трамвай и мотоцикл «получили разрешение» вместе или в одной группе. Грузовик ждёт. Трамвай среди них имеет приоритет, но все трое идут раньше грузовика.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "4.1.1"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": [
+          "1.1"
+        ]
+      },
+      {
+        "type": "term",
+        "ids": [
+          "passenger_car",
+          "automobile",
+          "motorcycle",
+          "turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "6-38": {
+    "comment": "Ты поворачиваешь налево на зелёный/разрешающий, трамвай либо стоит на красном, либо не мешает тебе. Если трамвай не имеет преимущества в этой конкретной фазе — ты первый.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "traffic_controller",
+          "intersection",
+          "road",
+          "turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "6-40": {
+    "comment": "Легковушка первой «проскочила». Трамвай имеет приоритет перед автобусом (как рельсовый транспорт), поэтому он второй. Автобус ждёт.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "intersection",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "6-41": {
+    "comment": "Если реверсивные светофоры выключены, полоса с разметкой 1.9 закрыта — даже если она выглядит удобной для поворота.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "1.9"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": [
+          "1.9"
+        ]
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "road",
+          "overtaking_simple"
+        ]
+      }
+    ]
+  },
+  "6-42": {
+    "comment": "У регулировщика важно смотреть, с какой стороны вы к нему подъезжаете: бок, грудь или спина.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "intersection",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "6-44": {
+    "comment": "Только мотоцикл стоит в положении, которое соответствует жесту регулировщика.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "traffic_controller",
+          "automobile",
+          "motorcycle"
+        ]
+      }
+    ]
+  },
+  "6-45": {
+    "comment": "При запрещающем жесте остановись перед стоп-линией, а не заезжай на перекрёсток.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "traffic_controller",
+          "intersection",
+          "road",
+          "turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "6-46": {
+    "comment": "Этот жест регулировщика запрещает движение в показанном направлении.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "traffic_controller"
+        ]
+      }
+    ]
+  },
+  "6-47": {
+    "comment": "При левом повороте могут сложиться два правила сразу: уступить встречным и уступить трамваю.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": [
+          "1.12"
+        ]
+      },
+      {
+        "type": "term",
+        "ids": [
+          "intersection",
+          "turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "6-48": {
+    "comment": "Зелёная стрелка вниз над реверсивной полосой означает, что эта полоса открыта.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "5.15.1"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "turn_simple",
+          "u_turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "6-50": {
+    "comment": "Стрелка при красном открывает манёвр, но ставит водителя в положение уступающего.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "intersection",
+          "turn_simple",
+          "u_turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "6-51": {
+    "comment": "Бело-лунный Т-светофор — не обычный светофор для всех, а сигнал для трамваев и маршрутного транспорта на выделенной полосе.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "6-52": {
+    "comment": "На переезде бело-лунный мигающий разрешает проезд, а красный запрещает.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "passenger_car",
+          "vehicle",
+          "automobile",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "6-53": {
+    "comment": "Закрытую реверсивную полосу нельзя использовать даже для короткого объезда.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "carriageway",
+          "intersection",
+          "road",
+          "turn_simple",
+          "pedestrian",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "6-54": {
+    "comment": "При руках в стороны с боков можно прямо и направо; со спины и груди нельзя, а налево с боков тоже нельзя.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "traffic_controller",
+          "automobile",
+          "turn_simple"
+        ]
+      }
+    ]
+  },
+  "6-55": {
+    "comment": "Красная машина проезжает последней из-за положения относительно регулировщика.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "automobile",
+          "intersection"
+        ]
+      }
+    ]
+  },
+  "6-56": {
+    "comment": "Дополнительная секция светофора действует только на свой проезд — не переноси стрелку на следующий цикл.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "6-57": {
+    "comment": "Реверсивный светофор управляет конкретной полосой, а не всем перекрёстком или всей дорогой.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "1.9"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": [
+          "1.9"
+        ]
+      },
+      {
+        "type": "term",
+        "ids": [
+          "carriageway",
+          "turn_simple"
+        ]
+      }
+    ]
+  },
+  "6-58": {
+    "comment": "При повороте уступают не только пешеходам, но и велосипедистам на велодорожке.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "automobile",
+          "road",
+          "motorcycle",
+          "turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "6-59": {
+    "comment": "При таком жесте проезжают машины с боков регулировщика.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "traffic_controller",
+          "automobile"
+        ]
+      }
+    ]
+  },
+  "6-60": {
+    "comment": "Поворот направо — обычно не конфликтует со встречными (они едут прямо или налево далеко). Поэтому уступать встречному не нужно, если твой сигнал разрешает.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "traffic_controller",
+          "turn_simple"
+        ]
+      }
+    ]
+  },
+  "6-61": {
+    "comment": "С твоей позиции регулировщик «закрыл» повороты. Можно только прямо — как будто горит только «прямо» на светофоре.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "intersection"
+        ]
+      }
+    ]
+  },
+  "6-63": {
+    "comment": "Реверсивный сигнал действует только на полосу под ним, а не на всю проезжую часть.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "carriageway"
+        ]
+      }
+    ]
+  },
+  "6-64": {
+    "comment": "Чёрные стрелки на зелёном не запрещают движение. Они предупреждают, что есть дополнительная секция.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "turn_simple"
+        ]
+      }
+    ]
+  },
+  "6-65": {
+    "comment": "Стрелка при красном открывает манёвр, но ставит водителя в положение уступающего.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "automobile",
+          "intersection",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "6-66": {
+    "comment": "Не выезжай на перекрёсток «на удачу». Если регулировщик ещё не дал жест для левого поворота — стой перед стоп-линией. Выезжать и ждать внутри опасно и неправильно.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "automobile",
+          "intersection",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "6-67": {
+    "comment": "Красная машина сбоку может ехать, синяя ограничена жестом.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "automobile"
+        ]
+      }
+    ]
+  },
+  "6-68": {
+    "comment": "Зелёная стрелка действует только на первый проезд — не переноси её на второй.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "6-69": {
+    "comment": "Разрешённый поворот не означает “еду не глядя”: пешеходов всё равно нужно пропустить.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "carriageway",
+          "traffic_controller",
+          "road",
+          "turn_simple",
+          "pedestrian",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "6-70": {
+    "comment": "Если трамвай тоже едет на обычный разрешающий сигнал, его преимущество сохраняется.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "automobile",
+          "road",
+          "turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "6-71": {
+    "comment": "Сначала ищи стоп-линию или знак 6.16. Только если их нет, ориентируйся на край перекрёстка или сам светофор.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "automobile",
+          "intersection",
+          "road",
+          "turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "6-72": {
+    "comment": "Для автомобиля это стрелка при красном, значит он может повернуть, но обязан уступить тем, кто едет на обычный зелёный.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "carriageway",
+          "intersection",
+          "road",
+          "turn_simple",
+          "pedestrian",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "6-73": {
+    "comment": "Поворот направо разрешён, но смотри на встречных и пешеходов.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "turn_simple",
+          "pedestrian"
+        ]
+      }
+    ]
+  },
+  "6-75": {
+    "comment": "Реверсивные светофоры выключены — это значит, что полоса с двойной разметкой 1.9 «закрыта» для движения в твою сторону. Не выезжай туда, даже если кажется пусто.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "intersection",
+          "turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "6-76": {
+    "comment": "В этой ситуации трамвай должен уступить.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "traffic_controller",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "6-77": {
+    "comment": "Разрешённый поворот не означает “еду не глядя”: пешеходов всё равно нужно пропустить.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "road",
+          "turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "6-78": {
+    "comment": "Стрелка при красном разрешает поворот, но не даёт преимущества.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "carriageway",
+          "intersection",
+          "road",
+          "turn_simple",
+          "pedestrian",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "6-79": {
+    "comment": "Левый поворот часто цепляет сразу две группы: встречных и пешеходов на выходе из поворота.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "built_up_area",
+          "road",
+          "bus",
+          "stop",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "6-80": {
+    "comment": "Зелёный со стрелкой разрешает и прямо, и направо.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": []
+      }
+    ]
+  },
+  "6-81": {
+    "comment": "Оба водителя стоят правильно и могут проехать.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "traffic_controller",
+          "bus",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "6-82": {
+    "comment": "В этой конкретной фазе светофора/жеста трамвай (поворачивающий или выезжающий) должен пропустить легковушку, которая имеет «чистый» разрешающий сигнал.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "6.16"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "carriageway",
+          "intersection",
+          "stop",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "6-83": {
+    "comment": "При левом повороте главный вопрос — кто едет навстречу прямо или направо. Им нужно уступить.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "1.9"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": [
+          "1.9"
+        ]
+      },
+      {
+        "type": "term",
+        "ids": [
+          "overtaking_simple"
+        ]
+      }
+    ]
+  },
+  "6-84": {
+    "comment": "Автобус получает преимущество не просто как автобус, а когда начинает движение от обозначенной остановки в населённом пункте.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "traffic_lane",
+          "overtaking_simple"
+        ]
+      }
+    ]
+  },
+  "6-85": {
+    "comment": "Разворот можно закончить только на зелёный — на красный нужно остановиться.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "automobile",
+          "u_turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "6-86": {
+    "comment": "Классический жест регулировщика «руки в стороны» = можно прямо и направо (для тех, кто сбоку). Прямо и направо — оба направления открыты.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "passenger_car",
+          "vehicle",
+          "truck",
+          "traffic_controller",
+          "automobile",
+          "motorcycle",
+          "bus",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "6-87": {
+    "comment": "Когда светофор выключен, ехать «как обычно» часто нельзя — смотри знаки и регулировщика.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "passenger_car",
+          "vehicle",
+          "automobile",
+          "bus",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "6-89": {
+    "comment": "Трамвай здесь без разрешения — проезжают легковые и мотоцикл.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "traffic_controller",
+          "automobile",
+          "motorcycle"
+        ]
+      }
+    ]
+  },
+  "6-90": {
+    "comment": "При красном с зелёной стрелкой направо разрешён только ближайший правый поворот.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "automobile",
+          "road",
+          "bus",
+          "turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "6-91": {
+    "comment": "С боковой стороны регулировщика при опущенных руках нельзя налево: только прямо или направо.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "regulated_intersection_simple",
+          "vehicle",
+          "traffic_controller",
+          "intersection",
+          "road",
+          "turn_simple",
+          "u_turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "6-92": {
+    "comment": "Синей машине при таком жесте налево ехать нельзя.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "automobile"
+        ]
+      }
+    ]
+  },
+  "6-93": {
+    "comment": "Из этой позиции возможен только проезд прямо.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "traffic_controller",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "6-94": {
+    "comment": "Ты стоишь правильно и можешь проехать первым.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "intersection",
+          "road",
+          "turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "6-95": {
+    "comment": "На зелёный не ждут у стоп-линии, но на выходе из поворота всё равно пропускают пешеходов.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "regulated_intersection_simple",
+          "vehicle",
+          "intersection",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  }
+}

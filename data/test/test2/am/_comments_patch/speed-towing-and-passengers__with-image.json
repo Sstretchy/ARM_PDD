@@ -1,0 +1,333 @@
+{
+  "8-1": {
+    "comment": "Междугородний автобус вне населённого пункта может ехать до 90 км/ч — не путай с обычным автобусом.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "5.25"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "built_up_area",
+          "road",
+          "bus",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "8-4": {
+    "comment": "В полосе для общественного транспорта у автобуса свой скоростной режим — обычно 60–90 км/ч.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "5.11.1"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "built_up_area",
+          "road",
+          "bus",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "8-5": {
+    "comment": "Междугородний автобус вне города — до 60 км/ч по этому вопросу, не выше без основания.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "road",
+          "bus",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "8-6": {
+    "comment": "Нельзя сажать и высаживать пассажиров, пока автобус стоит в опасном месте на проезжей части.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "road",
+          "bus",
+          "passenger"
+        ]
+      }
+    ]
+  },
+  "8-10": {
+    "comment": "На автомагистрали для автобуса лимит 90 км/ч.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "5.1"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "bus",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "8-16": {
+    "comment": "Знак разрешает прямо, направо и налево, но не разворот.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "road",
+          "u_turn_simple"
+        ]
+      }
+    ]
+  },
+  "8-17": {
+    "comment": "Знак опасного поворота предупреждает заранее — снизь скорость до изгиба.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "1.1"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": [
+          "1.12",
+          "1.1",
+          "1.4"
+        ]
+      },
+      {
+        "type": "term",
+        "ids": [
+          "built_up_area",
+          "turn_simple",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "8-25": {
+    "comment": "С гибкой сцепкой — не быстрее 50 км/ч.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "motor_vehicle",
+          "vehicle"
+        ]
+      }
+    ]
+  },
+  "8-52": {
+    "comment": "В буксируемом автобусе людей быть не должно.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "vehicle",
+          "bus",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "8-55": {
+    "comment": "На буксируемой машине должна быть аварийка.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "motor_vehicle",
+          "vehicle",
+          "road",
+          "turn_simple",
+          "u_turn_simple"
+        ]
+      }
+    ]
+  },
+  "8-56": {
+    "comment": "Смотри, какой знак главный — постоянный или предупреждающий.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "pedestrian_crossing",
+          "pedestrian"
+        ]
+      }
+    ]
+  },
+  "8-61": {
+    "comment": "Скорость зависит от типа ТС, дороги и условий — не переноси один лимит на все ситуации.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "5.1"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "road",
+          "bus"
+        ]
+      }
+    ]
+  },
+  "8-67": {
+    "comment": "Маркировка сзади нужна, если выступ больше 1 м, а не при любом выступе.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "maximum_authorized_mass",
+          "road",
+          "driver"
+        ]
+      }
+    ]
+  },
+  "8-75": {
+    "comment": "На автомагистрали легковой — до 110 км/ч.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": [
+          "5.1"
+        ]
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "passenger_car",
+          "automobile",
+          "road"
+        ]
+      }
+    ]
+  },
+  "8-76": {
+    "comment": "Междугородний автобус на автомагистрали — 90 км/ч.",
+    "entityRefs": [
+      {
+        "type": "sign",
+        "ids": []
+      },
+      {
+        "type": "marking",
+        "ids": []
+      },
+      {
+        "type": "term",
+        "ids": [
+          "road",
+          "bus",
+          "driver"
+        ]
+      }
+    ]
+  }
+}
