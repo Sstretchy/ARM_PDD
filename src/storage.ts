@@ -7,6 +7,7 @@ import { db } from "./db.js";
 import { log } from "./logger.js";
 import type {
   AnswerRecord,
+  DailyTouchState,
   ErrorReportRecord,
   LanguageCode,
   MarkingRecord,
@@ -479,6 +480,14 @@ async function initializeDatabase(): Promise<void> {
 
       CREATE INDEX IF NOT EXISTS idx_user_flows_state_updated_at
       ON user_flows (state, updated_at);
+
+      CREATE TABLE IF NOT EXISTS daily_touch_state (
+        telegram_id INTEGER NOT NULL,
+        local_date TEXT NOT NULL,
+        sent_count INTEGER NOT NULL DEFAULT 0,
+        backlog INTEGER NOT NULL DEFAULT 0,
+        PRIMARY KEY (telegram_id, local_date)
+      );
     `);
 
     if ((await getCount("users")) === 0) {
@@ -1383,4 +1392,104 @@ export function resolveAssetImagePath(relativePath: string | undefined): string 
   }
 
   return undefined;
+}
+
+function mapDailyTouchState(row: RowMap): DailyTouchState {
+  return {
+    telegramId: getRowNumber(row, "telegram_id"),
+    localDate: getRowString(row, "local_date") ?? "",
+    sentCount: getRowNumber(row, "sent_count"),
+    backlog: getRowNumber(row, "backlog"),
+  };
+}
+
+async function upsertDailyTouchState(state: DailyTouchState): Promise<DailyTouchState> {
+  await execute(
+    `
+      INSERT INTO daily_touch_state (telegram_id, local_date, sent_count, backlog)
+      VALUES (?, ?, ?, ?)
+      ON CONFLICT(telegram_id, local_date) DO UPDATE SET
+        sent_count = excluded.sent_count,
+        backlog = excluded.backlog
+    `,
+    [state.telegramId, state.localDate, state.sentCount, state.backlog],
+  );
+  return state;
+}
+
+export async function getDailyTouchState(
+  telegramId: number,
+  localDate: string,
+): Promise<DailyTouchState> {
+  const result = await execute(
+    `
+      SELECT * FROM daily_touch_state
+      WHERE telegram_id = ? AND local_date = ?
+      LIMIT 1
+    `,
+    [telegramId, localDate],
+  );
+  const row = result.rows[0] as RowMap | undefined;
+  if (!row) {
+    return { telegramId, localDate, sentCount: 0, backlog: 0 };
+  }
+
+  return mapDailyTouchState(row);
+}
+
+export async function recordDailySlotSkipped(
+  telegramId: number,
+  localDate: string,
+  maxDaily: number,
+): Promise<DailyTouchState> {
+  const state = await getDailyTouchState(telegramId, localDate);
+  if (state.sentCount >= maxDaily) {
+    return state;
+  }
+
+  if (state.sentCount + state.backlog >= maxDaily) {
+    return state;
+  }
+
+  const updated: DailyTouchState = {
+    ...state,
+    backlog: state.backlog + 1,
+  };
+  await upsertDailyTouchState(updated);
+  log.info("storage", "daily_slot_skipped", {
+    telegramId,
+    localDate,
+    sentCount: updated.sentCount,
+    backlog: updated.backlog,
+    maxDaily,
+  });
+  return updated;
+}
+
+export async function recordDailyQuestionDelivered(
+  telegramId: number,
+  localDate: string,
+  maxDaily: number,
+  fromBacklog: boolean,
+): Promise<DailyTouchState> {
+  const state = await getDailyTouchState(telegramId, localDate);
+  if (state.sentCount >= maxDaily) {
+    return state;
+  }
+
+  const updated: DailyTouchState = {
+    ...state,
+    sentCount: state.sentCount + 1,
+    backlog: fromBacklog && state.backlog > 0 ? state.backlog - 1 : state.backlog,
+  };
+  await upsertDailyTouchState(updated);
+  log.info("storage", "daily_question_delivered", {
+    telegramId,
+    localDate,
+    sentCount: updated.sentCount,
+    backlog: updated.backlog,
+    fromBacklog,
+    maxDaily,
+  });
+  return updated;
 }

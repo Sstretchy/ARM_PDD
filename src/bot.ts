@@ -11,6 +11,9 @@ import {
   createQuizSession,
   deleteQuizSession,
   getAnswersForUser,
+  getDailyTouchState,
+  recordDailyQuestionDelivered,
+  recordDailySlotSkipped,
   releaseUserFlow,
   getMarkings,
   getQuestionByKey,
@@ -326,6 +329,8 @@ type PreviousQuizMessageIds = {
 type SendQuestionOptions = {
   /** Menu/commands: abandon the current round and start fresh. */
   overrideFlow?: boolean;
+  /** Catch-up delivery from the daily backlog queue. */
+  fromDailyBacklog?: boolean;
 };
 
 async function abandonActiveRound(
@@ -662,7 +667,26 @@ function createSessionId(): string {
   return `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
 }
 
-function isFlowStale(flow: UserFlowRecord): boolean {
+function isActiveLearningRound(
+  flow: UserFlowRecord,
+  session: QuizSessionRecord,
+): boolean {
+  return (
+    (flow.state === "question_open" && session.status === "pending") ||
+    (flow.state === "explanation_shown" && session.status === "answered")
+  );
+}
+
+function isActiveRoundPastLocalDay(flow: UserFlowRecord): boolean {
+  const updatedAt = new Date(flow.updatedAt);
+  if (Number.isNaN(updatedAt.getTime())) {
+    return true;
+  }
+
+  return getLocalDateKey(updatedAt) !== getLocalDateKey(new Date());
+}
+
+function isFlowStale(flow: UserFlowRecord, session?: QuizSessionRecord): boolean {
   if (flow.state === "idle") {
     return false;
   }
@@ -670,6 +694,10 @@ function isFlowStale(flow: UserFlowRecord): boolean {
   const updatedAt = new Date(flow.updatedAt).getTime();
   if (Number.isNaN(updatedAt)) {
     return true;
+  }
+
+  if (session && isActiveLearningRound(flow, session)) {
+    return isActiveRoundPastLocalDay(flow);
   }
 
   return Date.now() - updatedAt > STALE_FLOW_MS;
@@ -690,6 +718,110 @@ function getLocalDateKey(date: Date): string {
     month: "2-digit",
     day: "2-digit",
   }).format(date);
+}
+
+function getMaxDailyTouches(): number {
+  return config.touchCrons.length;
+}
+
+async function markDailySlotSkipped(user: UserRecord): Promise<void> {
+  await recordDailySlotSkipped(
+    user.telegramId,
+    getLocalDateKey(new Date()),
+    getMaxDailyTouches(),
+  );
+}
+
+async function finishDailySendAttempt(
+  user: UserRecord,
+  mode: QuizMode,
+  result: boolean,
+  skipped: boolean,
+): Promise<boolean> {
+  if (mode === "daily" && skipped) {
+    await markDailySlotSkipped(user);
+  }
+
+  return result;
+}
+
+type DailyCatchupResult = "sent" | "empty" | "quota_full" | "delivery_failed";
+
+async function sendDailyCatchup(
+  user: UserRecord,
+  ctx?: Context,
+): Promise<DailyCatchupResult> {
+  const dailyState = await getDailyTouchState(
+    user.telegramId,
+    getLocalDateKey(new Date()),
+  );
+  const maxDaily = getMaxDailyTouches();
+
+  if (dailyState.backlog <= 0) {
+    return "empty";
+  }
+
+  if (dailyState.sentCount >= maxDaily) {
+    return "quota_full";
+  }
+
+  const sent = await sendQuestion(user, "daily", undefined, ctx, {
+    overrideFlow: true,
+    fromDailyBacklog: true,
+  });
+
+  return sent ? "sent" : "delivery_failed";
+}
+
+async function replyDailyCatchupResult(
+  user: UserRecord,
+  result: DailyCatchupResult,
+  ctx?: Context,
+): Promise<void> {
+  const maxDaily = getMaxDailyTouches();
+  const dailyState = await getDailyTouchState(
+    user.telegramId,
+    getLocalDateKey(new Date()),
+  );
+
+  let text: string;
+  switch (result) {
+    case "sent":
+      text = t(
+        user.language,
+        `Отправляю пропущенный вопрос дня. В очереди ещё ${dailyState.backlog}. После объяснения жми «Следующий вопрос», чтобы взять следующий.`,
+        `Ուղարկում եմ բաց թողնված օրվա հարցը։ Հերթում էլի կա ${dailyState.backlog}։ Բացատրությունից հետո սեղմիր «Հաջորդ հարց»՝ հաջորդը ստանալու համար։`,
+      );
+      break;
+    case "empty":
+      text = t(
+        user.language,
+        "Сегодня нет пропущенных вопросов дня в очереди.",
+        "Այսօր հերթում բաց թողնված օրվա հարցեր չկան։",
+      );
+      break;
+    case "quota_full":
+      text = t(
+        user.language,
+        `Сегодня уже получено максимум вопросов дня (${maxDaily}/${maxDaily}).`,
+        `Այսօր արդեն ստացվել է օրվա հարցերի առավելագույնը (${maxDaily}/${maxDaily})։`,
+      );
+      break;
+    case "delivery_failed":
+      text = t(
+        user.language,
+        "Не удалось отправить пропущенный вопрос. Попробуй ещё раз через минуту.",
+        "Չհաջողվեց ուղարկել բաց թողնված հարցը։ Փորձիր կրկին մեկ րոպեից։",
+      );
+      break;
+  }
+
+  if (ctx) {
+    await ctx.reply(text);
+    return;
+  }
+
+  await getBot().telegram.sendMessage(user.chatId, text);
 }
 
 function isDue(nextReviewAt: string | undefined, now: Date): boolean {
@@ -731,6 +863,7 @@ const BOT_COMMANDS_RU: BotCommand[] = [
   { command: "quiz", description: "Начать квиз" },
   { command: "topics", description: "10 групп вопросов" },
   { command: "mistakes", description: "Повтор ошибок" },
+  { command: "catchup", description: "Догнать пропущенные вопросы дня" },
   { command: "progress", description: "Прогресс обучения" },
   { command: "settings", description: "Язык и настройки" },
   { command: "sign", description: "Случайный знак или разметка" },
@@ -743,6 +876,7 @@ const BOT_COMMANDS_AM: BotCommand[] = [
   { command: "quiz", description: "Սկսել քուիզը" },
   { command: "topics", description: "10 հարցաշարային խմբեր" },
   { command: "mistakes", description: "Սխալների կրկնություն" },
+  { command: "catchup", description: "Բաց թողնված օրվա հարցերը" },
   { command: "progress", description: "Ուսուցման առաջընթաց" },
   { command: "settings", description: "Լեզու և կարգավորումներ" },
   { command: "sign", description: "Պատահական նշան կամ գծանշում" },
@@ -778,6 +912,7 @@ function buildMainMenuText(language: LanguageCode): string {
     `/sign ${t(language, "— случайный знак или разметка", "— նշան ըստ id կամ պատահական")}`,
     `/term ${t(language, "— случайный термин", "— տերմին ըստ slug կամ պատահական")}`,
     `/mistakes ${t(language, "— повтор ошибок", "— սխալների կրկնություն")}`,
+    `/catchup ${t(language, "— догнать пропущенные вопросы дня", "— բաց թողնված օրվա հարցերը")}`,
     `/progress ${t(language, "— прогресс", "— առաջընթաց")}`,
     `/settings ${t(language, "— язык", "— լեզու")}`,
     "/stop",
@@ -786,16 +921,31 @@ function buildMainMenuText(language: LanguageCode): string {
 
 async function buildDailySummaryText(user: UserRecord): Promise<string> {
   const todayKey = getLocalDateKey(new Date());
+  const dailyState = await getDailyTouchState(user.telegramId, todayKey);
+  const maxDaily = getMaxDailyTouches();
   const todayAnswers = (await getAnswersForUser(user.telegramId, user.language)).filter(
     (answer) => getLocalDateKey(new Date(answer.answeredAt)) === todayKey,
   );
 
   if (todayAnswers.length === 0) {
-    return t(
-      user.language,
-      "Итог дня: сегодня еще нет ответов. Следующий вопрос придет по расписанию или через /quiz.",
-      "Օրվա ամփոփում․ այսօր դեռ պատասխաններ չկան։ Հաջորդ հարցը կգա ըստ ժամանակացույցի կամ /quiz-ով։",
-    );
+    const backlogLine =
+      dailyState.backlog > 0
+        ? t(
+            user.language,
+            `В очереди ещё ${dailyState.backlog} пропущенных вопросов дня — ответь на текущий и жми «Следующий вопрос».`,
+            `Հերթում էլի կա ${dailyState.backlog} բաց թողնված օրվա հարց — պատասխանիր ընթացիկին և սեղմիր «Հաջորդ հարց»։`,
+          )
+        : "";
+    return [
+      t(
+        user.language,
+        "Итог дня: сегодня еще нет ответов. Следующий вопрос придет по расписанию или через /quiz.",
+        "Օրվա ամփոփում․ այսօր դեռ պատասխաններ չկան։ Հաջորդ հարցը կգա ըստ ժամանակացույցի կամ /quiz-ով։",
+      ),
+      backlogLine,
+    ]
+      .filter(Boolean)
+      .join("\n\n");
   }
 
   const correctCount = todayAnswers.filter((answer) => answer.isCorrect).length;
@@ -822,10 +972,21 @@ async function buildDailySummaryText(user: UserRecord): Promise<string> {
 
   const lines = [
     t(user.language, "Итог дня", "Օրվա ամփոփում"),
+    `${t(user.language, "Вопросов дня получено", "Օրվա հարցեր ստացվել է")}: ${dailyState.sentCount}/${maxDaily}`,
     `${t(user.language, "Ответов", "Պատասխաններ")}: ${todayAnswers.length}`,
     `${t(user.language, "Верных", "Ճիշտ")}: ${correctCount}`,
     `${t(user.language, "Ошибок", "Սխալ")}: ${mistakeCount}`,
   ];
+
+  if (dailyState.backlog > 0) {
+    lines.push(
+      t(
+        user.language,
+        `В очереди ещё ${dailyState.backlog} пропущенных — жми «Следующий вопрос» после объяснения.`,
+        `Հերթում էլի կա ${dailyState.backlog} բաց թողնված — բացատրությունից հետո սեղմիր «Հաջորդ հարց»։`,
+      ),
+    );
+  }
 
   if (weakTopics.length > 0) {
     lines.push(
@@ -975,17 +1136,6 @@ async function normalizeUserFlow(user: UserRecord, flow: UserFlowRecord): Promis
     return flow;
   }
 
-  if (isFlowStale(flow)) {
-    log.warn("flow", "normalize_stale_reset", {
-      telegramId: user.telegramId,
-      state: flow.state,
-      activeSessionId: flow.activeSessionId,
-      updatedAt: flow.updatedAt,
-    });
-    await releaseUserFlow(user.telegramId);
-    return buildDefaultFlow(user.telegramId);
-  }
-
   if (!flow.activeSessionId) {
     log.warn("flow", "normalize_missing_session_reset", {
       telegramId: user.telegramId,
@@ -1002,6 +1152,19 @@ async function normalizeUserFlow(user: UserRecord, flow: UserFlowRecord): Promis
       activeSessionId: flow.activeSessionId,
       sessionFound: Boolean(session),
       sessionTelegramId: session?.telegramId,
+    });
+    await releaseUserFlow(user.telegramId);
+    return buildDefaultFlow(user.telegramId);
+  }
+
+  if (isFlowStale(flow, session)) {
+    log.warn("flow", "normalize_stale_reset", {
+      telegramId: user.telegramId,
+      state: flow.state,
+      activeSessionId: flow.activeSessionId,
+      sessionStatus: session.status,
+      updatedAt: flow.updatedAt,
+      activeRound: isActiveLearningRound(flow, session),
     });
     await releaseUserFlow(user.telegramId);
     return buildDefaultFlow(user.telegramId);
@@ -1538,6 +1701,7 @@ async function deliverClaimedQuestion(
   ctx: Context | undefined,
   previousMessageIds: PreviousQuizMessageIds | undefined,
   startedAt: number,
+  fromDailyBacklog = false,
 ): Promise<boolean> {
   try {
     const question = await selectNextQuestion(user, mode, topicFilter);
@@ -1587,7 +1751,16 @@ async function deliverClaimedQuestion(
       sessionId,
       questionKey: question.key,
       durationMs: Date.now() - startedAt,
+      fromDailyBacklog,
     });
+    if (mode === "daily") {
+      await recordDailyQuestionDelivered(
+        user.telegramId,
+        getLocalDateKey(new Date()),
+        getMaxDailyTouches(),
+        fromDailyBacklog,
+      );
+    }
     return true;
   } catch (error) {
     log.error("quiz", "send_question_failed", error, {
@@ -1649,6 +1822,21 @@ async function sendQuestion(
     return false;
   }
 
+  if (mode === "daily") {
+    const dailyState = await getDailyTouchState(
+      user.telegramId,
+      getLocalDateKey(new Date()),
+    );
+    if (dailyState.sentCount >= getMaxDailyTouches()) {
+      log.info("quiz", "send_question_daily_quota_full", {
+        telegramId: user.telegramId,
+        sentCount: dailyState.sentCount,
+        maxDaily: getMaxDailyTouches(),
+      });
+      return false;
+    }
+  }
+
   let flow = await getFlowForUser(user);
   log.info("quiz", "send_question_flow_loaded", {
     telegramId: user.telegramId,
@@ -1672,7 +1860,7 @@ async function sendQuestion(
         activeSessionId: flow.activeSessionId,
         questionMessageId: flow.activeQuestionMessageId,
       });
-      return true;
+      return finishDailySendAttempt(user, mode, true, true);
     }
 
     if (isDeliveryClaimed(flow)) {
@@ -1683,7 +1871,7 @@ async function sendQuestion(
           activeSessionId: delivered.activeSessionId,
           questionMessageId: delivered.activeQuestionMessageId,
         });
-        return true;
+        return finishDailySendAttempt(user, mode, true, true);
       }
     }
 
@@ -1703,7 +1891,7 @@ async function sendQuestion(
         telegramId: user.telegramId,
         durationMs: Date.now() - startedAt,
       });
-      return true;
+      return finishDailySendAttempt(user, mode, true, true);
     }
     log.warn("quiz", "send_question_resend_failed_continue", {
       telegramId: user.telegramId,
@@ -1725,7 +1913,7 @@ async function sendQuestion(
         telegramId: user.telegramId,
         activeSessionId: flow.activeSessionId,
       });
-      return false;
+      return finishDailySendAttempt(user, mode, false, true);
     }
 
     log.info("quiz", "send_question_from_explanation", {
@@ -1743,7 +1931,7 @@ async function sendQuestion(
     if (mode !== "daily") {
       await notifyQuizMessage(user, buildQuestionFlowBlockedText(user, "question_open"), ctx);
     }
-    return false;
+    return finishDailySendAttempt(user, mode, false, mode === "daily");
   } else if (flow.state !== "idle") {
     log.warn("quiz", "send_question_blocked_by_flow", {
       telegramId: user.telegramId,
@@ -1754,7 +1942,7 @@ async function sendQuestion(
     if (mode !== "daily") {
       await notifyQuizMessage(user, buildQuestionFlowBlockedText(user, flow.state), ctx);
     }
-    return false;
+    return finishDailySendAttempt(user, mode, false, mode === "daily");
   }
 
   const sessionId = createSessionId();
@@ -1766,7 +1954,7 @@ async function sendQuestion(
     });
     const duplicateHandled = await handleDuplicateQuestionDelivery(user, mode, topicFilter, ctx);
     if (duplicateHandled) {
-      return true;
+      return finishDailySendAttempt(user, mode, true, true);
     }
 
     const currentFlow = await getFlowForUser(user);
@@ -1777,7 +1965,7 @@ async function sendQuestion(
         ctx,
       );
     }
-    return false;
+    return finishDailySendAttempt(user, mode, false, mode === "daily");
   }
 
   log.info("quiz", "send_question_flow_claimed", { telegramId: user.telegramId, sessionId });
@@ -1789,6 +1977,7 @@ async function sendQuestion(
     ctx,
     previousMessageIds,
     startedAt,
+    options?.fromDailyBacklog ?? false,
   );
 }
 
@@ -2402,6 +2591,25 @@ function registerCommands(): void {
     await sendQuestion(user, "mistake", undefined, ctx, { overrideFlow: true });
   });
 
+  getBot().command("catchup", async (ctx) => {
+    const from = ctx.from;
+    if (!from) {
+      return;
+    }
+
+    const user = await upsertUser(from.id, ctx.chat.id, from.first_name, from.username);
+    log.info("handler", "command_catchup_start", {
+      telegramId: user.telegramId,
+      chatId: user.chatId,
+    });
+    const result = await sendDailyCatchup(user, ctx);
+    await replyDailyCatchupResult(user, result, ctx);
+    log.info("handler", "command_catchup_done", {
+      telegramId: user.telegramId,
+      result,
+    });
+  });
+
   getBot().command("progress", async (ctx) => {
     const from = ctx.from;
     if (!from) {
@@ -2752,7 +2960,33 @@ function registerCommands(): void {
       return;
     }
 
-    const sent = await sendQuestion(user, "manual", undefined, ctx);
+    const completedSession = flow.activeSessionId
+      ? await getQuizSessionById(flow.activeSessionId)
+      : undefined;
+    const dailyState = await getDailyTouchState(
+      user.telegramId,
+      getLocalDateKey(new Date()),
+    );
+    const catchUpDaily =
+      completedSession?.mode === "daily" &&
+      dailyState.backlog > 0 &&
+      dailyState.sentCount < getMaxDailyTouches();
+
+    log.info("handler", "nav_next_quiz_mode", {
+      telegramId: user.telegramId,
+      completedSessionMode: completedSession?.mode,
+      catchUpDaily,
+      dailyBacklog: dailyState.backlog,
+      dailySentCount: dailyState.sentCount,
+    });
+
+    const sent = await sendQuestion(
+      user,
+      catchUpDaily ? "daily" : "manual",
+      undefined,
+      ctx,
+      catchUpDaily ? { fromDailyBacklog: true } : undefined,
+    );
     if (!sent) {
       await notifyQuizMessage(
         user,
@@ -2764,7 +2998,7 @@ function registerCommands(): void {
         ctx,
       );
     }
-    log.info("handler", "nav_next_quiz_done", { telegramId: user.telegramId, sent });
+    log.info("handler", "nav_next_quiz_done", { telegramId: user.telegramId, sent, catchUpDaily });
   });
 
   getBot().action(/topic\|(.+)/, async (ctx) => {

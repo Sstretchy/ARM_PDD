@@ -106,6 +106,13 @@ export type UserFlowRecord = {
   updatedAt: string;
 };
 
+export type DailyTouchState = {
+  telegramId: number;
+  localDate: string;
+  sentCount: number;
+  backlog: number;
+};
+
 export type QuizMode = "daily" | "manual" | "mistake";
 
 export type QuestionStatus = "new" | "learning" | "mistake" | "repeat" | "mastered";
