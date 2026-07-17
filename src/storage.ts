@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 
 import type { InArgs } from "@libsql/client/node";
@@ -22,30 +22,15 @@ import type {
 } from "./types.js";
 
 const dataDir = path.resolve(process.cwd(), "data");
-const usersPath = path.join(dataDir, "users.json");
-const answersPath = path.join(dataDir, "answers.json");
-const errorReportsPath = path.join(dataDir, "error-reports.json");
-const questionStatesPath = path.join(dataDir, "question-progress.json");
-const quizSessionsPath = path.join(dataDir, "quiz-sessions.json");
 const signsPath = path.join(dataDir, "signs.json");
 const termsPath = path.join(dataDir, "terms.json");
 const markingPath = path.join(dataDir, "marking.json");
 const drvTopicsRoot = path.join(dataDir, "drv-topics");
 
-type LegacyUserRecord = UserRecord & {
-  lessonCursor?: number;
-};
-
 type RowValue = string | number | bigint | Uint8Array | null;
 type RowMap = Record<string, RowValue>;
 
 let initPromise: Promise<void> | undefined;
-
-function ensureDataDir(): void {
-  if (!existsSync(dataDir)) {
-    mkdirSync(dataDir, { recursive: true });
-  }
-}
 
 function readJsonFile<T>(filePath: string, fallback: T): T {
   if (!existsSync(filePath)) {
@@ -63,25 +48,6 @@ function readJsonFile<T>(filePath: string, fallback: T): T {
     console.error(`Failed to parse JSON file ${filePath}, using fallback:`, error);
     return fallback;
   }
-}
-
-function writeJsonFile<T>(filePath: string, data: T): void {
-  ensureDataDir();
-  writeFileSync(filePath, JSON.stringify(data, null, 2), "utf-8");
-}
-
-function normalizeUser(user: LegacyUserRecord): UserRecord {
-  return {
-    telegramId: user.telegramId,
-    chatId: user.chatId,
-    firstName: user.firstName,
-    username: user.username,
-    language: user.language ?? "ru",
-    isSubscribed: user.isSubscribed ?? true,
-    pendingErrorReportQuestionKey: user.pendingErrorReportQuestionKey,
-    createdAt: user.createdAt ?? new Date().toISOString(),
-    updatedAt: user.updatedAt ?? new Date().toISOString(),
-  };
 }
 
 function getRowNumber(row: RowMap, key: string): number {
@@ -135,6 +101,7 @@ function mapUser(row: RowMap): UserRecord {
     username: getRowString(row, "username"),
     language: (getRowString(row, "language") as LanguageCode | undefined) ?? "ru",
     isSubscribed: getRowBoolean(row, "is_subscribed"),
+    activeTopicSlug: getRowString(row, "active_topic_slug") as TopicSlug | undefined,
     pendingErrorReportQuestionKey: getRowString(row, "pending_error_report_question_key"),
     createdAt: getRowString(row, "created_at") ?? new Date().toISOString(),
     updatedAt: getRowString(row, "updated_at") ?? new Date().toISOString(),
@@ -175,6 +142,7 @@ function mapQuestionState(row: RowMap): UserQuestionState {
     language: (getRowString(row, "language") as LanguageCode | undefined) ?? "ru",
     topicSlug: (getRowString(row, "topic_slug") as TopicSlug | undefined) ?? "road-signs",
     status: (getRowString(row, "status") as UserQuestionState["status"] | undefined) ?? "new",
+    correctCount: getRowNumber(row, "correct_count") || getRowNumber(row, "correct_streak"),
     correctStreak: getRowNumber(row, "correct_streak"),
     mistakeCount: getRowNumber(row, "mistake_count"),
     lastSeenAt: getRowString(row, "last_seen_at"),
@@ -219,166 +187,6 @@ function mapUserFlow(row: RowMap): UserFlowRecord {
   };
 }
 
-async function getCount(tableName: string): Promise<number> {
-  const result = await db.execute(`SELECT COUNT(*) AS count FROM ${tableName}`);
-  const firstRow = result.rows[0] as RowMap | undefined;
-  return firstRow ? getRowNumber(firstRow, "count") : 0;
-}
-
-async function importLegacyUsers(): Promise<void> {
-  const users = readJsonFile<LegacyUserRecord[]>(usersPath, []).map(normalizeUser);
-  if (users.length === 0) {
-    return;
-  }
-
-  await db.batch(
-    users.map((user) => ({
-      sql: `
-        INSERT INTO users (
-          telegram_id, chat_id, first_name, username, language, is_subscribed,
-          pending_error_report_question_key, created_at, updated_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `,
-      args: [
-        user.telegramId,
-        user.chatId,
-        user.firstName ?? null,
-        user.username ?? null,
-        user.language,
-        user.isSubscribed ? 1 : 0,
-        user.pendingErrorReportQuestionKey ?? null,
-        user.createdAt,
-        user.updatedAt,
-      ],
-    })),
-    "write",
-  );
-}
-
-async function importLegacyAnswers(): Promise<void> {
-  const answers = readJsonFile<AnswerRecord[]>(answersPath, []);
-  if (answers.length === 0) {
-    return;
-  }
-
-  await db.batch(
-    answers.map((answer) => ({
-      sql: `
-        INSERT INTO answers (
-          telegram_id, question_key, question_id, topic_slug, language, mode,
-          selected_option_id, is_correct, answered_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `,
-      args: [
-        answer.telegramId,
-        answer.questionKey,
-        answer.questionId,
-        answer.topicSlug,
-        answer.language,
-        answer.mode,
-        answer.selectedOptionId,
-        answer.isCorrect ? 1 : 0,
-        answer.answeredAt,
-      ],
-    })),
-    "write",
-  );
-}
-
-async function importLegacyQuestionStates(): Promise<void> {
-  const states = readJsonFile<UserQuestionState[]>(questionStatesPath, []);
-  if (states.length === 0) {
-    return;
-  }
-
-  await db.batch(
-    states.map((state) => ({
-      sql: `
-        INSERT INTO question_states (
-          telegram_id, question_key, language, topic_slug, status, correct_streak,
-          mistake_count, last_seen_at, next_review_at, last_answer_correct, updated_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `,
-      args: [
-        state.telegramId,
-        state.questionKey,
-        state.language,
-        state.topicSlug,
-        state.status,
-        state.correctStreak,
-        state.mistakeCount,
-        state.lastSeenAt ?? null,
-        state.nextReviewAt ?? null,
-        state.lastAnswerCorrect === undefined ? null : state.lastAnswerCorrect ? 1 : 0,
-        state.updatedAt,
-      ],
-    })),
-    "write",
-  );
-}
-
-async function importLegacyQuizSessions(): Promise<void> {
-  const sessions = readJsonFile<QuizSessionRecord[]>(quizSessionsPath, []);
-  if (sessions.length === 0) {
-    return;
-  }
-
-  await db.batch(
-    sessions.map((session) => ({
-      sql: `
-        INSERT INTO quiz_sessions (
-          id, telegram_id, chat_id, question_key, question_id, topic_slug, language,
-          mode, status, sent_at, answered_at, selected_option_id, is_correct
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `,
-      args: [
-        session.id,
-        session.telegramId,
-        session.chatId,
-        session.questionKey,
-        session.questionId,
-        session.topicSlug,
-        session.language,
-        session.mode,
-        session.status,
-        session.sentAt,
-        session.answeredAt ?? null,
-        session.selectedOptionId ?? null,
-        session.isCorrect === undefined ? null : session.isCorrect ? 1 : 0,
-      ],
-    })),
-    "write",
-  );
-}
-
-async function importLegacyErrorReports(): Promise<void> {
-  const reports = readJsonFile<ErrorReportRecord[]>(errorReportsPath, []);
-  if (reports.length === 0) {
-    return;
-  }
-
-  await db.batch(
-    reports.map((report) => ({
-      sql: `
-        INSERT INTO error_reports (
-          telegram_id, chat_id, language, question_key, question_id, topic_slug, text, created_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-      `,
-      args: [
-        report.telegramId,
-        report.chatId,
-        report.language,
-        report.questionKey,
-        report.questionId ?? null,
-        report.topicSlug ?? null,
-        report.text,
-        report.createdAt,
-      ],
-    })),
-    "write",
-  );
-}
-
 async function initializeDatabase(): Promise<void> {
   if (initPromise) {
     return initPromise;
@@ -393,6 +201,7 @@ async function initializeDatabase(): Promise<void> {
         username TEXT,
         language TEXT NOT NULL,
         is_subscribed INTEGER NOT NULL DEFAULT 1,
+        active_topic_slug TEXT,
         pending_error_report_question_key TEXT,
         created_at TEXT NOT NULL,
         updated_at TEXT NOT NULL
@@ -417,6 +226,7 @@ async function initializeDatabase(): Promise<void> {
         language TEXT NOT NULL,
         topic_slug TEXT NOT NULL,
         status TEXT NOT NULL,
+        correct_count INTEGER NOT NULL DEFAULT 0,
         correct_streak INTEGER NOT NULL,
         mistake_count INTEGER NOT NULL,
         last_seen_at TEXT,
@@ -490,27 +300,6 @@ async function initializeDatabase(): Promise<void> {
       );
     `);
 
-    if ((await getCount("users")) === 0) {
-      await importLegacyUsers();
-    }
-
-    if ((await getCount("answers")) === 0) {
-      await importLegacyAnswers();
-    }
-
-    if ((await getCount("question_states")) === 0) {
-      await importLegacyQuestionStates();
-    }
-
-    if ((await getCount("quiz_sessions")) === 0) {
-      await importLegacyQuizSessions();
-    }
-
-    if ((await getCount("error_reports")) === 0) {
-      await importLegacyErrorReports();
-    }
-
-    await migrateUserFlowsMessageIds();
   })();
 
   return initPromise;
@@ -519,28 +308,6 @@ async function initializeDatabase(): Promise<void> {
 async function execute(sql: string, args?: InArgs) {
   await initializeDatabase();
   return db.execute({ sql, args });
-}
-
-async function migrateUserFlowsMessageIds(): Promise<void> {
-  const columns = new Set(
-    (
-      await db.execute("PRAGMA table_info(user_flows)")
-    ).rows.map((row) => getRowString(row as RowMap, "name")),
-  );
-
-  if (!columns.has("active_question_message_id")) {
-    await db.execute(
-      "ALTER TABLE user_flows ADD COLUMN active_question_message_id INTEGER",
-    );
-    log.info("storage", "migrate_user_flows_add_question_message_id");
-  }
-
-  if (!columns.has("active_explanation_message_id")) {
-    await db.execute(
-      "ALTER TABLE user_flows ADD COLUMN active_explanation_message_id INTEGER",
-    );
-    log.info("storage", "migrate_user_flows_add_explanation_message_id");
-  }
 }
 
 function buildDefaultUserFlow(telegramId: number): UserFlowRecord {
@@ -791,6 +558,7 @@ export async function upsertUser(
     username,
     language: "ru",
     isSubscribed: true,
+    activeTopicSlug: undefined,
     pendingErrorReportQuestionKey: undefined,
     createdAt: now,
     updatedAt: now,
@@ -800,8 +568,8 @@ export async function upsertUser(
     `
       INSERT INTO users (
         telegram_id, chat_id, first_name, username, language, is_subscribed,
-        pending_error_report_question_key, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        active_topic_slug, pending_error_report_question_key, created_at, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `,
     [
       created.telegramId,
@@ -810,6 +578,7 @@ export async function upsertUser(
       created.username ?? null,
       created.language,
       1,
+      null,
       null,
       created.createdAt,
       created.updatedAt,
@@ -829,14 +598,15 @@ export async function updateUser(user: UserRecord): Promise<void> {
     `
       INSERT INTO users (
         telegram_id, chat_id, first_name, username, language, is_subscribed,
-        pending_error_report_question_key, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        active_topic_slug, pending_error_report_question_key, created_at, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ON CONFLICT(telegram_id) DO UPDATE SET
         chat_id = excluded.chat_id,
         first_name = excluded.first_name,
         username = excluded.username,
         language = excluded.language,
         is_subscribed = excluded.is_subscribed,
+        active_topic_slug = excluded.active_topic_slug,
         pending_error_report_question_key = excluded.pending_error_report_question_key,
         created_at = excluded.created_at,
         updated_at = excluded.updated_at
@@ -848,6 +618,7 @@ export async function updateUser(user: UserRecord): Promise<void> {
       user.username ?? null,
       user.language,
       user.isSubscribed ? 1 : 0,
+      user.activeTopicSlug ?? null,
       user.pendingErrorReportQuestionKey ?? null,
       user.createdAt,
       user.updatedAt,
@@ -980,13 +751,14 @@ export async function upsertQuestionState(state: UserQuestionState): Promise<voi
   await execute(
     `
       INSERT INTO question_states (
-        telegram_id, question_key, language, topic_slug, status, correct_streak,
+        telegram_id, question_key, language, topic_slug, status, correct_count, correct_streak,
         mistake_count, last_seen_at, next_review_at, last_answer_correct, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ON CONFLICT(telegram_id, question_key) DO UPDATE SET
         language = excluded.language,
         topic_slug = excluded.topic_slug,
         status = excluded.status,
+        correct_count = excluded.correct_count,
         correct_streak = excluded.correct_streak,
         mistake_count = excluded.mistake_count,
         last_seen_at = excluded.last_seen_at,
@@ -1000,6 +772,7 @@ export async function upsertQuestionState(state: UserQuestionState): Promise<voi
       state.language,
       state.topicSlug,
       state.status,
+      state.correctCount,
       state.correctStreak,
       state.mistakeCount,
       state.lastSeenAt ?? null,
@@ -1194,13 +967,14 @@ export async function completeQuizAnswer(params: {
     await transaction.execute({
       sql: `
         INSERT INTO question_states (
-          telegram_id, question_key, language, topic_slug, status, correct_streak,
+          telegram_id, question_key, language, topic_slug, status, correct_count, correct_streak,
           mistake_count, last_seen_at, next_review_at, last_answer_correct, updated_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ON CONFLICT(telegram_id, question_key) DO UPDATE SET
           language = excluded.language,
           topic_slug = excluded.topic_slug,
           status = excluded.status,
+          correct_count = excluded.correct_count,
           correct_streak = excluded.correct_streak,
           mistake_count = excluded.mistake_count,
           last_seen_at = excluded.last_seen_at,
@@ -1214,6 +988,7 @@ export async function completeQuizAnswer(params: {
         params.nextState.language,
         params.nextState.topicSlug,
         params.nextState.status,
+        params.nextState.correctCount,
         params.nextState.correctStreak,
         params.nextState.mistakeCount,
         params.nextState.lastSeenAt ?? null,

@@ -58,6 +58,7 @@ let middlewareRegistered = false;
 
 const DELIVERY_WAIT_MS = 25_000;
 const DELIVERY_POLL_MS = 800;
+const MASTERY_CORRECT_ANSWERS = 2;
 
 function getBot(): Telegraf {
   bot ??= new Telegraf(config.botToken);
@@ -862,6 +863,7 @@ const BOT_COMMANDS_RU: BotCommand[] = [
   { command: "start", description: "Главное меню" },
   { command: "quiz", description: "Начать квиз" },
   { command: "topics", description: "10 групп вопросов" },
+  { command: "topicstop", description: "Выйти из режима темы" },
   { command: "mistakes", description: "Повтор ошибок" },
   { command: "catchup", description: "Догнать пропущенные вопросы дня" },
   { command: "progress", description: "Прогресс обучения" },
@@ -875,6 +877,7 @@ const BOT_COMMANDS_AM: BotCommand[] = [
   { command: "start", description: "Գլխավոր մենյու" },
   { command: "quiz", description: "Սկսել քուիզը" },
   { command: "topics", description: "10 հարցաշարային խմբեր" },
+  { command: "topicstop", description: "Դուրս գալ թեմայի ռեժիմից" },
   { command: "mistakes", description: "Սխալների կրկնություն" },
   { command: "catchup", description: "Բաց թողնված օրվա հարցերը" },
   { command: "progress", description: "Ուսուցման առաջընթաց" },
@@ -909,6 +912,7 @@ function buildMainMenuText(language: LanguageCode): string {
     t(language, "Команды:", "Հրամաններ՝"),
     "/quiz",
     `/topics ${t(language, "— 10 групп вопросов", "— 10 հարցաշարային խմբեր")}`,
+    `/topicstop ${t(language, "— выйти из режима темы", "— դուրս գալ թեմայի ռեժիմից")}`,
     `/sign ${t(language, "— случайный знак или разметка", "— նշան ըստ id կամ պատահական")}`,
     `/term ${t(language, "— случайный термин", "— տերմին ըստ slug կամ պատահական")}`,
     `/mistakes ${t(language, "— повтор ошибок", "— սխալների կրկնություն")}`,
@@ -1244,6 +1248,12 @@ function buildQuestionFlowBlockedText(user: UserRecord, state: UserFlowRecord["s
   );
 }
 
+async function setActiveTopic(user: UserRecord, topicSlug?: TopicSlug): Promise<void> {
+  user.activeTopicSlug = topicSlug;
+  user.updatedAt = nowIso();
+  await updateUser(user);
+}
+
 function buildQuestionState(
   user: UserRecord,
   question: QuizQuestion,
@@ -1252,6 +1262,7 @@ function buildQuestionState(
 ): UserQuestionState {
   const now = new Date();
   const mistakeCount = isCorrect ? current?.mistakeCount ?? 0 : (current?.mistakeCount ?? 0) + 1;
+  const correctCount = isCorrect ? (current?.correctCount ?? 0) + 1 : current?.correctCount ?? 0;
   const correctStreak = isCorrect ? (current?.correctStreak ?? 0) + 1 : 0;
 
   let status: QuestionStatus;
@@ -1260,7 +1271,7 @@ function buildQuestionState(
   if (!isCorrect) {
     status = "mistake";
     nextReviewAt = addHours(now, 6);
-  } else if (correctStreak >= 3) {
+  } else if (correctCount >= MASTERY_CORRECT_ANSWERS) {
     status = "mastered";
     nextReviewAt = addDays(now, 7);
   } else if ((current?.status ?? "new") === "new") {
@@ -1277,6 +1288,7 @@ function buildQuestionState(
     language: question.language,
     topicSlug: question.topicSlug,
     status,
+    correctCount,
     correctStreak,
     mistakeCount,
     lastSeenAt: nowIso(),
@@ -1323,7 +1335,14 @@ async function selectNextQuestion(
   );
   const now = new Date();
 
-  const available = allQuestions.filter((question) => !pendingKeys.has(question.key));
+  const available = allQuestions.filter((question) => {
+    const state = states.get(question.key);
+    return (
+      !pendingKeys.has(question.key) &&
+      state?.status !== "mastered" &&
+      (state?.correctCount ?? 0) < MASTERY_CORRECT_ANSWERS
+    );
+  });
 
   if (mode === "mistake") {
     const dueMistakes = available.filter((question) => {
@@ -1716,11 +1735,17 @@ async function deliverClaimedQuestion(
       if (mode !== "daily") {
         await notifyQuizMessage(
           user,
-          t(
-            user.language,
-            "Сейчас нет подходящих вопросов для отправки.",
-            "Այս պահին ուղարկելու հարմար հարց չկա։",
-          ),
+          topicFilter
+            ? t(
+                user.language,
+                "Все вопросы этой темы освоены. Выбери другую тему через /topics или выйди из режима темы: /topicstop.",
+                "Այս թեմայի բոլոր հարցերը յուրացված են։ Ընտրիր այլ թեմա /topics-ով կամ դուրս եկ թեմայի ռեժիմից՝ /topicstop։",
+              )
+            : t(
+                user.language,
+                "Сейчас нет подходящих вопросов для отправки.",
+                "Այս պահին ուղարկելու հարմար հարց չկա։",
+              ),
           ctx,
         );
       }
@@ -1989,7 +2014,12 @@ function getOptionText(question: QuizQuestion, optionId: string | undefined): st
   return question.options.find((option) => option.id === optionId)?.text ?? optionId;
 }
 
-function buildAnswerExplanation(user: UserRecord, question: QuizQuestion, selectedOptionId: string): string {
+function buildAnswerExplanation(
+  user: UserRecord,
+  question: QuizQuestion,
+  selectedOptionId: string,
+  nextState: UserQuestionState,
+): string {
   const isCorrect = selectedOptionId === question.correctOptionId;
   const lines = [
     isCorrect
@@ -2006,6 +2036,21 @@ function buildAnswerExplanation(user: UserRecord, question: QuizQuestion, select
   if (question.comment.trim()) {
     lines.push(`${t(user.language, "Комментарий", "Մեկնաբանություն")}: ${question.comment.trim()}`);
   }
+
+  const correctCountText = `${nextState.correctCount}/${MASTERY_CORRECT_ANSWERS}`;
+  lines.push(
+    nextState.status === "mastered"
+      ? t(
+          user.language,
+          `Освоено: ${correctCountText} правильных ответа. Этот вопрос больше не будет показан.`,
+          `Յուրացված է՝ ${correctCountText} ճիշտ պատասխան։ Այս հարցն այլևս չի ցուցադրվի։`,
+        )
+      : t(
+          user.language,
+          `Правильных ответов на этот вопрос: ${correctCountText}.`,
+          `Այս հարցի ճիշտ պատասխանները՝ ${correctCountText}։`,
+        ),
+  );
 
   return lines.join("\n\n");
 }
@@ -2394,7 +2439,7 @@ async function answerQuestion(ctx: Context, sessionId: string, optionId: string)
   const isCorrect = optionId === question.correctOptionId;
   const states = await getQuestionStateMapForUser(user);
   const nextState = buildQuestionState(user, question, states.get(question.key), isCorrect);
-  const explanationText = buildAnswerExplanation(user, question, optionId);
+  const explanationText = buildAnswerExplanation(user, question, optionId, nextState);
   const followupKeyboard = buildFollowupKeyboard(user.language, question);
 
   await ctx.answerCbQuery(
@@ -2568,6 +2613,35 @@ function registerCommands(): void {
     );
   });
 
+  getBot().command("topicstop", async (ctx) => {
+    const from = ctx.from;
+    if (!from) {
+      return;
+    }
+
+    const user = await upsertUser(from.id, ctx.chat.id, from.first_name, from.username);
+    const activeTopicSlug = user.activeTopicSlug;
+    if (!activeTopicSlug) {
+      await ctx.reply(
+        t(
+          user.language,
+          "Режим темы уже выключен. Используй /topics, чтобы выбрать тему.",
+          "Թեմայի ռեժիմն արդեն անջատված է։ Թեմա ընտրելու համար օգտագործիր /topics։",
+        ),
+      );
+      return;
+    }
+
+    await setActiveTopic(user);
+    await ctx.reply(
+      t(
+        user.language,
+        `Режим темы «${getTopicTitle(activeTopicSlug, user.language)}» выключен. Следующий вопрос будет из общей очереди.`,
+        `«${getTopicTitle(activeTopicSlug, user.language)}» թեմայի ռեժիմն անջատված է։ Հաջորդ հարցը կլինի ընդհանուր հերթից։`,
+      ),
+    );
+  });
+
   getBot().command("quiz", async (ctx) => {
     log.info("handler", "command_quiz_start", describeCtx(ctx));
     const from = ctx.from;
@@ -2577,6 +2651,7 @@ function registerCommands(): void {
     }
 
     const user = await upsertUser(from.id, ctx.chat.id, from.first_name, from.username);
+    await setActiveTopic(user);
     const sent = await sendQuestion(user, "manual", undefined, ctx, { overrideFlow: true });
     log.info("handler", "command_quiz_done", { telegramId: user.telegramId, sent });
   });
@@ -2734,6 +2809,7 @@ function registerCommands(): void {
     }
 
     const user = await upsertUser(from.id, chatId, from.first_name, from.username);
+    await setActiveTopic(user);
     log.info("handler", "menu_quiz_user_ready", {
       telegramId: user.telegramId,
       chatId: user.chatId,
@@ -2923,7 +2999,7 @@ function registerCommands(): void {
         user,
         flow.activeSessionId,
         "manual",
-        undefined,
+        user.activeTopicSlug,
         ctx,
       );
       log.info("handler", "nav_next_quiz_resend_after_stuck", {
@@ -2971,11 +3047,13 @@ function registerCommands(): void {
       completedSession?.mode === "daily" &&
       dailyState.backlog > 0 &&
       dailyState.sentCount < getMaxDailyTouches();
+    const topicFilter = catchUpDaily ? undefined : user.activeTopicSlug;
 
     log.info("handler", "nav_next_quiz_mode", {
       telegramId: user.telegramId,
       completedSessionMode: completedSession?.mode,
       catchUpDaily,
+      topicFilter,
       dailyBacklog: dailyState.backlog,
       dailySentCount: dailyState.sentCount,
     });
@@ -2983,7 +3061,7 @@ function registerCommands(): void {
     const sent = await sendQuestion(
       user,
       catchUpDaily ? "daily" : "manual",
-      undefined,
+      topicFilter,
       ctx,
       catchUpDaily ? { fromDailyBacklog: true } : undefined,
     );
@@ -3044,6 +3122,7 @@ function registerCommands(): void {
     }
 
     const user = await upsertUser(from.id, chatId, from.first_name, from.username);
+    await setActiveTopic(user, topic.slug);
     await sendQuestion(user, "manual", topic.slug, ctx, { overrideFlow: true });
     await ctx.answerCbQuery();
   });

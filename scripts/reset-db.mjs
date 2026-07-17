@@ -17,6 +17,7 @@ const tables = [
   "answers",
   "question_states",
   "error_reports",
+  "daily_touch_state",
   "users",
 ];
 
@@ -50,7 +51,7 @@ async function main() {
   const isLocalFile = databaseUrl.startsWith("file:");
 
   console.log(`Target database: ${maskUrl(databaseUrl)}`);
-  console.log("Tables to clear:");
+  console.log("Tables to remove:");
   for (const table of tables) {
     console.log(`  - ${table}`);
   }
@@ -67,14 +68,10 @@ async function main() {
 
   for (const table of tables) {
     try {
-      const result = await client.execute(`DELETE FROM ${table}`);
-      console.log(`Cleared ${table}: ${result.rowsAffected ?? 0} rows`);
+      await client.execute(`DROP TABLE IF EXISTS ${table}`);
+      console.log(`Removed ${table}`);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      if (message.includes("no such table")) {
-        console.log(`Skipped ${table}: table does not exist yet`);
-        continue;
-      }
       throw error;
     }
   }
@@ -95,7 +92,7 @@ async function main() {
     return;
   }
 
-  console.log("\nDone. Turso database is empty.");
+  console.log("\nDone. The database schema will be recreated on the next bot start.");
 }
 
 main().catch((error) => {

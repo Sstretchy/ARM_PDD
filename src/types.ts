@@ -90,6 +90,7 @@ export type UserRecord = {
   username?: string;
   language: LanguageCode;
   isSubscribed: boolean;
+  activeTopicSlug?: TopicSlug;
   pendingErrorReportQuestionKey?: string;
   createdAt: string;
   updatedAt: string;
@@ -123,6 +124,7 @@ export type UserQuestionState = {
   language: LanguageCode;
   topicSlug: TopicSlug;
   status: QuestionStatus;
+  correctCount: number;
   correctStreak: number;
   mistakeCount: number;
   lastSeenAt?: string;
